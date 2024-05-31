@@ -1,6 +1,6 @@
 import { Document, Model, ObjectId } from "mongoose";
 
-export interface IUser extends Document {
+export interface IUserDocument extends Document {
     _id: ObjectId;
     name: String;
     email: String;
@@ -10,4 +10,4 @@ export interface IUser extends Document {
 }
 
 
-export interface IUsersCollection extends Model<IUser> {}
+export interface IUsersCollection extends Model<IUserDocument> {}

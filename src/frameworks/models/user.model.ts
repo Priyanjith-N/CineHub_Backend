@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IUser, IUsersCollection } from "../../interface/collections/IUsers.collections";
+import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
 
 const usersSchema: Schema = new Schema({
     name: {
@@ -29,6 +29,6 @@ const usersSchema: Schema = new Schema({
 
 
 
-const Users: IUsersCollection = mongoose.model<IUser>('Users', usersSchema);
+const Users: IUsersCollection = mongoose.model<IUserDocument>('Users', usersSchema);
 
 export default Users;
