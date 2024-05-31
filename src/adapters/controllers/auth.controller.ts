@@ -9,17 +9,21 @@ export default class AuthController implements IAuthController {
     }
 
     async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
-        const {
-            email,
-            password
-        }: ILoginCredentials = req.body;
-        
-        // usecase for authenticateing User
-        this.authUseCase.authenticateUser(email, password);
-        
-        res.status(200).json({
-            messsage: "Successfuly login",
-            token: "1234567890.qwertyuiop.lkjhgfdsa"
-        });
+        try {
+            const {
+                email,
+                password
+            }: ILoginCredentials = req.body;
+            
+            // usecase for authenticateing User
+            await this.authUseCase.authenticateUser(email, password);
+            
+            res.status(200).json({
+                messsage: "Successfuly login",
+                token: "1234567890.qwertyuiop.lkjhgfdsa"
+            });
+        } catch (err: any) {
+            next(err);
+        }
     }
 }
