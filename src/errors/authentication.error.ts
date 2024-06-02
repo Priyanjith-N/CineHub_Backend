@@ -5,7 +5,9 @@ export interface ErrorDetails {
 }
 
 export default class AuthenticationError extends Error {
-    constructor(public details: ErrorDetails) {
+    public details: ErrorDetails;
+    constructor(details: ErrorDetails) {
         super(details.message);
+        this.details = details;
     }
 }

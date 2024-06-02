@@ -3,6 +3,9 @@ import AuthController from '../../adapters/controllers/auth.controller';
 import AuthUseCase from '../../usecase/auth.usecase';
 import AuthRepository from '../../adapters/repositories/auth.repositories';
 
+// import utils
+import HashingService from '../utils/hashingService.utils';
+
 // importing collections
 import Users from '../models/user.model';
 
@@ -10,14 +13,14 @@ import Users from '../models/user.model';
 import { IAuthController } from '../../interface/controllers/IAuth.controller';
 import IAuthUseCase from '../../interface/usecase/IAuth.usecase';
 import IAuthRepository from '../../interface/repositories/IAuth.repositories';
+import IHashingService from '../../interface/utils/IHashingService';
 
 const router: Router = express.Router();
 
 const authRepository: IAuthRepository = new AuthRepository(Users);
-const authUseCase: IAuthUseCase = new AuthUseCase(authRepository);
+const hashingService: IHashingService = new HashingService();
+const authUseCase: IAuthUseCase = new AuthUseCase(authRepository, hashingService);
 const authController: IAuthController = new AuthController(authUseCase);
-
-
 
 router.post('/login', authController.handleLoginRequest.bind(authController));
 
