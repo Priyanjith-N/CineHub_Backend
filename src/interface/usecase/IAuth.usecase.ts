@@ -1,4 +1,4 @@
 export default interface IAuthUseCase {
-    authenticateUser(email: string, password: string): Promise<void>;
+    authenticateUser(email: string, password: string): Promise<string>;
 }
 

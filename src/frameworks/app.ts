@@ -1,5 +1,6 @@
 import express, {Express} from 'express';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 // connect database
@@ -13,6 +14,9 @@ import errorHandler from './middleware/error.middleware';
 const PORT = process.env.PORT || 3000;
 
 const app: Express = express();
+
+//for parseing cookie data
+app.use(cookieParser());
 
 // for parseing json data
 app.use(express.json());
