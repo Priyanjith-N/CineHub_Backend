@@ -27,4 +27,4 @@ app.use('/api/user', authRouter);
 // error middleware for handling errors
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server is alive at PORT ${PORT}`)); 
+app.listen(PORT, () => console.log(`Server is alive at PORT ${PORT}`));

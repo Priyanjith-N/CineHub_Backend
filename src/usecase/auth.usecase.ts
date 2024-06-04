@@ -1,6 +1,7 @@
 import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
 import { IUserDocument } from "../interface/collections/IUsers.collections";
+import { IRegisterCredentials } from "../interface/controllers/IAuth.controller";
 import IAuthRepository from "../interface/repositories/IAuth.repositories";
 import IAuthUseCase from "../interface/usecase/IAuth.usecase";
 import IHashingService from "../interface/utils/IHashingService";
@@ -25,7 +26,7 @@ export default class AuthUseCase implements IAuthUseCase {
             }else if(!await this.hashingService.compare(password, userData.password as string)) {
                 throw new AuthenticationError({message: 'The provided password is incorrect.', statusCode: StatusCodes.Unauthorized, errorField: 'password'});
             }else if(!userData.OTPVerification) {
-                throw new AuthenticationError({message: 'Account it not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp"});
+                throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp"});
             }
 
             const payload: IPayload = {
@@ -35,6 +36,24 @@ export default class AuthUseCase implements IAuthUseCase {
             const token: string = this.jwtService.sign(payload);
 
             return token;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async userRegister(registerData: IRegisterCredentials): Promise<void> {
+        try {
+            const userData: IUserDocument | null = await this.authRepository.getDataByEmail(registerData.email);
+
+            if(userData) {
+                throw new AuthenticationError({message: 'The email address you entered is already registered. Try a different email.', statusCode: StatusCodes.BadRequest, errorField: 'email'})
+            }
+
+            const hashedPassword: string = await this.hashingService.hash(registerData.password);
+
+            registerData.password = hashedPassword;
+
+            await this.authRepository.createUser(registerData);
         } catch (err: any) {
             throw err;
         }

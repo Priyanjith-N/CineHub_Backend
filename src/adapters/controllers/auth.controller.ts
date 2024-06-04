@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { IAuthController, ILoginCredentials} from "../../interface/controllers/IAuth.controller";
+import { IAuthController, ILoginCredentials, IRegisterCredentials} from "../../interface/controllers/IAuth.controller";
 import IAuthUseCase from "../../interface/usecase/IAuth.usecase";
 import { StatusCodes } from "../../enums/statusCode.enum";
 
@@ -23,6 +23,34 @@ export default class AuthController implements IAuthController {
             
             res.status(StatusCodes.Success).json({
                 messsage: "Successfuly login"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const {
+                name,
+                phoneNumber,
+                email,
+                password,
+                confirmPassword
+            }: IRegisterCredentials = req.body;
+
+            const registerData: IRegisterCredentials = {
+                name,
+                phoneNumber,
+                email,
+                password,
+                confirmPassword
+            };
+
+            await this.authUseCase.userRegister(registerData);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfuly register"
             });
         } catch (err: any) {
             next(err);
