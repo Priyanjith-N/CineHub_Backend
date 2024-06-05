@@ -1,16 +1,28 @@
+import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
 import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
 import { IRegisterCredentials } from "../../interface/controllers/IAuth.controller";
 import IAuthRepository from "../../interface/repositories/IAuth.repositories";
 
 export default class AuthRepository implements IAuthRepository {
     private userCollection: IUsersCollection;
-    constructor(userCollection: IUsersCollection) {
+    private otpCollection: IOTPCollection;
+    constructor(userCollection: IUsersCollection, otpCollection: IOTPCollection) {
         this.userCollection = userCollection;
+        this.otpCollection = otpCollection;
     }
 
     async getDataByEmail(email: string): Promise<IUserDocument | null> {
         try {
             const userData: IUserDocument | null = await this.userCollection.findOne({email});
+            return userData;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDataByPhoneNumber(phoneNumber: string): Promise<IUserDocument | null> {
+        try {
+            const userData: IUserDocument | null = await this.userCollection.findOne({phoneNumber});
             return userData;
         } catch (err: any) {
             throw err;
@@ -26,7 +38,20 @@ export default class AuthRepository implements IAuthRepository {
                 password: newUserData.password
             });
 
-            newUser.save();
+            await newUser.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async createOTP(email: string, otp: string): Promise<void> {
+        try {
+            const newOTP: IOTPDocument = new this.otpCollection({
+                email: email,
+                otp: otp
+            });
+
+            await newOTP.save();
         } catch (err: any) {
             throw err;
         }

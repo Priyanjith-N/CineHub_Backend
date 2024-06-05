@@ -49,6 +49,8 @@ export default class AuthController implements IAuthController {
 
             await this.authUseCase.userRegister(registerData);
 
+            res.cookie('emailToBeVerified', registerData.email, { httpOnly: true }); // Set http only cookie for user email to verify the otp
+
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
             });
