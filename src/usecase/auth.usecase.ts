@@ -1,5 +1,6 @@
 import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
+import { IOTPDocument } from "../interface/collections/IOTP.collections";
 import { IUserDocument } from "../interface/collections/IUsers.collections";
 import { IRegisterCredentials } from "../interface/controllers/IAuth.controller";
 import IAuthRepository from "../interface/repositories/IAuth.repositories";
@@ -73,6 +74,24 @@ export default class AuthUseCase implements IAuthUseCase {
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
             await this.authRepository.createOTP(registerData.email, otp); // saving otp in database
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async OTPVerification(email: string | undefined, otp: string): Promise<void> {
+        try {
+            const otpData: IOTPDocument | null = await this.authRepository.getOTPByEmail(email);
+            
+            if(!email) {
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'otp'});
+            } else if(!otpData) {
+                throw new AuthenticationError({message: 'OTP expired. Resend again.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
+            } else if(otpData.otp !== otp) {
+                throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
+            }
+
+            await this.authRepository.makeUserVerified(email);
         } catch (err: any) {
             throw err;
         }

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import e, { NextFunction, Request, Response } from "express";
 import { IAuthController, ILoginCredentials, IRegisterCredentials} from "../../interface/controllers/IAuth.controller";
 import IAuthUseCase from "../../interface/usecase/IAuth.usecase";
 import { StatusCodes } from "../../enums/statusCode.enum";
@@ -53,6 +53,23 @@ export default class AuthController implements IAuthController {
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const emailToBeVerified: string | undefined = req.cookies.emailToBeVerified;
+            const otp: string = req.body.otp;
+            
+            await this.authUseCase.OTPVerification(emailToBeVerified, otp);
+
+            res.cookie('emailToBeVerified', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfuly account verified"
             });
         } catch (err: any) {
             next(err);

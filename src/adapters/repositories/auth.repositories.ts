@@ -48,10 +48,36 @@ export default class AuthRepository implements IAuthRepository {
         try {
             const newOTP: IOTPDocument = new this.otpCollection({
                 email: email,
-                otp: otp
+                otp: otp,
+                expiresAt: new Date(Date.now() + 90000)
             });
 
             await newOTP.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getOTPByEmail(email: string | undefined): Promise<IOTPDocument | null> {
+        try {
+            return await this.otpCollection.findOne({email, expiresAt: {$gte: new Date()}}).sort({expiresAt: -1});
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async makeUserVerified(email: string): Promise<void> {
+        try {
+            await this.deleteOTPByEmail(email);
+            await this.userCollection.updateOne({email}, {$set: {OTPVerification: true}});
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    private async deleteOTPByEmail(email: string): Promise<void> {
+        try {
+            await this.otpCollection.deleteMany({email});
         } catch (err: any) {
             throw err;
         }

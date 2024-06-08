@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 export interface IAuthController {
     handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void>;
     handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void>;
+    handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface ILoginCredentials {
