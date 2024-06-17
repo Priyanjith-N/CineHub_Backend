@@ -10,4 +10,4 @@ export default class AuthenticationError extends Error {
         super(details.message);
         this.details = details;
     }
-}
+} 
