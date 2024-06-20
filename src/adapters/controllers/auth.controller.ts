@@ -22,7 +22,7 @@ export default class AuthController implements IAuthController {
             res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
             res.status(StatusCodes.Success).json({
-                messsage: "Successfuly login"
+                message: "Successfuly login"
             });
         } catch (err: any) {
             next(err);

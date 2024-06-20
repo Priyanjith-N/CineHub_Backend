@@ -84,7 +84,7 @@ export default class AuthUseCase implements IAuthUseCase {
             const otpData: IOTPDocument | null = await this.authRepository.getOTPByEmail(email);
             
             if(!email) {
-                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'otp'});
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
             } else if(!otpData) {
                 throw new AuthenticationError({message: 'OTP expired. Resend again.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
             } else if(otpData.otp !== otp) {
