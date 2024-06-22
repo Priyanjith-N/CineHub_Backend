@@ -1,6 +1,7 @@
 import express, {Express} from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import cors from 'cors';
 dotenv.config();
 
@@ -18,8 +19,12 @@ const app: Express = express();
 
 // enable cors for custom origin
 app.use(cors({
-    origin: ['http://localhost:4200']
-}))
+    origin: ['http://localhost:4200'],
+    credentials: true
+}));
+
+// log all requests
+app.use(morgan('dev'));
 
 //for parseing cookie data
 app.use(cookieParser());

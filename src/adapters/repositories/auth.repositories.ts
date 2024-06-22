@@ -46,6 +46,8 @@ export default class AuthRepository implements IAuthRepository {
 
     async createOTP(email: string, otp: string): Promise<void> {
         try {
+            await this.deleteOTPByEmail(email); // delete previous otp if exisits
+
             const newOTP: IOTPDocument = new this.otpCollection({
                 email: email,
                 otp: otp,

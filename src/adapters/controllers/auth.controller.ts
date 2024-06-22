@@ -64,12 +64,27 @@ export default class AuthController implements IAuthController {
             const emailToBeVerified: string | undefined = req.cookies.emailToBeVerified;
             const otp: string = req.body.otp;
             
+            
             await this.authUseCase.OTPVerification(emailToBeVerified, otp);
 
             res.cookie('emailToBeVerified', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async handleOTPResendRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const emailToBeVerified: string | undefined = req.cookies.emailToBeVerified;
+
+            await this.authUseCase.OTPResend(emailToBeVerified);
+
+            res.status(StatusCodes.Success).json({
+                message: 'OTP Resend Successfull'
             });
         } catch (err: any) {
             next(err);

@@ -2,6 +2,7 @@ export interface ErrorDetails {
     statusCode?: number;
     message: string;
     errorField?: string;
+    notOTPVerifiedError?: string | undefined;
 }
 
 export default class AuthenticationError extends Error {

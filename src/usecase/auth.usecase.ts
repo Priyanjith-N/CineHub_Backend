@@ -33,7 +33,9 @@ export default class AuthUseCase implements IAuthUseCase {
             }else if(!await this.hashingService.compare(password, userData.password as string)) {
                 throw new AuthenticationError({message: 'The provided password is incorrect.', statusCode: StatusCodes.Unauthorized, errorField: 'password'});
             }else if(!userData.OTPVerification) {
-                throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp"});
+                await this.generateAndSendOTP(userData.email as string); // send otp via email.
+
+                throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedError: userData.email as string});
             }
 
             const payload: IPayload = {
@@ -54,9 +56,9 @@ export default class AuthUseCase implements IAuthUseCase {
             const isPhoneNumberTaken: IUserDocument | null = await this.authRepository.getDataByPhoneNumber(registerData.phoneNumber); // if there is any user with same phonenumber
 
             if(isEmailTaken) {
-                throw new AuthenticationError({message: 'The email address you entered is already registered. Try a different email.', statusCode: StatusCodes.BadRequest, errorField: 'email'});
+                throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});
             }else if(isPhoneNumberTaken) {
-                throw new AuthenticationError({message: 'The PhoneNumber you entered is already registered. Try a different PhoneNumber.', statusCode: StatusCodes.BadRequest, errorField: 'phoneNumber'});
+                throw new AuthenticationError({message: 'The PhoneNumber you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'phoneNumber'});
             }
 
             const hashedPassword: string = await this.hashingService.hash(registerData.password);
@@ -65,15 +67,7 @@ export default class AuthUseCase implements IAuthUseCase {
 
             await this.authRepository.createUser(registerData);
 
-            const otp: string = this.otpService.generateOTP();
-
-            const to: string = registerData.email;
-            const subject: string = 'OTP For Account Verification';
-            const text: string = `You're OTP for account verification is ${otp}`;
-
-            await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
-
-            await this.authRepository.createOTP(registerData.email, otp); // saving otp in database
+            await this.generateAndSendOTP(registerData.email); // send otp via email.
         } catch (err: any) {
             throw err;
         }
@@ -92,6 +86,34 @@ export default class AuthUseCase implements IAuthUseCase {
             }
 
             await this.authRepository.makeUserVerified(email);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async OTPResend(email: string | undefined): Promise<void> {
+        try {
+            if(!email) {
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
+            }
+
+            await this.generateAndSendOTP(email); // send otp via email.
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    private async generateAndSendOTP(email: string): Promise<void> {
+        try {
+            const otp: string = this.otpService.generateOTP();
+
+            const to: string = email;
+            const subject: string = 'OTP For Account Verification';
+            const text: string = `You're OTP for account verification is ${otp}`;
+
+            await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
+
+            await this.authRepository.createOTP(email, otp); // saving otp in database
         } catch (err: any) {
             throw err;
         }

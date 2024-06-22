@@ -38,4 +38,6 @@ router.post('/register', authController.handleRegisterRequest.bind(authControlle
 
 router.post('/otpVerify', authController.handleOTPVerificationRequest.bind(authController));
 
+router.post('/otpResend', authController.handleOTPResendRequest.bind(authController));
+
 export default router;
