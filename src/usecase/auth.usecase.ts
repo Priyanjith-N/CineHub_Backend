@@ -73,7 +73,7 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    async OTPVerification(email: string | undefined, otp: string): Promise<void> {
+    async OTPVerification(email: string | undefined, otp: string): Promise<string> {
         try {
             const otpData: IOTPDocument | null = await this.authRepository.getOTPByEmail(email);
             
@@ -86,6 +86,17 @@ export default class AuthUseCase implements IAuthUseCase {
             }
 
             await this.authRepository.makeUserVerified(email);
+
+            const userData: IUserDocument | null = await this.authRepository.getDataByEmail(email);
+
+            const payload: IPayload = {
+                id: userData?.id,
+                type: 'User'
+            }
+
+            const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
+
+            return authToken; // for authing user by cookei
         } catch (err: any) {
             throw err;
         }

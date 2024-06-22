@@ -65,9 +65,10 @@ export default class AuthController implements IAuthController {
             const otp: string = req.body.otp;
             
             
-            await this.authUseCase.OTPVerification(emailToBeVerified, otp);
+            const token: string = await this.authUseCase.OTPVerification(emailToBeVerified, otp);
 
             res.cookie('emailToBeVerified', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
+            res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

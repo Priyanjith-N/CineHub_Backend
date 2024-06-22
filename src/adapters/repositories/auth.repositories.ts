@@ -70,7 +70,7 @@ export default class AuthRepository implements IAuthRepository {
 
     async makeUserVerified(email: string): Promise<void> {
         try {
-            await this.deleteOTPByEmail(email);
+            await this.deleteOTPByEmail(email); // delete the otp document of this email.
             await this.userCollection.updateOne({email}, {$set: {OTPVerification: true}});
         } catch (err: any) {
             throw err;
