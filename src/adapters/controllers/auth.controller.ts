@@ -91,4 +91,30 @@ export default class AuthController implements IAuthController {
             next(err);
         }
     }
+
+    async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const token: string | undefined = req.cookies.token;
+
+            await this.authUseCase.verifyToken(token);
+
+            res.status(StatusCodes.Success).json({
+                message: 'User is authenticated'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing token stroed http only cookie to logout.
+            
+            res.status(StatusCodes.Success).json({
+                message: "User Logout sucessfull"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

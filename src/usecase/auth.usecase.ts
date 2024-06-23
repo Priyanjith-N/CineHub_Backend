@@ -1,5 +1,6 @@
 import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
+import JWTTokenError from "../errors/jwt.error";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
 import { IUserDocument } from "../interface/collections/IUsers.collections";
 import { IRegisterCredentials } from "../interface/controllers/IAuth.controller";
@@ -125,6 +126,22 @@ export default class AuthUseCase implements IAuthUseCase {
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
             await this.authRepository.createOTP(email, otp); // saving otp in database
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async verifyToken(token: string | undefined): Promise<void> {
+        try {
+            if(!token) {
+                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not authenticated' })
+            }
+
+            const decoded: IPayload = this.jwtService.verifyToken(token);
+
+            if(decoded.type !== 'User') {
+                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+            }
         } catch (err: any) {
             throw err;
         }

@@ -32,7 +32,11 @@ const otpService: IOTPService = new OTPService();
 const authUseCase: IAuthUseCase = new AuthUseCase(authRepository, hashingService, jwtService, emailService, otpService);
 const authController: IAuthController = new AuthController(authUseCase);
 
+router.get('/verifyToken', authController.verifyTokenRequest.bind(authController));
+
 router.post('/login', authController.handleLoginRequest.bind(authController));
+
+router.post('/logout', authController.handleLogoutRequest.bind(authController));
 
 router.post('/register', authController.handleRegisterRequest.bind(authController));
 
