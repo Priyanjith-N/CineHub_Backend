@@ -7,7 +7,7 @@ import JWTTokenError from "../../errors/jwt.error";
 export default function errorHandler(err: ErrorDetails, req: Request, res: Response, next: NextFunction) {
     if(err instanceof AuthenticationError) {
         if(err.details.notOTPVerifiedError) {
-            res.cookie('emailToBeVerified', err.details.notOTPVerifiedError, { httpOnly: true }); // Set http only cookie for user email to verify the otp
+            res.cookie('emailToBeVerified', err.details.notOTPVerifiedError); // Set http only cookie for user email to verify the otp
         }
         
         res.status(err.details.statusCode!).json({message: err.message, errorField: err.details.errorField});

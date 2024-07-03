@@ -49,7 +49,7 @@ export default class AuthController implements IAuthController {
 
             await this.authUseCase.userRegister(registerData);
 
-            res.cookie('emailToBeVerified', registerData.email, { httpOnly: true }); // Set http only cookie for user email to verify the otp
+            res.cookie('emailToBeVerified', registerData.email); // Set http only cookie for user email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -67,7 +67,7 @@ export default class AuthController implements IAuthController {
             
             const token: string = await this.authUseCase.OTPVerification(emailToBeVerified, otp);
 
-            res.cookie('emailToBeVerified', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
+            res.cookie('emailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing http only cookie
             res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
 
             res.status(StatusCodes.Success).json({
