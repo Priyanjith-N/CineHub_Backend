@@ -1,15 +1,15 @@
-import { StatusCodes } from "../enums/statusCode.enum";
-import AuthenticationError from "../errors/authentication.error";
-import JWTTokenError from "../errors/jwt.error";
-import { IOTPDocument } from "../interface/collections/IOTP.collections";
-import { IUserDocument } from "../interface/collections/IUsers.collections";
-import { IRegisterCredentials } from "../interface/controllers/IAuth.controller";
-import IAuthRepository from "../interface/repositories/IAuth.repositories";
-import IAuthUseCase from "../interface/usecase/IAuth.usecase";
-import IEmailService from "../interface/utils/IEmailService";
-import IHashingService from "../interface/utils/IHashingService";
-import IJWTService, { IPayload } from "../interface/utils/IJWTService";
-import IOTPService from "../interface/utils/IOTPService";
+import { StatusCodes } from "../../enums/statusCode.enum";
+import AuthenticationError from "../../errors/authentication.error";
+import JWTTokenError from "../../errors/jwt.error";
+import { IOTPDocument } from "../../interface/collections/IOTP.collections";
+import { IUserDocument } from "../../interface/collections/IUsers.collections";
+import { IRegisterCredentials } from "../../interface/controllers/user/IAuth.controller";
+import IAuthRepository from "../../interface/repositories/user/IAuth.repositories";
+import IAuthUseCase from "../../interface/usecase/user/IAuth.usecase";
+import IEmailService from "../../interface/utils/IEmailService";
+import IHashingService from "../../interface/utils/IHashingService";
+import IJWTService, { IPayload } from "../../interface/utils/IJWTService";
+import IOTPService from "../../interface/utils/IOTPService";
 
 export default class AuthUseCase implements IAuthUseCase {
     private authRepository: IAuthRepository;

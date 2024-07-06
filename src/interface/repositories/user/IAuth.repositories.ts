@@ -1,6 +1,6 @@
-import { IOTPDocument } from "../collections/IOTP.collections";
-import { IUserDocument } from "../collections/IUsers.collections";
-import { IRegisterCredentials } from "../controllers/IAuth.controller";
+import { IOTPDocument } from "../../collections/IOTP.collections";
+import { IUserDocument } from "../../collections/IUsers.collections";
+import { IRegisterCredentials } from "../../controllers/user/IAuth.controller";
 
 export default interface IAuthRepository {
     getDataByEmail(email: string): Promise<IUserDocument | null>;

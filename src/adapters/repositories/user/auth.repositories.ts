@@ -1,7 +1,7 @@
-import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
-import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
-import { IRegisterCredentials } from "../../interface/controllers/IAuth.controller";
-import IAuthRepository from "../../interface/repositories/IAuth.repositories";
+import { IOTPCollection, IOTPDocument } from "../../../interface/collections/IOTP.collections";
+import { IUserDocument, IUsersCollection } from "../../../interface/collections/IUsers.collections";
+import { IRegisterCredentials } from "../../../interface/controllers/user/IAuth.controller";
+import IAuthRepository from "../../../interface/repositories/user/IAuth.repositories";
 
 export default class AuthRepository implements IAuthRepository {
     private userCollection: IUsersCollection;

@@ -10,7 +10,8 @@ import connectDB from './config/db';
 connectDB();
 
 //importing user router
-import authRouter from './router/auth.router';
+import userAuthRouter from './router/user/auth.router';
+import adminAuthRouter from './router/admin/auth.router';
 import errorHandler from './middleware/error.middleware';
 
 const PORT = process.env.PORT || 3000;
@@ -33,7 +34,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/user', authRouter);
+app.use('/api/user', userAuthRouter); // user auth routes
+
+app.use('/api/admin', adminAuthRouter); // admin auth routes
 
 // error middleware for handling errors
 app.use(errorHandler);

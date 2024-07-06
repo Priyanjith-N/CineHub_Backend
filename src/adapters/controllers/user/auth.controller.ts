@@ -1,7 +1,7 @@
 import e, { NextFunction, Request, Response } from "express";
-import { IAuthController, ILoginCredentials, IRegisterCredentials} from "../../interface/controllers/IAuth.controller";
-import IAuthUseCase from "../../interface/usecase/IAuth.usecase";
-import { StatusCodes } from "../../enums/statusCode.enum";
+import { IAuthController, ILoginCredentials, IRegisterCredentials} from "../../../interface/controllers/user/IAuth.controller";
+import IAuthUseCase from "../../../interface/usecase/user/IAuth.usecase";
+import { StatusCodes } from "../../../enums/statusCode.enum";
 
 export default class AuthController implements IAuthController {
     private authUseCase: IAuthUseCase;

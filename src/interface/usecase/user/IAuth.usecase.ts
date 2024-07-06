@@ -1,4 +1,4 @@
-import { IRegisterCredentials } from "../controllers/IAuth.controller";
+import { IRegisterCredentials } from "../../controllers/user/IAuth.controller";
 
 export default interface IAuthUseCase {
     authenticateUser(email: string, password: string): Promise<string>;
