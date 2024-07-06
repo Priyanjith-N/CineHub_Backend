@@ -9,7 +9,7 @@ export default class AuthController implements IAuthController {
         this.authUseCase = authUseCase;
     }
 
-    async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const {
                 email,
@@ -29,7 +29,7 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const {
                 name,
@@ -59,7 +59,7 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const emailToBeVerified: string | undefined = req.cookies.emailToBeVerified;
             const otp: string = req.body.otp;
@@ -78,7 +78,7 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async handleOTPResendRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async handleOTPResendRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const emailToBeVerified: string | undefined = req.cookies.emailToBeVerified;
 
@@ -92,7 +92,7 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const token: string | undefined = req.cookies.token;
 
@@ -106,7 +106,7 @@ export default class AuthController implements IAuthController {
         }
     }
 
-    async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing token stroed http only cookie to logout.
             

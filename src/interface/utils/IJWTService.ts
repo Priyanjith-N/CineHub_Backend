@@ -6,6 +6,6 @@ export interface IPayload {
 }
 
 export default interface IJWTService {
-    sign(payload: IPayload): string;
-    verifyToken(token: string): IPayload;
+    sign(payload: IPayload): string | never;
+    verifyToken(token: string): IPayload | never;
 }

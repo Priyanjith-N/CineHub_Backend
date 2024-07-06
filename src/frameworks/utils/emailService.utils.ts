@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import IEmailService, { IMailOptions } from "../../interface/utils/IEmailService";
 
 export default class EmailService implements IEmailService {
-    async sendEmail(to: string, subject: string, text: string): Promise<void> {
+    async sendEmail(to: string, subject: string, text: string): Promise<void | never> {
         try {
             const transporter = nodemailer.createTransport({
                 service: 'gmail',

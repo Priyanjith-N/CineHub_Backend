@@ -11,7 +11,7 @@ export default class AuthRepository implements IAuthRepository {
         this.otpCollection = otpCollection;
     }
 
-    async getDataByEmail(email: string): Promise<IUserDocument | null> {
+    async getDataByEmail(email: string): Promise<IUserDocument | null | never> {
         try {
             const userData: IUserDocument | null = await this.userCollection.findOne({email});
             return userData;
@@ -20,7 +20,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    async getDataByPhoneNumber(phoneNumber: string): Promise<IUserDocument | null> {
+    async getDataByPhoneNumber(phoneNumber: string): Promise<IUserDocument | null | never> {
         try {
             const userData: IUserDocument | null = await this.userCollection.findOne({phoneNumber});
             return userData;
@@ -29,7 +29,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    async createUser(newUserData: IRegisterCredentials): Promise<void> {
+    async createUser(newUserData: IRegisterCredentials): Promise<void | never> {
         try {
             const newUser: IUserDocument = new this.userCollection({
                 name: newUserData.name,
@@ -44,7 +44,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    async createOTP(email: string, otp: string): Promise<void> {
+    async createOTP(email: string, otp: string): Promise<void | never> {
         try {
             await this.deleteOTPByEmail(email); // delete previous otp if exisits
 
@@ -60,7 +60,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    async getOTPByEmail(email: string | undefined): Promise<IOTPDocument | null> {
+    async getOTPByEmail(email: string | undefined): Promise<IOTPDocument | null | never> {
         try {
             return await this.otpCollection.findOne({email, expiresAt: {$gte: new Date()}}).sort({expiresAt: -1});
         } catch (err: any) {
@@ -68,7 +68,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    async makeUserVerified(email: string): Promise<void> {
+    async makeUserVerified(email: string): Promise<void | never> {
         try {
             await this.deleteOTPByEmail(email); // delete the otp document of this email.
             await this.userCollection.updateOne({email}, {$set: {OTPVerification: true}});
@@ -77,7 +77,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    private async deleteOTPByEmail(email: string): Promise<void> {
+    private async deleteOTPByEmail(email: string): Promise<void | never> {
         try {
             await this.otpCollection.deleteMany({email});
         } catch (err: any) {

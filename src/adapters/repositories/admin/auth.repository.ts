@@ -8,7 +8,7 @@ export default class AuthRepository implements IAuthRepository {
         this.adminCollection = adminCollection;
     }
 
-    async getDataByEmail(email: string): Promise<IAdminDocument | null> {
+    async getDataByEmail(email: string): Promise<IAdminDocument | null | never> {
         try {
             const userData: IAdminDocument | null = await this.adminCollection.findOne({email});
             return userData;

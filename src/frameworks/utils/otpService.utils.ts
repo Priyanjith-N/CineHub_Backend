@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import IOTPService from '../../interface/utils/IOTPService';
 
 export default class OTPService implements IOTPService {
-    generateOTP(length: number = 6, characters: string = '0123456789'): string {
+    generateOTP(length: number = 6, characters: string = '0123456789'): string | never {
         try {
             const buffer = crypto.randomBytes(Math.ceil(length / 2));
             let OTP: string = '';

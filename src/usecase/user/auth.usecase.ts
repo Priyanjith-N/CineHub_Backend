@@ -25,7 +25,7 @@ export default class AuthUseCase implements IAuthUseCase {
         this.otpService = otpService;
     }
 
-    async authenticateUser(email: string, password: string): Promise<string> {
+    async authenticateUser(email: string, password: string): Promise<string | never> {
         try {
             const userData: IUserDocument | null = await this.authRepository.getDataByEmail(email);
 
@@ -51,7 +51,7 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    async userRegister(registerData: IRegisterCredentials): Promise<void> {
+    async userRegister(registerData: IRegisterCredentials): Promise<void | never> {
         try {
             const isEmailTaken: IUserDocument | null = await this.authRepository.getDataByEmail(registerData.email); // if there is any user with same email
             const isPhoneNumberTaken: IUserDocument | null = await this.authRepository.getDataByPhoneNumber(registerData.phoneNumber); // if there is any user with same phonenumber
@@ -74,7 +74,7 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    async OTPVerification(email: string | undefined, otp: string): Promise<string> {
+    async OTPVerification(email: string | undefined, otp: string): Promise<string | never> {
         try {
             const otpData: IOTPDocument | null = await this.authRepository.getOTPByEmail(email);
             
@@ -103,7 +103,7 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    async OTPResend(email: string | undefined): Promise<void> {
+    async OTPResend(email: string | undefined): Promise<void | never> {
         try {
             if(!email) {
                 throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
@@ -115,7 +115,7 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    private async generateAndSendOTP(email: string): Promise<void> {
+    private async generateAndSendOTP(email: string): Promise<void | never> {
         try {
             const otp: string = this.otpService.generateOTP();
 
@@ -131,7 +131,7 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    async verifyToken(token: string | undefined): Promise<void> {
+    async verifyToken(token: string | undefined): Promise<void | never> {
         try {
             if(!token) {
                 throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not authenticated' })

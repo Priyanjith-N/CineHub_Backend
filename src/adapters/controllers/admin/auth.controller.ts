@@ -10,7 +10,7 @@ export default class AuthController implements IAuthController {
         this.authUseCase = authUseCase;
     }
 
-    async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const {
                 email,

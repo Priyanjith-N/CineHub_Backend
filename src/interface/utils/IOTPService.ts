@@ -1,3 +1,3 @@
 export default interface IOTPService {
-    generateOTP(length?: number, characters?: string): string;
+    generateOTP(length?: number, characters?: string): string | never;
 }

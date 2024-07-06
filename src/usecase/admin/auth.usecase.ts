@@ -21,7 +21,7 @@ export default class AuthUseCase implements IAuthUseCase {
         this.emailService = emailService;
     }
 
-    async authenticateUser(email: string, password: string): Promise<string> {
+    async authenticateUser(email: string, password: string): Promise<string | never> {
         try {
             const adminData: IAdminDocument | null = await this.authRepository.getDataByEmail(email);
 
