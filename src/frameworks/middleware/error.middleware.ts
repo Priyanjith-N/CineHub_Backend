@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import AuthenticationError, { ErrorDetails } from "../../errors/authentication.error";
+import AuthenticationError from "../../errors/authentication.error";
 import { StatusCodes } from "../../enums/statusCode.enum";
 import jwt from 'jsonwebtoken';
 import JWTTokenError from "../../errors/jwt.error";
 
-export default function errorHandler(err: ErrorDetails, req: Request, res: Response, next: NextFunction) {
+export default function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     if(err instanceof AuthenticationError) {
         if(err.details.notOTPVerifiedError) {
             res.cookie('emailToBeVerified', err.details.notOTPVerifiedError); // Set http only cookie for user email to verify the otp

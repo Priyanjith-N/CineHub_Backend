@@ -1,13 +1,8 @@
-export interface ErrorDetails {
-    statusCode?: number;
-    message: string;
-    errorField?: string;
-    notOTPVerifiedError?: string | undefined;
-}
+import { IAuthenticationErrorDetails } from "../interface/errors/IAuthentication.error";
 
 export default class AuthenticationError extends Error {
-    public details: ErrorDetails;
-    constructor(details: ErrorDetails) {
+    public details: IAuthenticationErrorDetails;
+    constructor(details: IAuthenticationErrorDetails) {
         super(details.message);
         this.details = details;
     }
