@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+
+// interfaces
 import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
 
 const otpSchema: Schema =  new Schema({

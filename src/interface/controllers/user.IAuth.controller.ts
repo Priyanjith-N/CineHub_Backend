@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export interface IAuthController {
+export interface IUserAuthenticationController {
     handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
@@ -9,12 +9,12 @@ export interface IAuthController {
     verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
 }
 
-export interface ILoginCredentials {
+export interface IUserLoginCredentials {
     email: string;
     password: string;
 }
 
-export interface IRegisterCredentials {
+export interface IUserRegisterCredentials {
     name: string,
     phoneNumber: string,
     email: string,

@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+
+// interfaces
 import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
 
 const usersSchema: Schema = new Schema({

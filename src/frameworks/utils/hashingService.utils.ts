@@ -1,4 +1,6 @@
 import * as bcrypt from 'bcrypt';
+
+// interfaces
 import IHashingService from '../../interface/utils/IHashingService';
 
 export default class HashingService implements IHashingService {

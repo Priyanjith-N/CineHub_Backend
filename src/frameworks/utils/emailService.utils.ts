@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer';
+
+// interfaces
 import IEmailService, { IMailOptions } from "../../interface/utils/IEmailService";
 
 export default class EmailService implements IEmailService {

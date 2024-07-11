@@ -1,7 +1,8 @@
-import { IAdminCollection, IAdminDocument } from "../../../interface/collections/IAdmin.collections";
-import IAuthRepository from "../../../interface/repositories/admin/IAuth.repository";
+// interfaces
+import IAdminAuthRepository from "../../interface/repositories/admin.IAuth.repository";
+import { IAdminCollection, IAdminDocument } from "../../interface/collections/IAdmin.collections";
 
-export default class AuthRepository implements IAuthRepository {
+export default class AdminAuthRepository implements IAdminAuthRepository {
     private adminCollection: IAdminCollection;
 
     constructor(adminCollection: IAdminCollection){

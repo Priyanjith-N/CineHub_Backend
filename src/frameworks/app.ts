@@ -1,8 +1,10 @@
-import express, {Express} from 'express';
+import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import cors from 'cors';
+
+// configure .env file
 dotenv.config();
 
 // connect database
@@ -10,8 +12,12 @@ import connectDB from './config/db';
 connectDB();
 
 //importing user router
-import userAuthRouter from './router/user/auth.router';
-import adminAuthRouter from './router/admin/auth.router';
+import userAuthRouter from './router/user.auth.router';
+
+// importing admin router
+import adminAuthRouter from './router/admin.auth.router';
+
+// importing error middleware
 import errorHandler from './middleware/error.middleware';
 
 const PORT = process.env.PORT || 3000;
@@ -34,9 +40,11 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/user', userAuthRouter); // user auth routes
+// user auth routes
+app.use('/api/user', userAuthRouter); 
 
-app.use('/api/admin', adminAuthRouter); // admin auth routes
+// admin auth routes
+app.use('/api/admin', adminAuthRouter); 
 
 // error middleware for handling errors
 app.use(errorHandler);

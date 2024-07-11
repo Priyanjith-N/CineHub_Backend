@@ -1,12 +1,17 @@
-import e, { NextFunction, Request, Response } from "express";
-import { IAuthController, ILoginCredentials, IRegisterCredentials} from "../../../interface/controllers/user/IAuth.controller";
-import IAuthUseCase from "../../../interface/usecase/user/IAuth.usecase";
-import { StatusCodes } from "../../../enums/statusCode.enum";
+import { NextFunction, Request, Response } from "express";
 
-export default class AuthController implements IAuthController {
-    private authUseCase: IAuthUseCase;
-    constructor(authUseCase: IAuthUseCase) {
-        this.authUseCase = authUseCase;
+// interfaces
+import { IUserAuthenticationController, IUserLoginCredentials, IUserRegisterCredentials} from "../../interface/controllers/user.IAuth.controller";
+import IUserAuthUseCase from "../../interface/usecase/user.IAuth.usecase";
+
+// enums
+import { StatusCodes } from "../../enums/statusCode.enum";
+
+export default class UserAuthenticationController implements IUserAuthenticationController {
+    private userAuthUseCase: IUserAuthUseCase;
+    
+    constructor(userAuthUseCase: IUserAuthUseCase) {
+        this.userAuthUseCase = userAuthUseCase;
     }
 
     async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
@@ -14,10 +19,10 @@ export default class AuthController implements IAuthController {
             const {
                 email,
                 password
-            }: ILoginCredentials = req.body;
+            }: IUserLoginCredentials = req.body;
             
             // usecase for authenticateing User
-            const token: string = await this.authUseCase.authenticateUser(email, password); // return token if credentials and user is verified or error
+            const token: string = await this.userAuthUseCase.authenticateUser(email, password); // return token if credentials and user is verified or error
 
             res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
@@ -37,9 +42,9 @@ export default class AuthController implements IAuthController {
                 email,
                 password,
                 confirmPassword
-            }: IRegisterCredentials = req.body;
+            }: IUserRegisterCredentials = req.body;
 
-            const registerData: IRegisterCredentials = {
+            const registerData: IUserRegisterCredentials = {
                 name,
                 phoneNumber,
                 email,
@@ -47,7 +52,7 @@ export default class AuthController implements IAuthController {
                 confirmPassword
             };
 
-            await this.authUseCase.userRegister(registerData);
+            await this.userAuthUseCase.userRegister(registerData);
 
             res.cookie('emailToBeVerified', registerData.email); // Set http only cookie for user email to verify the otp
 
@@ -65,7 +70,7 @@ export default class AuthController implements IAuthController {
             const otp: string = req.body.otp;
             
             
-            const token: string = await this.authUseCase.OTPVerification(emailToBeVerified, otp);
+            const token: string = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
 
             res.cookie('emailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing http only cookie
             res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now()) }); // clearing http only cookie
@@ -82,7 +87,7 @@ export default class AuthController implements IAuthController {
         try {
             const emailToBeVerified: string | undefined = req.cookies.emailToBeVerified;
 
-            await this.authUseCase.OTPResend(emailToBeVerified);
+            await this.userAuthUseCase.OTPResend(emailToBeVerified);
 
             res.status(StatusCodes.Success).json({
                 message: 'OTP Resend Successfull'
@@ -96,7 +101,7 @@ export default class AuthController implements IAuthController {
         try {
             const token: string | undefined = req.cookies.token;
 
-            await this.authUseCase.verifyToken(token);
+            await this.userAuthUseCase.verifyToken(token);
 
             res.status(StatusCodes.Success).json({
                 message: 'User is authenticated'

@@ -1,3 +1,4 @@
+// interfaces
 import { IAuthenticationErrorDetails } from "../interface/errors/IAuthentication.error";
 
 export default class AuthenticationError extends Error {

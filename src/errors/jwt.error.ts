@@ -1,3 +1,4 @@
+// interfaces
 import { IJWTTokenErrorDetails } from "../interface/errors/IJWT.error";
 
 export default class JWTTokenError extends Error {

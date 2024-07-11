@@ -1,24 +1,30 @@
-import { StatusCodes } from "../../enums/statusCode.enum";
-import AuthenticationError from "../../errors/authentication.error";
-import JWTTokenError from "../../errors/jwt.error";
-import { IOTPDocument } from "../../interface/collections/IOTP.collections";
-import { IUserDocument } from "../../interface/collections/IUsers.collections";
-import { IRegisterCredentials } from "../../interface/controllers/user/IAuth.controller";
-import IAuthRepository from "../../interface/repositories/user/IAuth.repositories";
-import IAuthUseCase from "../../interface/usecase/user/IAuth.usecase";
-import IEmailService from "../../interface/utils/IEmailService";
-import IHashingService from "../../interface/utils/IHashingService";
-import IJWTService, { IPayload } from "../../interface/utils/IJWTService";
-import IOTPService from "../../interface/utils/IOTPService";
+// interfaces
+import IUserAuthUseCase from "../interface/usecase/user.IAuth.usecase";
+import IUserAuthRepository from "../interface/repositories/user.IAuth.repositories";
+import { IUserRegisterCredentials } from "../interface/controllers/user.IAuth.controller";
+import { IUserDocument } from "../interface/collections/IUsers.collections";
+import IEmailService from "../interface/utils/IEmailService";
+import IHashingService from "../interface/utils/IHashingService";
+import IOTPService from "../interface/utils/IOTPService";
+import { IOTPDocument } from "../interface/collections/IOTP.collections";
+import IJWTService, { IPayload } from "../interface/utils/IJWTService";
 
-export default class AuthUseCase implements IAuthUseCase {
-    private authRepository: IAuthRepository;
+// enums
+import { StatusCodes } from "../enums/statusCode.enum";
+
+// errors
+import AuthenticationError from "../errors/authentication.error";
+import JWTTokenError from "../errors/jwt.error";
+
+export default class UserAuthUseCase implements IUserAuthUseCase {
+    private userAuthRepository: IUserAuthRepository;
     private hashingService: IHashingService;
     private jwtService: IJWTService;
     private emailService: IEmailService;
     private otpService: IOTPService;
-    constructor(authRepository: IAuthRepository, hashingService: IHashingService, jwtService: IJWTService, emailService: IEmailService, otpService: IOTPService) {
-        this.authRepository = authRepository;
+    
+    constructor(userAuthRepository: IUserAuthRepository, hashingService: IHashingService, jwtService: IJWTService, emailService: IEmailService, otpService: IOTPService) {
+        this.userAuthRepository = userAuthRepository;
         this.hashingService = hashingService;
         this.jwtService = jwtService;
         this.emailService = emailService;
@@ -27,7 +33,7 @@ export default class AuthUseCase implements IAuthUseCase {
 
     async authenticateUser(email: string, password: string): Promise<string | never> {
         try {
-            const userData: IUserDocument | null = await this.authRepository.getDataByEmail(email);
+            const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(email);
 
             if(!userData) {
                 throw new AuthenticationError({message: 'The provided email address is not found.', statusCode: StatusCodes.Unauthorized, errorField: 'email'});
@@ -51,10 +57,10 @@ export default class AuthUseCase implements IAuthUseCase {
         }
     }
 
-    async userRegister(registerData: IRegisterCredentials): Promise<void | never> {
+    async userRegister(registerData: IUserRegisterCredentials): Promise<void | never> {
         try {
-            const isEmailTaken: IUserDocument | null = await this.authRepository.getDataByEmail(registerData.email); // if there is any user with same email
-            const isPhoneNumberTaken: IUserDocument | null = await this.authRepository.getDataByPhoneNumber(registerData.phoneNumber); // if there is any user with same phonenumber
+            const isEmailTaken: IUserDocument | null = await this.userAuthRepository.getDataByEmail(registerData.email); // if there is any user with same email
+            const isPhoneNumberTaken: IUserDocument | null = await this.userAuthRepository.getDataByPhoneNumber(registerData.phoneNumber); // if there is any user with same phonenumber
 
             if(isEmailTaken) {
                 throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});
@@ -66,7 +72,7 @@ export default class AuthUseCase implements IAuthUseCase {
 
             registerData.password = hashedPassword;
 
-            await this.authRepository.createUser(registerData);
+            await this.userAuthRepository.createUser(registerData);
 
             await this.generateAndSendOTP(registerData.email); // send otp via email.
         } catch (err: any) {
@@ -76,7 +82,7 @@ export default class AuthUseCase implements IAuthUseCase {
 
     async OTPVerification(email: string | undefined, otp: string): Promise<string | never> {
         try {
-            const otpData: IOTPDocument | null = await this.authRepository.getOTPByEmail(email);
+            const otpData: IOTPDocument | null = await this.userAuthRepository.getOTPByEmail(email);
             
             if(!email) {
                 throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
@@ -86,9 +92,9 @@ export default class AuthUseCase implements IAuthUseCase {
                 throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
             }
 
-            await this.authRepository.makeUserVerified(email);
+            await this.userAuthRepository.makeUserVerified(email);
 
-            const userData: IUserDocument | null = await this.authRepository.getDataByEmail(email);
+            const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(email);
 
             const payload: IPayload = {
                 id: userData?.id,
@@ -125,7 +131,7 @@ export default class AuthUseCase implements IAuthUseCase {
 
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
-            await this.authRepository.createOTP(email, otp); // saving otp in database
+            await this.userAuthRepository.createOTP(email, otp); // saving otp in database
         } catch (err: any) {
             throw err;
         }

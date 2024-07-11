@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+
+// interfaces
 import IJWTService, { IPayload } from '../../interface/utils/IJWTService';
 
 export default class JWTService implements IJWTService {

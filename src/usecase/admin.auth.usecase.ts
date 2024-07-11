@@ -1,21 +1,25 @@
-import { StatusCodes } from "../../enums/statusCode.enum";
-import IAuthUseCase from "../../interface/usecase/admin/IAuth.usecase";
-import AuthenticationError from "../../errors/authentication.error";
-import JWTTokenError from "../../errors/jwt.error";
-import IEmailService from "../../interface/utils/IEmailService";
-import IHashingService from "../../interface/utils/IHashingService";
-import IJWTService, { IPayload } from "../../interface/utils/IJWTService";
-import IAuthRepository from "../../interface/repositories/admin/IAuth.repository";
-import { IAdminDocument } from "../../interface/collections/IAdmin.collections";
+// interfaces
+import IAdminAuthUseCase from "../interface/usecase/admin.IAuth.usecase";
+import IAdminAuthRepository from "../interface/repositories/admin.IAuth.repository";
+import IEmailService from "../interface/utils/IEmailService";
+import IHashingService from "../interface/utils/IHashingService";
+import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import { IAdminDocument } from "../interface/collections/IAdmin.collections";
 
-export default class AuthUseCase implements IAuthUseCase {
-    private authRepository: IAuthRepository;
+// enums
+import { StatusCodes } from "../enums/statusCode.enum";
+
+// errors
+import AuthenticationError from "../errors/authentication.error";
+
+export default class AdminAuthUseCase implements IAdminAuthUseCase {
+    private adminAuthRepository: IAdminAuthRepository;
     private hashingService: IHashingService;
     private jwtService: IJWTService;
     private emailService: IEmailService;
 
-    constructor(authRepository: IAuthRepository, hashingService: IHashingService, emailService: IEmailService, jwtService: IJWTService) {
-        this.authRepository = authRepository;
+    constructor(adminAuthRepository: IAdminAuthRepository, hashingService: IHashingService, emailService: IEmailService, jwtService: IJWTService) {
+        this.adminAuthRepository = adminAuthRepository;
         this.hashingService = hashingService;
         this.jwtService = jwtService;
         this.emailService = emailService;
@@ -23,7 +27,7 @@ export default class AuthUseCase implements IAuthUseCase {
 
     async authenticateUser(email: string, password: string): Promise<string | never> {
         try {
-            const adminData: IAdminDocument | null = await this.authRepository.getDataByEmail(email);
+            const adminData: IAdminDocument | null = await this.adminAuthRepository.getDataByEmail(email);
 
             if(!adminData) {
                 throw new AuthenticationError({message: 'The provided email address is not found.', statusCode: StatusCodes.Unauthorized, errorField: 'email'});

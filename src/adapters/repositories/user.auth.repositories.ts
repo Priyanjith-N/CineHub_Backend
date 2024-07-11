@@ -1,11 +1,13 @@
-import { IOTPCollection, IOTPDocument } from "../../../interface/collections/IOTP.collections";
-import { IUserDocument, IUsersCollection } from "../../../interface/collections/IUsers.collections";
-import { IRegisterCredentials } from "../../../interface/controllers/user/IAuth.controller";
-import IAuthRepository from "../../../interface/repositories/user/IAuth.repositories";
+// interfaces
+import IUserAuthRepository from "../../interface/repositories/user.IAuth.repositories";
+import { IUserRegisterCredentials } from "../../interface/controllers/user.IAuth.controller";
+import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
+import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
 
-export default class AuthRepository implements IAuthRepository {
+export default class UserAuthRepository implements IUserAuthRepository {
     private userCollection: IUsersCollection;
     private otpCollection: IOTPCollection;
+    
     constructor(userCollection: IUsersCollection, otpCollection: IOTPCollection) {
         this.userCollection = userCollection;
         this.otpCollection = otpCollection;
@@ -29,7 +31,7 @@ export default class AuthRepository implements IAuthRepository {
         }
     }
 
-    async createUser(newUserData: IRegisterCredentials): Promise<void | never> {
+    async createUser(newUserData: IUserRegisterCredentials): Promise<void | never> {
         try {
             const newUser: IUserDocument = new this.userCollection({
                 name: newUserData.name,
