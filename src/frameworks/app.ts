@@ -17,6 +17,9 @@ import adminAuthRouter from './router/admin.auth.router';
 // importing distributer router
 import distributerAuthRouter from './router/distributer.auth.router';
 
+// importing theater owner router
+import theaterOwnerAuthRouter from './router/theaterOwner.auth.router';
+
 //importing user router
 import userAuthRouter from './router/user.auth.router';
 
@@ -47,8 +50,11 @@ app.use(express.urlencoded({ extended: true }));
 // admin auth routes
 app.use('/api/admin', adminAuthRouter);
 
-//distributer auth routes
+// distributer auth routes
 app.use('/api/distributer', distributerAuthRouter)
+
+// theaterOwner auth routes
+app.use('/api/theaterOwner', theaterOwnerAuthRouter);
 
 // user auth routes
 app.use('/api/user', userAuthRouter);
