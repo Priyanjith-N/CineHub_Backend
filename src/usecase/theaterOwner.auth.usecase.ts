@@ -43,7 +43,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
         }else if(!theaterOwnerData.OTPVerificationStatus) {
             await this.generateAndSendOTP(theaterOwnerData.email); // send otp via email.
 
-            throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: theaterOwnerData.email});
+            throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: theaterOwnerData.email, cookieKeyForOTPVerification: 'theaterOwnerEmailToBeVerified'});
         }else if(!theaterOwnerData.documentVerificationStatus) {
             throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
         }

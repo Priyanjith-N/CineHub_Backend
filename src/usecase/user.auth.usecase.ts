@@ -42,7 +42,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
             }else if(!userData.OTPVerification) {
                 await this.generateAndSendOTP(userData.email as string); // send otp via email.
 
-                throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: userData.email as string});
+                throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: userData.email as string, cookieKeyForOTPVerification: 'emailToBeVerified'});
             }
 
             const payload: IPayload = {

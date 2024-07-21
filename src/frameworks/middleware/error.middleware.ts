@@ -12,7 +12,7 @@ export default function errorHandler(err: any, req: Request, res: Response, next
     if(err instanceof AuthenticationError) {
         if(err.details.notOTPVerifiedErrorEmail) {
             // Set http only cookie for user email to verify the otp
-            res.cookie('emailToBeVerified', err.details.notOTPVerifiedErrorEmail);
+            res.cookie(err.details.cookieKeyForOTPVerification!, err.details.notOTPVerifiedErrorEmail);
         }
         
         res.status(err.details.statusCode!).json({message: err.message, errorField: err.details.errorField});
