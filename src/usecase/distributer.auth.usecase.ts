@@ -31,7 +31,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     async authenticateUser(email: string | undefined, password: string | undefined): Promise<string | never> {
      try {
         if(!email || !password) {
-            throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required Fields Not Provided'});
+            throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
         }
 
         const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(email);
@@ -45,7 +45,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
 
             throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: distributerData.email});
         }else if(!distributerData.documentVerificationStatus) {
-            throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document", notOTPVerifiedErrorEmail: distributerData.email});
+            throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
         }
 
         const payload: IPayload = {
