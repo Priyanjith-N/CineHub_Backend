@@ -39,6 +39,6 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
     }
 });
 
-const distributers: ITheaterOwnerCollection = mongoose.model<ITheaterOwnerDocument>('TheaterOwners', theaterOwnerSchema);
+const TheaterOwners: ITheaterOwnerCollection = mongoose.model<ITheaterOwnerDocument>('TheaterOwners', theaterOwnerSchema);
 
-export default distributers;
+export default TheaterOwners;

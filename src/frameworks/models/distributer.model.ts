@@ -52,6 +52,6 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
     }
 });
 
-const distributers: IDistributerCollection = mongoose.model<IDistributerDocument>('Distributers', distributerSchema);
+const Distributers: IDistributerCollection = mongoose.model<IDistributerDocument>('Distributers', distributerSchema);
 
-export default distributers;
+export default Distributers;

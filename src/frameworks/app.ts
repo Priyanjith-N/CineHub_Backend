@@ -11,11 +11,15 @@ dotenv.config();
 import connectDB from './config/db';
 connectDB();
 
+// importing admin router
+import adminAuthRouter from './router/admin.auth.router';
+
+// importing distributer router
+import distributerAuthRouter from './router/distributer.auth.router';
+
 //importing user router
 import userAuthRouter from './router/user.auth.router';
 
-// importing admin router
-import adminAuthRouter from './router/admin.auth.router';
 
 // importing error middleware
 import errorHandler from './middleware/error.middleware';
@@ -40,11 +44,15 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// user auth routes
-app.use('/api/user', userAuthRouter); 
-
 // admin auth routes
-app.use('/api/admin', adminAuthRouter); 
+app.use('/api/admin', adminAuthRouter);
+
+//distributer auth routes
+app.use('/api/distributer', distributerAuthRouter)
+
+// user auth routes
+app.use('/api/user', userAuthRouter);
+
 
 // error middleware for handling errors
 app.use(errorHandler);

@@ -11,8 +11,8 @@ export default class AdminAuthRepository implements IAdminAuthRepository {
 
     async getDataByEmail(email: string): Promise<IAdminDocument | null | never> {
         try {
-            const userData: IAdminDocument | null = await this.adminCollection.findOne({email});
-            return userData;
+            const adminData: IAdminDocument | null = await this.adminCollection.findOne({email});
+            return adminData;
         } catch (err: any) {
             throw err;
         }
