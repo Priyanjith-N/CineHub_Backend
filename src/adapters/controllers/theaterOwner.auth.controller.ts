@@ -79,4 +79,19 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             next(err);
         }
     }
+
+    async handleOTPResendRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
+        try {
+            const email: string | undefined = req.cookies.theaterOwnerEmailToBeVerified;
+
+            // use case for handling otp resend request
+            await this.theaterOwnerAuthUseCase.OTPResend(email);
+
+            res.status(StatusCodes.Success).json({
+                message: 'OTP Resend Successfull'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

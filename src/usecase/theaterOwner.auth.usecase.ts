@@ -132,7 +132,19 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
         }
     }
 
-    private async generateAndSendOTP(email: string): Promise<void | never> {
+    async OTPResend(email: string | undefined): Promise<void | never> {
+        try {
+            if(!email) {
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
+            }
+
+            this.generateAndSendOTP(email); // send otp via email using email service made a common service.
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    private async generateAndSendOTP(email: string): Promise<void | never> { // send otp via email using email service made a common service
         try {
             const otp: string = this.otpService.generateOTP();
 

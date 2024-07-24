@@ -45,4 +45,6 @@ router.post('/register', theaterOwnerAuthController.handleRegisterRequest.bind(t
 
 router.post('/otpVerify', theaterOwnerAuthController.handleOTPVerificationRequest.bind(theaterOwnerAuthController));
 
+router.post('/otpResend', theaterOwnerAuthController.handleOTPResendRequest.bind(theaterOwnerAuthController));
+
 export default router;
