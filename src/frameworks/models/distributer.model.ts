@@ -24,8 +24,15 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
     },
     idProof: {
         type: String,
+        enum: ["Aadhar Card", "PAN Card"],
         required: true
     },
+    idProofImage: [
+        {
+            type: String,
+            required: true
+        }
+    ],
     OTPVerificationStatus: {
         type: Boolean,
         default: false,
@@ -36,24 +43,26 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
         default: false,
         required: true
     },
+    licenceUpdateDocument: {
+        type: String,
+        required: false
+    },
     licenceUpdateVerificationStatus: {
         type: Boolean,
         default: false,
         required: true
-    },
-    licenceUpdateDocument: {
-        type: String,
-        required: false
     },
     idProofUpdateVerificationStatus: {
         type: Boolean,
         default: false,
         required: true
     },
-    idProofUpdateDocument: {
-        type: String,
-        required: false
-    }
+    idProofUpdateDocumentImage: [
+        {
+            type: String,
+            required: false
+        }
+    ]
 });
 
 const Distributers: IDistributerCollection = mongoose.model<IDistributerDocument>('Distributers', distributerSchema);

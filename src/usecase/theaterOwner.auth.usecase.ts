@@ -62,7 +62,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
         return token;
      } catch (err: any) {
         throw err;
-     }   
+     }
     }
 
     async register(registerData: ITheaterOwnerRegisterCredentials): Promise<void | never> {
