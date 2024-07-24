@@ -8,6 +8,7 @@ import IEmailService from "../interface/utils/IEmailService";
 import IJWTService, { IPayload } from "../interface/utils/IJWTService";
 import { ITheaterOwnerRegisterCredentials } from "../interface/controllers/theaterOwner.IAuth.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
+import { IOTPDocument } from "../interface/collections/IOTP.collections";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -95,6 +96,37 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
             await this.theaterOwnerAuthRepository.createTheaterOwner(registerData);
 
             await this.generateAndSendOTP(registerData.email); // generate and send otp using email services
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async OTPVerification(email: string | undefined, otp: string | undefined): Promise<string | never> {
+        try {
+            if(!email) {
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
+            }else if(!otp || (otp.length !== 6)) {
+                throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
+            }
+
+            const otpData: IOTPDocument | null = await this.theaterOwnerAuthRepository.getOTPByEmail(email);
+
+            if(!otpData) {
+                throw new AuthenticationError({message: 'OTP expired. Resend again.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
+            }else if(otpData.otp !== otp) {
+                throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
+            }
+
+            const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.makeTheaterOwnerVerified(email); // return the updated document if found or null;
+
+            const payload: IPayload = {
+                id: theaterOwnerData?.id,
+                type: 'TheaterOwner'
+            }
+
+            const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
+
+            return authToken; // for authing user by cookei
         } catch (err: any) {
             throw err;
         }

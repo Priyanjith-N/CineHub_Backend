@@ -60,4 +60,23 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             next(err);
         }
     }
+
+    async handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
+        try {
+            const email: string | undefined = req.cookies.theaterOwnerEmailToBeVerified;
+            const otp: string | undefined = req.body.otp;
+
+            // use case for handling otp verification request
+            const token: string = await this.theaterOwnerAuthUseCase.OTPVerification(email, otp);
+
+            res.cookie('theaterOwnerEmailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
+            res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now()) }); // seting token as http only cookie
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfuly account verified"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

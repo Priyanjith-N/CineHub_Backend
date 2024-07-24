@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 
 export interface ITheaterOwnerAuthenticationController {
     handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
-    handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>
+    handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
+    handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
 }
 
 export interface ITheaterOwnerLoginCredentials {
