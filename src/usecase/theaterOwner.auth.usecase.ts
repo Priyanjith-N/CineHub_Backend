@@ -6,6 +6,8 @@ import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import IEmailService from "../interface/utils/IEmailService";
 import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import { ITheaterOwnerRegisterCredentials } from "../interface/controllers/theaterOwner.IAuth.controller";
+import ICloudinaryService from "../interface/utils/ICloudinaryService";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -19,13 +21,15 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
     private otpService: IOTPService;
     private emailService: IEmailService;
     private jwtService: IJWTService;
+    private cloudinaryService: ICloudinaryService;
 
-    constructor(theaterOwnerAuthRepository: ITheaterOwnerAuthRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService) {
+    constructor(theaterOwnerAuthRepository: ITheaterOwnerAuthRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, cloudinaryService: ICloudinaryService) {
         this.theaterOwnerAuthRepository = theaterOwnerAuthRepository;
         this.hashingService = hashingService;
         this.otpService = otpService;
         this.emailService = emailService;
         this.jwtService = jwtService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     async authenticateUser(email: string | undefined, password: string | undefined): Promise<string | never> {
@@ -58,6 +62,42 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
      } catch (err: any) {
         throw err;
      }   
+    }
+
+    async register(registerData: ITheaterOwnerRegisterCredentials): Promise<void | never> {
+        try {
+            if(!registerData.name || !registerData.email || !registerData.phoneNumber || !registerData.password || !registerData.confirmPassword || !registerData.IDProof || !registerData.IDProofImage || !(/^[A-Za-z0-9]+@gmail\.com$/).test(registerData.email) || (registerData.phoneNumber.length !== 10) || (registerData.password !== registerData.confirmPassword) || (registerData.IDProofImage.length !== 2)) {
+                throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
+            }
+
+            const isEmailTaken: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.getDataByEmail(registerData.email);
+            const isPhoneNumberTaken: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.getDataByPhoneNumber(registerData.phoneNumber);
+
+            if(isEmailTaken) {
+                throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});
+            }else if(isPhoneNumberTaken) {
+                throw new AuthenticationError({message: 'The PhoneNumber you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'phoneNumber'});
+            }
+
+            const hashedPassword: string = await this.hashingService.hash(registerData.password);
+
+            registerData.password = hashedPassword;
+
+            const secureUrlIDProofImage: string[] = [];
+
+            for(const imageDataBase64 of registerData.IDProofImage) {
+                const secure_url = await this.cloudinaryService.uploadImage(imageDataBase64); // returns secure url
+                secureUrlIDProofImage.push(secure_url);
+            }
+
+            registerData.IDProofImage = secureUrlIDProofImage; // change property value to array of secure url of the uploaded image to store it in database to see images
+
+            await this.theaterOwnerAuthRepository.createTheaterOwner(registerData);
+
+            await this.generateAndSendOTP(registerData.email); // generate and send otp using email services
+        } catch (err: any) {
+            throw err;
+        }
     }
 
     private async generateAndSendOTP(email: string): Promise<void | never> {

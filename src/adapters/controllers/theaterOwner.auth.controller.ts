@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 // interfaces
-import { ITheaterOwnerAuthenticationController, ITheaterOwnerLoginCredentials } from "../../interface/controllers/theaterOwner.IAuth.controller";
+import { ITheaterOwnerAuthenticationController, ITheaterOwnerLoginCredentials, ITheaterOwnerRegisterCredentials } from "../../interface/controllers/theaterOwner.IAuth.controller";
 import ITheaterOwnerAuthUseCase from "../../interface/usecase/theaterOwner.IAuth.usecase";
 
 //enums
@@ -28,6 +28,33 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
+        try {
+            const { name, email, phoneNumber, password, confirmPassword, IDProof, IDProofImage }: ITheaterOwnerRegisterCredentials = req.body;
+            
+            const registerData: ITheaterOwnerRegisterCredentials = {
+                name,
+                email,
+                phoneNumber,
+                password,
+                confirmPassword,
+                IDProof,
+                IDProofImage
+            }
+
+            // use case fo registering theater owner
+            await this.theaterOwnerAuthUseCase.register(registerData);
+
+            res.cookie('theaterOwnerEmailToBeVerified', registerData.email); // Set http only cookie for user email to verify the otp
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfuly register"
             });
         } catch (err: any) {
             next(err);

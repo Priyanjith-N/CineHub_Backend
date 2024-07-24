@@ -14,6 +14,10 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
         type: String,
         required: true
     },
+    password: {
+        type: String,
+        required: true
+    },
     licence: {
         type: String,
         required: true

@@ -14,10 +14,21 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
         type: String,
         required: true
     },
-    idProof: {
+    password: {
         type: String,
         required: true
     },
+    idProof: {
+        type: String,
+        enum: ["Aadhar Card", "PAN Card"],
+        required: true
+    },
+    idProofImage: [
+        {
+            type: String,
+            required: true
+        }
+    ],
     OTPVerificationStatus: {
         type: Boolean,
         default: false,
@@ -33,10 +44,12 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
         default: false,
         required: true
     },
-    idProofUpdateDocument: {
-        type: String,
-        required: false
-    }
+    idProofUpdateDocumentImage: [
+        {
+            type: String,
+            required: false
+        }
+    ]
 });
 
 const TheaterOwners: ITheaterOwnerCollection = mongoose.model<ITheaterOwnerDocument>('TheaterOwners', theaterOwnerSchema);

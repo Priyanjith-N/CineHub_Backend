@@ -9,6 +9,7 @@ import HashingService from "../utils/hashingService.utils";
 import OTPService from "../utils/otpService.utils";
 import EmailService from "../utils/emailService.utils";
 import JWTService from "../utils/jwtService.utils";
+import CloudinaryService from '../utils/cloudinaryService.utils';
 
 // importing collections
 import TheaterOwners from '../models/theaterOwner.model';
@@ -23,6 +24,7 @@ import IHashingService from "../../interface/utils/IHashingService";
 import IOTPService from "../../interface/utils/IOTPService";
 import IEmailService from "../../interface/utils/IEmailService";
 import IJWTService from "../../interface/utils/IJWTService";
+import ICloudinaryService from '../../interface/utils/ICloudinaryService';
 
 const router: Router = express.Router();
 
@@ -31,11 +33,14 @@ const hashingService: IHashingService = new HashingService();
 const otpService: IOTPService = new OTPService();
 const emailService: IEmailService = new EmailService();
 const jwtService: IJWTService = new JWTService();
+const cloudinaryService: ICloudinaryService = new CloudinaryService();
 
 const theaterOwnerAuthRepository: ITheaterOwnerAuthRepository = new TheaterOwnerAuthRepository(TheaterOwners, OTPs)
-const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, hashingService, otpService, emailService, jwtService);
+const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
 const theaterOwnerAuthController: ITheaterOwnerAuthenticationController = new TheaterOwnerAuthenticationController(theaterOwnerAuthUseCase);
 
 router.post('/login', theaterOwnerAuthController.handleLoginRequest.bind(theaterOwnerAuthController));
+
+router.post('/register', theaterOwnerAuthController.handleRegisterRequest.bind(theaterOwnerAuthController));
 
 export default router;

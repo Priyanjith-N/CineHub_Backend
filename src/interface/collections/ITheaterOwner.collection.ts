@@ -1,4 +1,4 @@
-import { Model, ObjectId } from "mongoose";
+import { Document, Model, ObjectId } from "mongoose";
 
 export interface ITheaterOwnerDocument extends Document {
     _id: ObjectId;
@@ -7,10 +7,11 @@ export interface ITheaterOwnerDocument extends Document {
     phoneNumber: string;
     password: string;
     idProof: string;
+    idProofImage: string[]
     OTPVerificationStatus: boolean;
     documentVerificationStatus: boolean;
     idProofUpdateVerificationStatus: boolean;
-    idProofUpdateDocument: string | null | undefined;
+    idProofUpdateDocumentImage: string[] | null | undefined;
 }
 
 export interface ITheaterOwnerCollection extends Model<ITheaterOwnerDocument> {}
