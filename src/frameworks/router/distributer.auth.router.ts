@@ -9,6 +9,7 @@ import HashingService from "../utils/hashingService.utils";
 import OTPService from "../utils/otpService.utils";
 import EmailService from "../utils/emailService.utils";
 import JWTService from "../utils/jwtService.utils";
+import CloudinaryService from "../utils/cloudinaryService.utils";
 
 // importing collections
 import Distributers from "../models/distributer.model";
@@ -22,6 +23,7 @@ import IHashingService from "../../interface/utils/IHashingService";
 import IOTPService from "../../interface/utils/IOTPService";
 import IEmailService from "../../interface/utils/IEmailService";
 import IJWTService from "../../interface/utils/IJWTService";
+import ICloudinaryService from "../../interface/utils/ICloudinaryService";
 
 const router: Router = express.Router();
 
@@ -30,11 +32,14 @@ const hashingService: IHashingService = new HashingService();
 const otpService: IOTPService = new OTPService();
 const emailService: IEmailService = new EmailService();
 const jwtService: IJWTService = new JWTService();
+const cloudinaryService: ICloudinaryService = new CloudinaryService();
 
 const distributerAuthRepository: IDistributerAuthRepository = new DistributerAuthRepository(Distributers, OTPs)
-const distributerAuthUseCase: IDistributerAuthUseCase = new DistributerAuthUseCase(distributerAuthRepository, hashingService, otpService, emailService, jwtService);
+const distributerAuthUseCase: IDistributerAuthUseCase = new DistributerAuthUseCase(distributerAuthRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
 const distributerAuthController: IDistributerAuthenticationController = new DistributerAuthenticationController(distributerAuthUseCase);
 
 router.post('/login', distributerAuthController.handleLoginRequest.bind(distributerAuthController));
+
+router.post('/register', distributerAuthController.handleRegisterRequest.bind(distributerAuthController));
 
 export default router;

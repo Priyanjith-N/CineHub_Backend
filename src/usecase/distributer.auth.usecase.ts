@@ -12,6 +12,8 @@ import { StatusCodes } from "../enums/statusCode.enum";
 
 // errors
 import AuthenticationError from "../errors/authentication.error";
+import { IDistributerRegisterCredentials } from "../interface/controllers/distributer.IAuth.controller";
+import ICloudinaryService from "../interface/utils/ICloudinaryService";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -20,7 +22,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private emailService: IEmailService;
     private jwtService: IJWTService;
 
-    constructor(distributerAuthRepository: IDistributerAuthRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService) {
+    constructor(distributerAuthRepository: IDistributerAuthRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, private cloudinaryService: ICloudinaryService) {
         this.distributerAuthRepository = distributerAuthRepository;
         this.hashingService = hashingService;
         this.otpService = otpService;
@@ -58,6 +60,45 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
      } catch (err: any) {
         throw err;
      }   
+    }
+
+    async register(registerData: IDistributerRegisterCredentials): Promise<void | never> {
+        try {
+            if(!registerData.name || !registerData.email || !registerData.phoneNumber || !registerData.password || !registerData.confirmPassword || !registerData.IDProof || !registerData.IDProofImage || !registerData.licence || !(/^[A-Za-z0-9]+@gmail\.com$/).test(registerData.email) || (registerData.phoneNumber.length !== 10) || (registerData.password !== registerData.confirmPassword) || (registerData.IDProofImage.length !== 2)) {
+                throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
+            }
+
+            const isEmailTaken: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(registerData.email);
+            const isPhoneNumberTaken: IDistributerDocument | null = await this.distributerAuthRepository.getDataByPhoneNumber(registerData.phoneNumber);
+
+            if(isEmailTaken) {
+                throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});
+            }else if(isPhoneNumberTaken) {
+                throw new AuthenticationError({message: 'The PhoneNumber you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'phoneNumber'});
+            }
+
+            const hashedPassword: string = await this.hashingService.hash(registerData.password);
+
+            registerData.password = hashedPassword;
+
+            const secureUrlIDProofImage: string[] = [];
+
+            for(const imageDataBase64 of registerData.IDProofImage) {
+                const secure_url = await this.cloudinaryService.uploadImage(imageDataBase64); // returns secure url
+                secureUrlIDProofImage.push(secure_url);
+            }
+
+            registerData.IDProofImage = secureUrlIDProofImage; // change property value to array of secure url of the uploaded image to store it in database to see images
+
+            const secure_url = await this.cloudinaryService.uploadImage(registerData.licence); // returns secure url
+            registerData.licence = secure_url;
+
+            await this.distributerAuthRepository.createDistributer(registerData);
+
+            await this.generateAndSendOTP(registerData.email); // generate and send otp using email services
+        } catch (err: any) {
+            throw err;
+        }
     }
 
     private async generateAndSendOTP(email: string): Promise<void | never> {

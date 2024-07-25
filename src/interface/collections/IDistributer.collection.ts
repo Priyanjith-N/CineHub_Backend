@@ -1,4 +1,4 @@
-import { Model, ObjectId } from "mongoose";
+import { Document, Model, ObjectId } from "mongoose";
 
 export interface IDistributerDocument extends Document {
     _id: ObjectId;
