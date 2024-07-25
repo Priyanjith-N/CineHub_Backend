@@ -4,6 +4,7 @@ export interface IDistributerAuthenticationController {
     handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
+    handleOTPResendRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
 }
 
 export interface IDistributerLoginCredentials {

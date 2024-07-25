@@ -9,5 +9,5 @@ export default interface IDistributerAuthRepository {
     createDistributer(distributerData: IDistributerRegisterCredentials): Promise<void | never>;
     createOTP(email: string, otp: string): Promise<void | never>;
     getOTPByEmail(email: string): Promise<IOTPDocument | null | never>;
-    makeTheaterOwnerVerified(email: string): Promise<IDistributerDocument | null | never>;
+    makeDistributerVerified(email: string): Promise<IDistributerDocument | null | never>;
 }

@@ -118,7 +118,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
             }
 
-            const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.makeTheaterOwnerVerified(email); // return the updated document if found or null;
+            const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.makeDistributerVerified(email); // return the updated document if found or null;
 
             const payload: IPayload = {
                 id: distributerData?.id,
@@ -128,6 +128,18 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
 
             return authToken; // for authing user by cookie
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async OTPResend(email: string | undefined): Promise<void | never> {
+        try {
+            if(!email) {
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
+            }
+
+            this.generateAndSendOTP(email); // send otp via email using email service made a common service.
         } catch (err: any) {
             throw err;
         }

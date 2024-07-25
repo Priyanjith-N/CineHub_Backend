@@ -73,7 +73,7 @@ export default class DistributerAuthRepository implements IDistributerAuthReposi
         }
     }
 
-    async makeTheaterOwnerVerified(email: string): Promise<IDistributerDocument | null | never> {
+    async makeDistributerVerified(email: string): Promise<IDistributerDocument | null | never> {
         try {
             return await this.distributerCollection.findOneAndUpdate({ email }, { $set: { OTPVerificationStatus: true } }, { new: true });
         } catch (err: any) {
