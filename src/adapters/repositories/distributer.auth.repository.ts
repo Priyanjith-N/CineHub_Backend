@@ -65,6 +65,22 @@ export default class DistributerAuthRepository implements IDistributerAuthReposi
         }
     }
 
+    async getOTPByEmail(email: string): Promise<IOTPDocument | null | never> {
+        try {
+            return await this.otpCollection.findOne({email, expiresAt: {$gte: new Date()}}).sort({expiresAt: -1});
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async makeTheaterOwnerVerified(email: string): Promise<IDistributerDocument | null | never> {
+        try {
+            return await this.distributerCollection.findOneAndUpdate({ email }, { $set: { OTPVerificationStatus: true } }, { new: true });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
     private async deleteOTPByEmail(email: string): Promise<void | never> {
         try {
             await this.otpCollection.deleteMany({email});

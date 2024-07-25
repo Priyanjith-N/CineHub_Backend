@@ -42,4 +42,6 @@ router.post('/login', distributerAuthController.handleLoginRequest.bind(distribu
 
 router.post('/register', distributerAuthController.handleRegisterRequest.bind(distributerAuthController));
 
+router.post('/otpVerify', distributerAuthController.handleOTPVerificationRequest.bind(distributerAuthController));
+
 export default router;

@@ -14,6 +14,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
 import { IDistributerRegisterCredentials } from "../interface/controllers/distributer.IAuth.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
+import { IOTPDocument } from "../interface/collections/IOTP.collections";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -96,6 +97,37 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             await this.distributerAuthRepository.createDistributer(registerData);
 
             await this.generateAndSendOTP(registerData.email); // generate and send otp using email services
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async OTPVerification(email: string | undefined, otp: string | undefined): Promise<string | never> {
+        try {
+            if(!email) {
+                throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
+            }else if(!otp || (otp.length !== 6)) {
+                throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
+            }
+
+            const otpData: IOTPDocument | null = await this.distributerAuthRepository.getOTPByEmail(email);
+
+            if(!otpData) {
+                throw new AuthenticationError({message: 'OTP expired. Resend again.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
+            }else if(otpData.otp !== otp) {
+                throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
+            }
+
+            const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.makeTheaterOwnerVerified(email); // return the updated document if found or null;
+
+            const payload: IPayload = {
+                id: distributerData?.id,
+                type: 'Distributer'
+            }
+
+            const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
+
+            return authToken; // for authing user by cookie
         } catch (err: any) {
             throw err;
         }

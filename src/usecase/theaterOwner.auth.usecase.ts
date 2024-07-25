@@ -126,7 +126,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
 
             const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
 
-            return authToken; // for authing user by cookei
+            return authToken; // for authing user by cookie
         } catch (err: any) {
             throw err;
         }
