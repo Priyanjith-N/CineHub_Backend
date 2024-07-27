@@ -6,11 +6,9 @@ import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.c
 
 export default class UserAuthRepository implements IUserAuthRepository {
     private userCollection: IUsersCollection;
-    private otpCollection: IOTPCollection;
     
-    constructor(userCollection: IUsersCollection, otpCollection: IOTPCollection) {
+    constructor(userCollection: IUsersCollection) {
         this.userCollection = userCollection;
-        this.otpCollection = otpCollection;
     }
 
     async getDataByEmail(email: string): Promise<IUserDocument | null | never> {
@@ -46,42 +44,9 @@ export default class UserAuthRepository implements IUserAuthRepository {
         }
     }
 
-    async createOTP(email: string, otp: string): Promise<void | never> {
-        try {
-            await this.deleteOTPByEmail(email); // delete previous otp if exisits
-
-            const newOTP: IOTPDocument = new this.otpCollection({
-                email: email,
-                otp: otp,
-                expiresAt: new Date(Date.now() + 90000)
-            });
-
-            await newOTP.save();
-        } catch (err: any) {
-            throw err;
-        }
-    }
-
-    async getOTPByEmail(email: string | undefined): Promise<IOTPDocument | null | never> {
-        try {
-            return await this.otpCollection.findOne({email, expiresAt: {$gte: new Date()}}).sort({expiresAt: -1});
-        } catch (err: any) {
-            throw err;
-        }
-    }
-
     async makeUserVerified(email: string): Promise<void | never> {
         try {
-            await this.deleteOTPByEmail(email); // delete the otp document of this email.
             await this.userCollection.updateOne({email}, {$set: {OTPVerification: true}});
-        } catch (err: any) {
-            throw err;
-        }
-    }
-
-    private async deleteOTPByEmail(email: string): Promise<void | never> {
-        try {
-            await this.otpCollection.deleteMany({email});
         } catch (err: any) {
             throw err;
         }

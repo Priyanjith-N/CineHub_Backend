@@ -15,16 +15,19 @@ import { StatusCodes } from "../enums/statusCode.enum";
 // errors
 import AuthenticationError from "../errors/authentication.error";
 import JWTTokenError from "../errors/jwt.error";
+import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
 
 export default class UserAuthUseCase implements IUserAuthUseCase {
     private userAuthRepository: IUserAuthRepository;
+    private otpRepository: IOTPRepository;
     private hashingService: IHashingService;
     private jwtService: IJWTService;
     private emailService: IEmailService;
     private otpService: IOTPService;
     
-    constructor(userAuthRepository: IUserAuthRepository, hashingService: IHashingService, jwtService: IJWTService, emailService: IEmailService, otpService: IOTPService) {
+    constructor(userAuthRepository: IUserAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, jwtService: IJWTService, emailService: IEmailService, otpService: IOTPService) {
         this.userAuthRepository = userAuthRepository;
+        this.otpRepository = otpRepository;
         this.hashingService = hashingService;
         this.jwtService = jwtService;
         this.emailService = emailService;
@@ -82,7 +85,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
 
     async OTPVerification(email: string | undefined, otp: string): Promise<string | never> {
         try {
-            const otpData: IOTPDocument | null = await this.userAuthRepository.getOTPByEmail(email);
+            const otpData: IOTPDocument | null = await this.otpRepository.getOTPByEmail(email as string);
             
             if(!email) {
                 throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
@@ -92,6 +95,8 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
             }
 
+            await this.otpRepository.deleteOTPByEmail(email); // delete otp document used for verification
+            
             await this.userAuthRepository.makeUserVerified(email);
 
             const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(email);
@@ -131,7 +136,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
 
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
-            await this.userAuthRepository.createOTP(email, otp); // saving otp in database
+            await this.otpRepository.createOTP(email, otp); // saving otp in database
         } catch (err: any) {
             throw err;
         }

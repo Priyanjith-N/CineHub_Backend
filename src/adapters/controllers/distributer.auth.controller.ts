@@ -71,7 +71,7 @@ export default class DistributerAuthenticationController implements IDistributer
             const token: string = await this.distributerAuthUseCase.OTPVerification(email, otp);
 
             res.cookie('distributerEmailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
-            res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now()) }); // seting token as http only cookie
+            res.cookie('token', token, { httpOnly: true }); // seting token as http only cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

@@ -3,6 +3,7 @@ import express, { Router } from 'express';
 import TheaterOwnerAuthenticationController from '../../adapters/controllers/theaterOwner.auth.controller';
 import TheaterOwnerAuthUseCase from '../../usecase/theaterOwner.auth.usecase';
 import TheaterOwnerAuthRepository from '../../adapters/repositories/theaterOwner.auth.repository';
+import OTPRepository from '../../adapters/repositories/OTP.repository';
 
 // import utils
 import HashingService from "../utils/hashingService.utils";
@@ -25,6 +26,7 @@ import IOTPService from "../../interface/utils/IOTPService";
 import IEmailService from "../../interface/utils/IEmailService";
 import IJWTService from "../../interface/utils/IJWTService";
 import ICloudinaryService from '../../interface/utils/ICloudinaryService';
+import IOTPRepository from '../../interface/repositories/OTP.IOTPRepository.interface';
 
 const router: Router = express.Router();
 
@@ -35,8 +37,9 @@ const emailService: IEmailService = new EmailService();
 const jwtService: IJWTService = new JWTService();
 const cloudinaryService: ICloudinaryService = new CloudinaryService();
 
-const theaterOwnerAuthRepository: ITheaterOwnerAuthRepository = new TheaterOwnerAuthRepository(TheaterOwners, OTPs)
-const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
+const theaterOwnerAuthRepository: ITheaterOwnerAuthRepository = new TheaterOwnerAuthRepository(TheaterOwners);
+const otpRepository: IOTPRepository = new OTPRepository(OTPs);
+const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, otpRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
 const theaterOwnerAuthController: ITheaterOwnerAuthenticationController = new TheaterOwnerAuthenticationController(theaterOwnerAuthUseCase);
 
 router.post('/login', theaterOwnerAuthController.handleLoginRequest.bind(theaterOwnerAuthController));

@@ -22,6 +22,8 @@ import IEmailService from '../../interface/utils/IEmailService';
 import IOTPService from '../../interface/utils/IOTPService';
 import IUserAuthRepository from '../../interface/repositories/user.IAuth.repositories';
 import IUserAuthUseCase from '../../interface/usecase/user.IAuth.usecase';
+import IOTPRepository from '../../interface/repositories/OTP.IOTPRepository.interface';
+import OTPRepository from '../../adapters/repositories/OTP.repository';
 
 const router: Router = express.Router();
 
@@ -31,8 +33,9 @@ const jwtService: IJWTService = new JWTService();
 const emailService: IEmailService = new EmailService();
 const otpService: IOTPService = new OTPService();
 
-const userAuthRepository: IUserAuthRepository = new UserAuthRepository(Users, OTPs);
-const userAuthUseCase: IUserAuthUseCase = new UserAuthUseCase(userAuthRepository, hashingService, jwtService, emailService, otpService);
+const userAuthRepository: IUserAuthRepository = new UserAuthRepository(Users);
+const otpRepository: IOTPRepository = new OTPRepository(OTPs);
+const userAuthUseCase: IUserAuthUseCase = new UserAuthUseCase(userAuthRepository, otpRepository, hashingService, jwtService, emailService, otpService);
 const userAuthController: IUserAuthenticationController = new UserAuthenticationController(userAuthUseCase);
 
 router.get('/verifyToken', userAuthController.verifyTokenRequest.bind(userAuthController));

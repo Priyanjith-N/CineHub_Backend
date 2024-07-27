@@ -73,7 +73,7 @@ export default class UserAuthenticationController implements IUserAuthentication
             const token: string = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
 
             res.cookie('emailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
-            res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now()) }); // seting token as http only cookie
+            res.cookie('token', token, { httpOnly: true }); // seting token as http only cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

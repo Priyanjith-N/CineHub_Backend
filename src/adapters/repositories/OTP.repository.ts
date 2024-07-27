@@ -33,7 +33,7 @@ export default class OTPRepository implements IOTPRepository {
         }
     }
 
-    private async deleteOTPByEmail(email: string): Promise<void | never> {
+    async deleteOTPByEmail(email: string): Promise<void | never> {
         try {
             await this.otpCollection.deleteMany({email});
         } catch (err: any) {

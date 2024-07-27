@@ -9,6 +9,7 @@ import IJWTService, { IPayload } from "../interface/utils/IJWTService";
 import { ITheaterOwnerRegisterCredentials } from "../interface/controllers/theaterOwner.IAuth.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
+import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -18,14 +19,16 @@ import AuthenticationError from "../errors/authentication.error";
 
 export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase {
     private theaterOwnerAuthRepository: ITheaterOwnerAuthRepository;
+    private otpRepository: IOTPRepository;
     private hashingService: IHashingService;
     private otpService: IOTPService;
     private emailService: IEmailService;
     private jwtService: IJWTService;
     private cloudinaryService: ICloudinaryService;
 
-    constructor(theaterOwnerAuthRepository: ITheaterOwnerAuthRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, cloudinaryService: ICloudinaryService) {
+    constructor(theaterOwnerAuthRepository: ITheaterOwnerAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, cloudinaryService: ICloudinaryService) {
         this.theaterOwnerAuthRepository = theaterOwnerAuthRepository;
+        this.otpRepository = otpRepository;
         this.hashingService = hashingService;
         this.otpService = otpService;
         this.emailService = emailService;
@@ -109,7 +112,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
             }
 
-            const otpData: IOTPDocument | null = await this.theaterOwnerAuthRepository.getOTPByEmail(email);
+            const otpData: IOTPDocument | null = await this.otpRepository.getOTPByEmail(email);
 
             if(!otpData) {
                 throw new AuthenticationError({message: 'OTP expired. Resend again.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
@@ -117,6 +120,8 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
             }
 
+            await this.otpRepository.deleteOTPByEmail(email); // delete otp document used for verification
+            
             const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.makeTheaterOwnerVerified(email); // return the updated document if found or null;
 
             const payload: IPayload = {
@@ -154,7 +159,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
 
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
-            await this.theaterOwnerAuthRepository.createOTP(email, otp); // saving otp in database
+            await this.otpRepository.createOTP(email, otp); // saving otp in database
         } catch (err: any) {
             throw err;
         }

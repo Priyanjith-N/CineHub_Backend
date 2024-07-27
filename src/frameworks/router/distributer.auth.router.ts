@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import DistributerAuthenticationController from "../../adapters/controllers/distributer.auth.controller";
 import DistributerAuthUseCase from "../../usecase/distributer.auth.usecase";
 import DistributerAuthRepository from "../../adapters/repositories/distributer.auth.repository";
+import OTPRepository from "../../adapters/repositories/OTP.repository";
 
 // import utils
 import HashingService from "../utils/hashingService.utils";
@@ -24,6 +25,7 @@ import IOTPService from "../../interface/utils/IOTPService";
 import IEmailService from "../../interface/utils/IEmailService";
 import IJWTService from "../../interface/utils/IJWTService";
 import ICloudinaryService from "../../interface/utils/ICloudinaryService";
+import IOTPRepository from "../../interface/repositories/OTP.IOTPRepository.interface";
 
 const router: Router = express.Router();
 
@@ -34,8 +36,9 @@ const emailService: IEmailService = new EmailService();
 const jwtService: IJWTService = new JWTService();
 const cloudinaryService: ICloudinaryService = new CloudinaryService();
 
-const distributerAuthRepository: IDistributerAuthRepository = new DistributerAuthRepository(Distributers, OTPs)
-const distributerAuthUseCase: IDistributerAuthUseCase = new DistributerAuthUseCase(distributerAuthRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
+const distributerAuthRepository: IDistributerAuthRepository = new DistributerAuthRepository(Distributers);
+const otpRepository: IOTPRepository = new OTPRepository(OTPs);
+const distributerAuthUseCase: IDistributerAuthUseCase = new DistributerAuthUseCase(distributerAuthRepository, otpRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
 const distributerAuthController: IDistributerAuthenticationController = new DistributerAuthenticationController(distributerAuthUseCase);
 
 router.post('/login', distributerAuthController.handleLoginRequest.bind(distributerAuthController));

@@ -6,25 +6,28 @@ import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import IEmailService from "../interface/utils/IEmailService";
 import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import { IDistributerRegisterCredentials } from "../interface/controllers/distributer.IAuth.controller";
+import ICloudinaryService from "../interface/utils/ICloudinaryService";
+import { IOTPDocument } from "../interface/collections/IOTP.collections";
+import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
 
 // errors
 import AuthenticationError from "../errors/authentication.error";
-import { IDistributerRegisterCredentials } from "../interface/controllers/distributer.IAuth.controller";
-import ICloudinaryService from "../interface/utils/ICloudinaryService";
-import { IOTPDocument } from "../interface/collections/IOTP.collections";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
+    private otpRepository: IOTPRepository;
     private hashingService: IHashingService;
     private otpService: IOTPService;
     private emailService: IEmailService;
     private jwtService: IJWTService;
 
-    constructor(distributerAuthRepository: IDistributerAuthRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, private cloudinaryService: ICloudinaryService) {
+    constructor(distributerAuthRepository: IDistributerAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, private cloudinaryService: ICloudinaryService) {
         this.distributerAuthRepository = distributerAuthRepository;
+        this.otpRepository = otpRepository;
         this.hashingService = hashingService;
         this.otpService = otpService;
         this.emailService = emailService;
@@ -110,7 +113,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
             }
 
-            const otpData: IOTPDocument | null = await this.distributerAuthRepository.getOTPByEmail(email);
+            const otpData: IOTPDocument | null = await this.otpRepository.getOTPByEmail(email);
 
             if(!otpData) {
                 throw new AuthenticationError({message: 'OTP expired. Resend again.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
@@ -118,6 +121,8 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 throw new AuthenticationError({message: 'The OTP you entered is incorrect.', statusCode: StatusCodes.BadRequest, errorField: 'otp'});
             }
 
+            await this.otpRepository.deleteOTPByEmail(email); // delete otp document used for verification
+            
             const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.makeDistributerVerified(email); // return the updated document if found or null;
 
             const payload: IPayload = {
@@ -155,7 +160,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
 
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
-            await this.distributerAuthRepository.createOTP(email, otp); // saving otp in database
+            await this.otpRepository.createOTP(email, otp); // saving otp in database
         } catch (err: any) {
             throw err;
         }
