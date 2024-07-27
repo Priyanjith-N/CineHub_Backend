@@ -7,11 +7,12 @@ export interface ITheaterOwnerDocument extends Document {
     phoneNumber: string;
     password: string;
     idProof: string;
-    idProofImage: string[]
+    idProofImage: string[];
     OTPVerificationStatus: boolean;
     documentVerificationStatus: boolean;
     idProofUpdateVerificationStatus: boolean;
     idProofUpdateDocumentImage: string[] | null | undefined;
+    isBlocked: boolean;
 }
 
 export interface ITheaterOwnerCollection extends Model<ITheaterOwnerDocument> {}

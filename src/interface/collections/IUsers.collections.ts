@@ -2,11 +2,12 @@ import { Document, Model, ObjectId } from "mongoose";
 
 export interface IUserDocument extends Document {
     _id: ObjectId;
-    name: String;
-    email: String;
-    phoneNumber: String;
-    password: String;
-    OTPVerification: Boolean;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    OTPVerification: boolean;
+    isBlocked: boolean;
 }
 
 

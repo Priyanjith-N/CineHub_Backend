@@ -62,7 +62,12 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
             type: String,
             required: false
         }
-    ]
+    ],
+    isBlocked: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 });
 
 const Distributers: IDistributerCollection = mongoose.model<IDistributerDocument>('Distributers', distributerSchema);

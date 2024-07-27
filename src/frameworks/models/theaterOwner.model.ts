@@ -49,7 +49,12 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
             type: String,
             required: false
         }
-    ]
+    ],
+    isBlocked: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 });
 
 const TheaterOwners: ITheaterOwnerCollection = mongoose.model<ITheaterOwnerDocument>('TheaterOwners', theaterOwnerSchema);

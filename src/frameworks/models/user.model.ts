@@ -26,6 +26,11 @@ const usersSchema: Schema = new Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    isBlocked: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 });
 
