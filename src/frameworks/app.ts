@@ -13,6 +13,7 @@ connectDB();
 
 // importing admin router
 import adminAuthRouter from './router/admin.auth.router';
+import adminRouter from './router/admin.router';
 
 // importing distributer router
 import distributerAuthRouter from './router/distributer.auth.router';
@@ -58,6 +59,9 @@ app.use('/api/theaterOwner', theaterOwnerAuthRouter);
 
 // user auth routes
 app.use('/api/user', userAuthRouter);
+
+// adminRoutes
+app.use('/admin', adminRouter);
 
 
 // error middleware for handling errors
