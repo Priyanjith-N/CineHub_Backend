@@ -1,18 +1,23 @@
+import { isObjectIdOrHexString } from "mongoose";
+
 // interfaces
 import { IDistributerDocument } from "../interface/collections/IDistributer.collection";
 import { ITheaterOwnerDocument } from "../interface/collections/ITheaterOwner.collection";
 import { IUserDocument } from "../interface/collections/IUsers.collections";
-import { IAdminRepository } from "../interface/repositories/admin.repository.interface";
+import { IAdminRepository, IDistributerData, INotVerifiedDistributers, INotVerifiedTheaterOwners, ITheaterOwnerData } from "../interface/repositories/admin.repository.interface";
 import { IAdminUseCase } from "../interface/usecase/admin.usecase.interface";
+import IEmailService from "../interface/utils/IEmailService";
 
 // errors
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 
 export default class AdminUseCase implements IAdminUseCase {
     private adminRepository: IAdminRepository;
+    private emailService: IEmailService;
 
-    constructor(adminRepository: IAdminRepository) {
+    constructor(adminRepository: IAdminRepository, emailService: IEmailService) {
         this.adminRepository = adminRepository;
+        this.emailService = emailService;
     }
 
     async getAllUsersData(): Promise<IUserDocument[] | never> {
@@ -73,6 +78,96 @@ export default class AdminUseCase implements IAdminUseCase {
             }
 
             await this.adminRepository.updateDistributerIsBlockedStatus(id, isBlocked);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllDocumentVerificationRequest(): Promise<(INotVerifiedDistributers | INotVerifiedTheaterOwners)[]> {
+        try {
+            return await this.adminRepository.getAllDocumentVerificationPendingData();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async changeDocumentVerificationStatusTheaterOwner(id: string | undefined, status: string | undefined, message: string | undefined): Promise<void | never> {
+        try {
+            if(!id || !status || !isObjectIdOrHexString(id) || !["Approved", "Rejected"].includes(status)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const email: string | undefined = await this.adminRepository.changeDocumentVerificationStatusTheaterOwner(id, status);
+
+            if(!email) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const to: string = email;
+            const subject: string = `Document Verification ${status}`;
+            const text: string = message || 'All Document Verified Looking forward business with you. You can now login to your account.';
+            await this.emailService.sendEmail(to, subject, text);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async changeDocumentVerificationStatusDistributer(id: string | undefined, status: string | undefined,  message: string | undefined): Promise<void | never> {
+        try {
+            if(!id || !status || !isObjectIdOrHexString(id) || !["Approved", "Rejected"].includes(status)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const email: string | undefined = await this.adminRepository.changeDocumentVerificationStatusDistributer(id, status);
+
+            if(!email) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const to: string = email;
+            const subject: string = `Document Verification ${status}`;
+            const text: string = message || 'All Document Verified Looking forward business with you. You can now login to your account.';
+            await this.emailService.sendEmail(to, subject, text);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTheaterOwner(id: string | undefined): Promise<ITheaterOwnerData | never> {
+        try {
+            if(!id || !isObjectIdOrHexString(id)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const data: Omit<ITheaterOwnerDocument, 'password'> | null = await this.adminRepository.getTheaterOwner(id);
+
+            if(!data) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const newData: ITheaterOwnerData = {...data, _id: (data._id as unknown) as string, role: "Theater Owner"}
+
+            return newData;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDistributer(id: string | undefined): Promise<IDistributerData | never> {
+        try {
+            if(!id || !isObjectIdOrHexString(id)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const data: Omit<IDistributerDocument, 'password'> | null = await this.adminRepository.getDistributer(id);
+
+            if(!data) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const newData: IDistributerData = {...data, _id: (data._id as unknown) as string, role: "Distributer"}
+
+            return newData;
         } catch (err: any) {
             throw err;
         }

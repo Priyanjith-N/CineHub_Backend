@@ -35,8 +35,9 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
         required: true
     },
     documentVerificationStatus: {
-        type: Boolean,
-        default: false,
+        type: String,
+        enum: ["Pending", "Approved", "Rejected"],
+        default: "Pending",
         required: true
     },
     idProofUpdateVerificationStatus: {

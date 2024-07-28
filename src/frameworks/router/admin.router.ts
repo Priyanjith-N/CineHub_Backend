@@ -28,7 +28,7 @@ const jwtService: IJWTService = new JWTService();
 const emailService: IEmailService = new EmailService();
 
 const adminRepository: IAdminRepository = new AdminRepository(Users, TheaterOwners, Distributers);
-const adminUseCase: IAdminUseCase = new AdminUseCase(adminRepository);
+const adminUseCase: IAdminUseCase = new AdminUseCase(adminRepository, emailService);
 const adminController: IAdminController = new AdminController(adminUseCase);
 
 // return all users data as response
@@ -39,11 +39,22 @@ router.patch('/users/:id', adminController.blockOrUnblockUser.bind(adminControll
 // return all theater owners data as response
 router.get('/theaterOwners', adminController.getAllTheaterOwners.bind(adminController));
 
+router.get('/theaterOwner/:id', adminController.getTheaterOwnerData.bind(adminController));
+
 router.patch('/theaterOwners/:id', adminController.blockOrUnblockTheaterOwner.bind(adminController));
+
+router.patch('/theaterOwnerVerifyDocument/:id', adminController.changeDocumentVerificationStatusTheaterOwner.bind(adminController));
 
 // return all distributer data as response
 router.get('/distributers', adminController.getAllDistributers.bind(adminController));
 
+router.get('/distributers/:id', adminController.getDistributerData.bind(adminController));
+
 router.patch('/distributers/:id', adminController.blockOrUnblockDistributer.bind(adminController));
+
+router.patch('/distributersVerifyDocument/:id', adminController.changeDocumentVerificationStatusDistributer.bind(adminController));
+
+// geting all data of new accounts register by theater owners and distributers for document verification
+router.get('/getAllDoumentVerificationRequests', adminController.getAllDocumentVerificationRequest.bind(adminController));
 
 export default router;

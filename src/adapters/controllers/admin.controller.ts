@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { IAdminController } from "../../interface/controllers/admin.controller.interface";
 import { IAdminUseCase } from "../../interface/usecase/admin.usecase.interface";
 import { IUserDocument } from "../../interface/collections/IUsers.collections";
+import { IDistributerData, INotVerifiedDistributers, INotVerifiedTheaterOwners, ITheaterOwnerData } from "../../interface/repositories/admin.repository.interface";
 
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
@@ -94,6 +95,81 @@ export default class AdminController implements IAdminController {
 
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfull',
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getAllDocumentVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data: (INotVerifiedDistributers | INotVerifiedTheaterOwners)[] = await this.adminUseCase.getAllDocumentVerificationRequest();
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+                data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async changeDocumentVerificationStatusTheaterOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id: string | undefined = req.params.id;
+            const status: string | undefined = req.body.status;
+            const message: string | undefined = req.body.message;
+
+            await this.adminUseCase.changeDocumentVerificationStatusTheaterOwner(id, status, message);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull'
+            });
+        } catch (err: any) {
+            next(err)
+        }
+    }
+
+    async changeDocumentVerificationStatusDistributer(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id: string | undefined = req.params.id;
+            const status: string | undefined = req.body.status;
+            const message: string | undefined = req.body.message;
+
+            await this.adminUseCase.changeDocumentVerificationStatusDistributer(id, status, message);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull'
+            });
+        } catch (err: any) {
+            next(err)
+        }
+    }
+
+    async getTheaterOwnerData(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id: string | undefined = req.params.id;
+
+            const data: ITheaterOwnerData = await this.adminUseCase.getTheaterOwner(id);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+                data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getDistributerData(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id: string | undefined = req.params.id;
+
+            const data: IDistributerData = await this.adminUseCase.getDistributer(id);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+                data
             });
         } catch (err: any) {
             next(err);

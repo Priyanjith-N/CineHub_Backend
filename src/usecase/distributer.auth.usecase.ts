@@ -50,7 +50,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             await this.generateAndSendOTP(distributerData.email); // send otp via email.
 
             throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: distributerData.email, cookieKeyForOTPVerification: 'distributerEmailToBeVerified'});
-        }else if(!distributerData.documentVerificationStatus) {
+        }else if(distributerData.documentVerificationStatus === "Pending") {
             throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
         }
 

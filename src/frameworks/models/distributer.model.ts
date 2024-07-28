@@ -39,8 +39,9 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
         required: true
     },
     documentVerificationStatus: {
-        type: Boolean,
-        default: false,
+        type: String,
+        enum: ["Pending", "Approved", "Rejected"],
+        default: "Pending",
         required: true
     },
     licenceUpdateDocument: {

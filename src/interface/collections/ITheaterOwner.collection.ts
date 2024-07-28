@@ -9,7 +9,7 @@ export interface ITheaterOwnerDocument extends Document {
     idProof: string;
     idProofImage: string[];
     OTPVerificationStatus: boolean;
-    documentVerificationStatus: boolean;
+    documentVerificationStatus: string;
     idProofUpdateVerificationStatus: boolean;
     idProofUpdateDocumentImage: string[] | null | undefined;
     isBlocked: boolean;

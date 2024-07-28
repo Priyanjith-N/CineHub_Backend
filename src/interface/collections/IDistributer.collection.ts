@@ -10,7 +10,7 @@ export interface IDistributerDocument extends Document {
     idProof: string;
     idProofImage: string[];
     OTPVerificationStatus: boolean;
-    documentVerificationStatus: boolean;
+    documentVerificationStatus: string;
     licenceUpdateDocument: string | undefined | null
     licenceUpdateVerificationStatus: boolean;
     idProofUpdateVerificationStatus: boolean;
