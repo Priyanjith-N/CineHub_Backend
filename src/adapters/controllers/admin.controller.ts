@@ -54,4 +54,49 @@ export default class AdminController implements IAdminController {
             next(err);
         }
     }
+
+    async blockOrUnblockUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId: string | undefined = req.params.id;
+            const isBlocked: boolean | undefined = req.body.isBlocked;
+
+            await this.adminUseCase.blockOrUnblockUser(userId, isBlocked);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async blockOrUnblockTheaterOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterOwnerId: string | undefined = req.params.id;
+            const isBlocked: boolean | undefined = req.body.isBlocked;
+
+            await this.adminUseCase.blockOrUnblockTheaterOwner(theaterOwnerId, isBlocked);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async blockOrUnblockDistributer(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const distributerId: string | undefined = req.params.id;
+            const isBlocked: boolean | undefined = req.body.isBlocked;
+
+            await this.adminUseCase.blockOrUnblockDistributer(distributerId, isBlocked);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

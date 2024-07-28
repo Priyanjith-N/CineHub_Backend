@@ -34,10 +34,16 @@ const adminController: IAdminController = new AdminController(adminUseCase);
 // return all users data as response
 router.get('/users', adminController.getAllUsers.bind(adminController));
 
+router.patch('/users/:id', adminController.blockOrUnblockUser.bind(adminController));
+
 // return all theater owners data as response
 router.get('/theaterOwners', adminController.getAllTheaterOwners.bind(adminController));
 
+router.patch('/theaterOwners/:id', adminController.blockOrUnblockTheaterOwner.bind(adminController));
+
 // return all distributer data as response
 router.get('/distributers', adminController.getAllDistributers.bind(adminController));
+
+router.patch('/distributers/:id', adminController.blockOrUnblockDistributer.bind(adminController));
 
 export default router;

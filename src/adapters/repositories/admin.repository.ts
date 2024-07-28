@@ -38,4 +38,28 @@ export default class AdminRepository implements IAdminRepository {
             throw err;
         }
     }
+
+    async updateUserIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null> {
+        try {
+            await this.userCollection.updateOne({ _id: id }, { $set: { isBlocked } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async updateTheaterOwnerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null> {
+        try {
+            await this.theaterOwnerCollection.updateOne({ _id: id }, { $set: { isBlocked } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async updateDistributerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null> {
+        try {
+            await this.distributerCollection.updateOne({ _id: id }, { $set: { isBlocked } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

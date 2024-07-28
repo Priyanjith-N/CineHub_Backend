@@ -7,4 +7,7 @@ export interface IAdminRepository {
     allUser(): Promise<IUserDocument[] | never>;
     allTheaterOwners(): Promise<ITheaterOwnerDocument[] | never>;
     allDistributers(): Promise<IDistributerDocument[] | never>;
+    updateUserIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null>;
+    updateTheaterOwnerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null>;
+    updateDistributerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null>;
 }
