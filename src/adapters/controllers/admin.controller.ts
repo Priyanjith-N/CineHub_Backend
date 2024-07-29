@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { IAdminController } from "../../interface/controllers/admin.controller.interface";
 import { IAdminUseCase } from "../../interface/usecase/admin.usecase.interface";
 import { IUserDocument } from "../../interface/collections/IUsers.collections";
-import { IDistributerData, INotVerifiedDistributers, INotVerifiedTheaterOwners, ITheaterOwnerData } from "../../interface/repositories/admin.repository.interface";
+import { INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../interface/repositories/admin.repository.interface";
 
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
@@ -150,7 +150,10 @@ export default class AdminController implements IAdminController {
         try {
             const id: string | undefined = req.params.id;
 
-            const data: ITheaterOwnerData = await this.adminUseCase.getTheaterOwner(id);
+            const data: INotVerifiedTheaterOwners = await this.adminUseCase.getTheaterOwner(id);
+
+            console.log(data);
+            
 
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfull',
@@ -165,7 +168,7 @@ export default class AdminController implements IAdminController {
         try {
             const id: string | undefined = req.params.id;
 
-            const data: IDistributerData = await this.adminUseCase.getDistributer(id);
+            const data: INotVerifiedDistributers = await this.adminUseCase.getDistributer(id);
 
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfull',

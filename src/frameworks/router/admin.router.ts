@@ -4,12 +4,6 @@ import AdminRepository from '../../adapters/repositories/admin.repository';
 import AdminUseCase from '../../usecase/admin.usecase';
 import AdminController from '../../adapters/controllers/admin.controller';
 
-
-//import collections
-import Users from '../models/user.model';
-import TheaterOwners from '../models/theaterOwner.model';
-import Distributers from '../models/distributer.model';
-
 // import utils
 import JWTService from '../utils/jwtService.utils';
 import EmailService from '../utils/emailService.utils';
@@ -27,7 +21,7 @@ const router: Router = express.Router();
 const jwtService: IJWTService = new JWTService();
 const emailService: IEmailService = new EmailService();
 
-const adminRepository: IAdminRepository = new AdminRepository(Users, TheaterOwners, Distributers);
+const adminRepository: IAdminRepository = new AdminRepository();
 const adminUseCase: IAdminUseCase = new AdminUseCase(adminRepository, emailService);
 const adminController: IAdminController = new AdminController(adminUseCase);
 

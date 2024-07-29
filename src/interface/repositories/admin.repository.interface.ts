@@ -13,8 +13,8 @@ export interface IAdminRepository {
     getAllDocumentVerificationPendingData(): Promise<(INotVerifiedDistributers | INotVerifiedTheaterOwners)[]>;
     changeDocumentVerificationStatusTheaterOwner(id: string, status: string): Promise<string | undefined | never>;
     changeDocumentVerificationStatusDistributer(id: string, status: string): Promise<string | undefined | never>;
-    getTheaterOwner(id: string): Promise<Omit<ITheaterOwnerDocument, 'password'> | null>;
-    getDistributer(id: string): Promise<Omit<IDistributerDocument, 'password'> | null>;
+    getTheaterOwner(id: string): Promise<INotVerifiedTheaterOwners | undefined | never>
+    getDistributer(id: string): Promise<INotVerifiedDistributers | undefined | never>;
 }
 
 export interface INotVerifiedTheaterOwners {
@@ -49,7 +49,3 @@ export interface INotVerifiedDistributers {
     isBlocked: boolean;
     role: string;
 }
-
-export interface ITheaterOwnerData extends INotVerifiedTheaterOwners { }
-
-export interface IDistributerData extends INotVerifiedDistributers { }

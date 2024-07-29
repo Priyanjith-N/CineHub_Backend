@@ -4,7 +4,7 @@ import { isObjectIdOrHexString } from "mongoose";
 import { IDistributerDocument } from "../interface/collections/IDistributer.collection";
 import { ITheaterOwnerDocument } from "../interface/collections/ITheaterOwner.collection";
 import { IUserDocument } from "../interface/collections/IUsers.collections";
-import { IAdminRepository, IDistributerData, INotVerifiedDistributers, INotVerifiedTheaterOwners, ITheaterOwnerData } from "../interface/repositories/admin.repository.interface";
+import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../interface/repositories/admin.repository.interface";
 import { IAdminUseCase } from "../interface/usecase/admin.usecase.interface";
 import IEmailService from "../interface/utils/IEmailService";
 
@@ -133,41 +133,38 @@ export default class AdminUseCase implements IAdminUseCase {
         }
     }
 
-    async getTheaterOwner(id: string | undefined): Promise<ITheaterOwnerData | never> {
+    async getTheaterOwner(id: string | undefined): Promise<INotVerifiedTheaterOwners | never> {
         try {
             if(!id || !isObjectIdOrHexString(id)) {
                 throw new RequiredCredentialsNotGiven('Provide all required details.');
             }
 
-            const data: Omit<ITheaterOwnerDocument, 'password'> | null = await this.adminRepository.getTheaterOwner(id);
+            const data: INotVerifiedTheaterOwners | undefined = await this.adminRepository.getTheaterOwner(id);
 
             if(!data) {
                 throw new RequiredCredentialsNotGiven('Provide all required details.');
             }
+            
 
-            const newData: ITheaterOwnerData = {...data, _id: (data._id as unknown) as string, role: "Theater Owner"}
-
-            return newData;
+            return data;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async getDistributer(id: string | undefined): Promise<IDistributerData | never> {
+    async getDistributer(id: string | undefined): Promise<INotVerifiedDistributers | never> {
         try {
             if(!id || !isObjectIdOrHexString(id)) {
                 throw new RequiredCredentialsNotGiven('Provide all required details.');
             }
 
-            const data: Omit<IDistributerDocument, 'password'> | null = await this.adminRepository.getDistributer(id);
+            const data: INotVerifiedDistributers | undefined = await this.adminRepository.getDistributer(id);
 
             if(!data) {
                 throw new RequiredCredentialsNotGiven('Provide all required details.');
             }
 
-            const newData: IDistributerData = {...data, _id: (data._id as unknown) as string, role: "Distributer"}
-
-            return newData;
+            return data;
         } catch (err: any) {
             throw err;
         }

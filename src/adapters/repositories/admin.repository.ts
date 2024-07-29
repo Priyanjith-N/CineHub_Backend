@@ -1,3 +1,10 @@
+import mongoose from "mongoose";
+
+// collections
+import Users from "../../frameworks/models/user.model";
+import TheaterOwners from "../../frameworks/models/theaterOwner.model";
+import Distributers from "../../frameworks/models/distributer.model";
+
 // interfaces
 import { IDistributerCollection, IDistributerDocument } from "../../interface/collections/IDistributer.collection";
 import { ITheaterOwnerCollection, ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
@@ -5,19 +12,9 @@ import { IUserDocument, IUsersCollection } from "../../interface/collections/IUs
 import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../interface/repositories/admin.repository.interface";
 
 export default class AdminRepository implements IAdminRepository {
-    private userCollection: IUsersCollection;
-    private theaterOwnerCollection: ITheaterOwnerCollection;
-    private distributerCollection: IDistributerCollection;
-
-    constructor(userCollection: IUsersCollection, theaterOwnerCollection: ITheaterOwnerCollection, distributerCollection: IDistributerCollection) {
-        this.userCollection = userCollection;
-        this.theaterOwnerCollection = theaterOwnerCollection;
-        this.distributerCollection = distributerCollection;
-    }
-
     async allUser(): Promise<IUserDocument[] | never> {
         try {
-            return await this.userCollection.find({}, { password: 0 });
+            return await Users.find({}, { password: 0 });
         } catch (err: any) {
             throw err;
         }
@@ -25,7 +22,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async allTheaterOwners(): Promise<ITheaterOwnerDocument[] | never> {
         try {
-            return await this.theaterOwnerCollection.find({}, { password: 0 });
+            return await TheaterOwners.find({}, { password: 0 });
         } catch (err: any) {
             throw err;
         }
@@ -33,7 +30,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async allDistributers(): Promise<IDistributerDocument[] | never> {
         try {
-            return await this.distributerCollection.find({}, { password: 0 });
+            return await Distributers.find({}, { password: 0 });
         } catch (err: any) {
             throw err;
         }
@@ -41,7 +38,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async updateUserIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null> {
         try {
-            await this.userCollection.updateOne({ _id: id }, { $set: { isBlocked } });
+            await Users.updateOne({ _id: id }, { $set: { isBlocked } });
         } catch (err: any) {
             throw err;
         }
@@ -49,7 +46,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async updateTheaterOwnerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null> {
         try {
-            await this.theaterOwnerCollection.updateOne({ _id: id }, { $set: { isBlocked } });
+            await TheaterOwners.updateOne({ _id: id }, { $set: { isBlocked } });
         } catch (err: any) {
             throw err;
         }
@@ -57,7 +54,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async updateDistributerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null> {
         try {
-            await this.distributerCollection.updateOne({ _id: id }, { $set: { isBlocked } });
+            await Distributers.updateOne({ _id: id }, { $set: { isBlocked } });
         } catch (err: any) {
             throw err;
         }
@@ -65,11 +62,12 @@ export default class AdminRepository implements IAdminRepository {
 
     async getAllDocumentVerificationPendingData(): Promise<(INotVerifiedDistributers | INotVerifiedTheaterOwners)[]> {
         try {
-            const theaterOwners: INotVerifiedTheaterOwners[] = await this.theaterOwnerCollection.aggregate(
+            const theaterOwners: INotVerifiedTheaterOwners[] = await TheaterOwners.aggregate(
                 [
                     {
                         $match: {
-                          'OTPVerificationStatus': true
+                          'OTPVerificationStatus': true,
+                          'documentVerificationStatus': 'Pending'
                         }
                     },
                     {
@@ -85,11 +83,12 @@ export default class AdminRepository implements IAdminRepository {
                 ]
             );
 
-            const distributer: INotVerifiedDistributers[] = await this.distributerCollection.aggregate(
+            const distributer: INotVerifiedDistributers[] = await Distributers.aggregate(
                 [
                     {
                         $match: {
-                          'OTPVerificationStatus': true
+                          'OTPVerificationStatus': true,
+                          'documentVerificationStatus': 'Pending'
                         }
                     },
                     {
@@ -113,7 +112,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async changeDocumentVerificationStatusTheaterOwner(id: string, status: string): Promise<string | undefined | never> {
         try {
-            const updatedData: ITheaterOwnerDocument | null = await this.theaterOwnerCollection.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
+            const updatedData: ITheaterOwnerDocument | null = await TheaterOwners.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
 
             return updatedData?.email;
         } catch (err: any) {
@@ -123,7 +122,9 @@ export default class AdminRepository implements IAdminRepository {
 
     async changeDocumentVerificationStatusDistributer(id: string, status: string): Promise<string | undefined | never> {
         try {
-            const updatedData: IDistributerDocument | null = await this.distributerCollection.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
+            console.log(status);
+            
+            const updatedData: IDistributerDocument | null = await Distributers.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
 
             return updatedData?.email;
         } catch (err: any) {
@@ -131,9 +132,27 @@ export default class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getTheaterOwner(id: string): Promise<Omit<ITheaterOwnerDocument, 'password'> | null> {
+    async getTheaterOwner(id: string): Promise<INotVerifiedTheaterOwners | undefined | never> {
         try {
-            const data: Omit<ITheaterOwnerDocument, 'password'> | null = await this.theaterOwnerCollection.findOne({ _id: id }, { password: 0 });
+            const [ data ]: INotVerifiedTheaterOwners[] = await TheaterOwners.aggregate(
+                [
+                    {
+                        $match: {
+                            _id: new mongoose.Types.ObjectId(id)
+                        }
+                    },
+                    {
+                        $addFields: {
+                          role: 'Theater Owner'
+                        }
+                    },
+                    {
+                        $project: {
+                            pasword: 0
+                        }
+                    }
+                ]
+            );
 
             return data;
         } catch (err: any) {
@@ -141,9 +160,27 @@ export default class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getDistributer(id: string): Promise<Omit<IDistributerDocument, 'password'> | null> {
+    async getDistributer(id: string): Promise<INotVerifiedDistributers | undefined | never> {
         try {
-            const data: Omit<IDistributerDocument, 'password'> | null = await this.distributerCollection.findOne({ _id: id }, { password: 0 });
+            const [ data ]: INotVerifiedDistributers[] = await Distributers.aggregate(
+                [
+                    {
+                        $match: {
+                            _id: new mongoose.Types.ObjectId(id)
+                        }
+                    },
+                    {
+                        $addFields: {
+                          role: 'Distributer'
+                        }
+                    },
+                    {
+                        $project: {
+                            pasword: 0
+                        }
+                    }
+                ]
+            );
 
             return data;
         } catch (err: any) {
