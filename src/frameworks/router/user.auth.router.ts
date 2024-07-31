@@ -9,6 +9,7 @@ import HashingService from '../utils/hashingService.utils';
 import JWTService from '../utils/jwtService.utils';
 import EmailService from '../utils/emailService.utils';
 import OTPService from '../utils/otpService.utils';
+import { GoogleAuthService } from '../utils/googleAuthService.utils';
 
 // importing collections
 import Users from '../models/user.model';
@@ -24,6 +25,7 @@ import IUserAuthRepository from '../../interface/repositories/user.IAuth.reposit
 import IUserAuthUseCase from '../../interface/usecase/user.IAuth.usecase';
 import IOTPRepository from '../../interface/repositories/OTP.IOTPRepository.interface';
 import OTPRepository from '../../adapters/repositories/OTP.repository';
+import { IGoogleAuthService } from '../../interface/utils/IGoogleAuthService';
 
 const router: Router = express.Router();
 
@@ -32,11 +34,14 @@ const hashingService: IHashingService = new HashingService();
 const jwtService: IJWTService = new JWTService();
 const emailService: IEmailService = new EmailService();
 const otpService: IOTPService = new OTPService();
+const googleAuthService: IGoogleAuthService = new GoogleAuthService();
 
 const userAuthRepository: IUserAuthRepository = new UserAuthRepository(Users);
 const otpRepository: IOTPRepository = new OTPRepository(OTPs);
-const userAuthUseCase: IUserAuthUseCase = new UserAuthUseCase(userAuthRepository, otpRepository, hashingService, jwtService, emailService, otpService);
+const userAuthUseCase: IUserAuthUseCase = new UserAuthUseCase(userAuthRepository, otpRepository, hashingService, jwtService, emailService, otpService, googleAuthService);
 const userAuthController: IUserAuthenticationController = new UserAuthenticationController(userAuthUseCase);
+
+router.post('/googleauthlogin', userAuthController.googleAuthLogin.bind(userAuthController));
 
 router.get('/verifyToken', userAuthController.verifyTokenRequest.bind(userAuthController));
 

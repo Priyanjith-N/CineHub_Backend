@@ -8,6 +8,7 @@ import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
 import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -15,7 +16,9 @@ import { StatusCodes } from "../enums/statusCode.enum";
 // errors
 import AuthenticationError from "../errors/authentication.error";
 import JWTTokenError from "../errors/jwt.error";
-import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
+import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
+import { IGoogleAuthService } from "../interface/utils/IGoogleAuthService";
+import { TokenPayload } from "google-auth-library";
 
 export default class UserAuthUseCase implements IUserAuthUseCase {
     private userAuthRepository: IUserAuthRepository;
@@ -24,14 +27,53 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
     private jwtService: IJWTService;
     private emailService: IEmailService;
     private otpService: IOTPService;
+    private googleAuthService: IGoogleAuthService;
     
-    constructor(userAuthRepository: IUserAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, jwtService: IJWTService, emailService: IEmailService, otpService: IOTPService) {
+    constructor(userAuthRepository: IUserAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, jwtService: IJWTService, emailService: IEmailService, otpService: IOTPService, googleAuthService: IGoogleAuthService) {
         this.userAuthRepository = userAuthRepository;
         this.otpRepository = otpRepository;
         this.hashingService = hashingService;
         this.jwtService = jwtService;
         this.emailService = emailService;
         this.otpService = otpService;
+        this.googleAuthService = googleAuthService;
+    }
+
+    async googleLoginUser(idToken: string | undefined): Promise<string | never> {
+        try {
+            if(!idToken) {
+                throw new RequiredCredentialsNotGiven('GOOGLE_TOKEN_REQUIRE.');
+            }
+
+            const decodedToken: TokenPayload | undefined = await this.googleAuthService.verifyIdToken(idToken);
+
+            if(!decodedToken?.email) {
+                throw new RequiredCredentialsNotGiven('TOKEN_ERROR_LOGIN_AGAIN.');
+            }
+
+            const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(decodedToken.email);
+
+            if(!userData) {
+                throw new RequiredCredentialsNotGiven('No user with that email, Create account now.');
+            }
+
+            if(!userData.OTPVerification) {
+                // if he or she is not verified then make them verified since they log in with google so it's their account so can be verified
+
+                await this.userAuthRepository.makeUserVerified(userData.email);
+            }
+            
+            const payload: IPayload = {
+                id: userData._id,
+                type: 'User'
+            }
+
+            const token: string = this.jwtService.sign(payload);
+
+            return token;
+        } catch (err: any) {
+            throw err;
+        }
     }
 
     async authenticateUser(email: string, password: string): Promise<string | never> {

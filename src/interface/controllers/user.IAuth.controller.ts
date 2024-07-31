@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 export interface IUserAuthenticationController {
+    googleAuthLogin(req: Request, res: Response, next: NextFunction): Promise<void>;
     handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleRegisterRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
