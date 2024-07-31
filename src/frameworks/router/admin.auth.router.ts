@@ -31,6 +31,10 @@ const adminAuthRepository: IAdminAuthRepository = new AdminAuthRepository(Admins
 const adminAuthUseCase: IAdminAuthUseCase = new AdminAuthUseCase(adminAuthRepository, hashingService, emailService, jwtService);
 const adminAuthenticationController:IAdminAuthenticationController = new AdminAuthenticationController(adminAuthUseCase);
 
+router.get('/verifyToken', adminAuthenticationController.verifyTokenRequest.bind(adminAuthenticationController));
+
 router.post('/login', adminAuthenticationController.handleLoginRequest.bind(adminAuthenticationController));
+
+router.post('/logout', adminAuthenticationController.handleLogoutRequest.bind(adminAuthenticationController));
 
 export default router;

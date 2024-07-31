@@ -124,4 +124,16 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             next(err);
         }
     }
+
+    async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
+        try {
+            res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing token stroed http only cookie to logout.
+            
+            res.status(StatusCodes.Success).json({
+                message: "Theater Owner Logout sucessfull"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

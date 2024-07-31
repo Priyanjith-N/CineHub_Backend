@@ -11,6 +11,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 
 // errors
 import AuthenticationError from "../errors/authentication.error";
+import JWTTokenError from "../errors/jwt.error";
 
 export default class AdminAuthUseCase implements IAdminAuthUseCase {
     private adminAuthRepository: IAdminAuthRepository;
@@ -43,6 +44,22 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
             const token: string = this.jwtService.sign(payload);
 
             return token;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async verifyToken(token: string | undefined): Promise<void | never> {
+        try {
+            if(!token) {
+                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'Admin not authenticated' })
+            }
+
+            const decoded: IPayload = this.jwtService.verifyToken(token);
+
+            if(decoded.type !== 'Admin') {
+                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+            }
         } catch (err: any) {
             throw err;
         }

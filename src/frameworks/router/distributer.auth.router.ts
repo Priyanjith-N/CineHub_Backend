@@ -50,6 +50,8 @@ router.get('/verifyToken', distributerAuthController.verifyTokenRequest.bind(dis
 
 router.post('/login', distributerAuthController.handleLoginRequest.bind(distributerAuthController));
 
+router.post('/logout', distributerAuthController.handleLogoutRequest.bind(distributerAuthController));
+
 router.post('/register', distributerAuthController.handleRegisterRequest.bind(distributerAuthController));
 
 router.post('/otpVerify', distributerAuthController.handleOTPVerificationRequest.bind(distributerAuthController));

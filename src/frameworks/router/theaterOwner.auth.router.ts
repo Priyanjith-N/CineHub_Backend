@@ -51,6 +51,8 @@ router.get('/verifyToken', theaterOwnerAuthController.verifyTokenRequest.bind(th
 
 router.post('/login', theaterOwnerAuthController.handleLoginRequest.bind(theaterOwnerAuthController));
 
+router.post('/logout', theaterOwnerAuthController.handleLogoutRequest.bind(theaterOwnerAuthController));
+
 router.post('/register', theaterOwnerAuthController.handleRegisterRequest.bind(theaterOwnerAuthController));
 
 router.post('/otpVerify', theaterOwnerAuthController.handleOTPVerificationRequest.bind(theaterOwnerAuthController));

@@ -7,6 +7,7 @@ export interface IDistributerAuthenticationController {
     handleOTPVerificationRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     handleOTPResendRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
     verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
+    handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never>;
 }
 
 export interface IDistributerLoginCredentials {
