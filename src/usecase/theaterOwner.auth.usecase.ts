@@ -66,6 +66,8 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 await this.theaterOwnerAuthRepository.makeTheaterOwnerVerified(theaterOwnerData.email);
             }else if(theaterOwnerData.documentVerificationStatus === "Pending") {
                 throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
+            }else if(theaterOwnerData.isBlocked) {
+                throw new AuthenticationError({message: 'Account is blocked.', statusCode: StatusCodes.Unauthorized, errorField: "blocked"});
             }
             
             const payload: IPayload = {
@@ -99,6 +101,8 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
             throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: theaterOwnerData.email, cookieKeyForOTPVerification: 'theaterOwnerEmailToBeVerified'});
         }else if(theaterOwnerData.documentVerificationStatus === "Pending") {
             throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
+        }else if(theaterOwnerData.isBlocked) {
+            throw new AuthenticationError({message: 'Account is blocked.', statusCode: StatusCodes.Unauthorized, errorField: "blocked"});
         }
 
         const payload: IPayload = {

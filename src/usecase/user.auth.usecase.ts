@@ -61,6 +61,8 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 // if he or she is not verified then make them verified since they log in with google so it's their account so can be verified
 
                 await this.userAuthRepository.makeUserVerified(userData.email);
+            }else if(userData.isBlocked) {
+                throw new AuthenticationError({message: 'Account is blocked.', statusCode: StatusCodes.Unauthorized, errorField: "blocked"});
             }
             
             const payload: IPayload = {
@@ -88,6 +90,8 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 await this.generateAndSendOTP(userData.email as string); // send otp via email.
 
                 throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: userData.email as string, cookieKeyForOTPVerification: 'emailToBeVerified'});
+            }else if(userData.isBlocked) {
+                throw new AuthenticationError({message: 'Account is blocked.', statusCode: StatusCodes.Unauthorized, errorField: "blocked"});
             }
 
             const payload: IPayload = {

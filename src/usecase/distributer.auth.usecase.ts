@@ -64,6 +64,8 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 await this.distributerAuthRepository.makeDistributerVerified(distributerData.email);
             }else if(distributerData.documentVerificationStatus === "Pending") {
                 throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
+            }else if(distributerData.isBlocked) {
+                throw new AuthenticationError({message: 'Account is blocked.', statusCode: StatusCodes.Unauthorized, errorField: "blocked"});
             }
             
             const payload: IPayload = {
@@ -97,6 +99,8 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             throw new AuthenticationError({message: 'Account is not verified.', statusCode: StatusCodes.Unauthorized, errorField: "otp", notOTPVerifiedErrorEmail: distributerData.email, cookieKeyForOTPVerification: 'distributerEmailToBeVerified'});
         }else if(distributerData.documentVerificationStatus === "Pending") {
             throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
+        }else if(distributerData.isBlocked) {
+            throw new AuthenticationError({message: 'Account is blocked.', statusCode: StatusCodes.Unauthorized, errorField: "blocked"});
         }
 
         const payload: IPayload = {
