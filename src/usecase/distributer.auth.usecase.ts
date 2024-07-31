@@ -10,12 +10,15 @@ import { IDistributerRegisterCredentials } from "../interface/controllers/distri
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
 import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
+import { IGoogleAuthService } from "../interface/utils/IGoogleAuthService";
+import { TokenPayload } from "google-auth-library";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
 
 // errors
 import AuthenticationError from "../errors/authentication.error";
+import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -24,14 +27,55 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private otpService: IOTPService;
     private emailService: IEmailService;
     private jwtService: IJWTService;
+    private googleAuthService: IGoogleAuthService;
 
-    constructor(distributerAuthRepository: IDistributerAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, private cloudinaryService: ICloudinaryService) {
+    constructor(distributerAuthRepository: IDistributerAuthRepository, otpRepository: IOTPRepository, hashingService: IHashingService, otpService: IOTPService, emailService: IEmailService, jwtService: IJWTService, private cloudinaryService: ICloudinaryService, googleAuthService: IGoogleAuthService) {
         this.distributerAuthRepository = distributerAuthRepository;
         this.otpRepository = otpRepository;
         this.hashingService = hashingService;
         this.otpService = otpService;
         this.emailService = emailService;
         this.jwtService = jwtService;
+        this.googleAuthService = googleAuthService;
+    }
+
+    async googleLoginUser(idToken: string | undefined): Promise<string | never> {
+        try {
+            if(!idToken) {
+                throw new RequiredCredentialsNotGiven('GOOGLE_TOKEN_REQUIRE.');
+            }
+
+            const decodedToken: TokenPayload | undefined = await this.googleAuthService.verifyIdToken(idToken);
+
+            if(!decodedToken?.email) {
+                throw new RequiredCredentialsNotGiven('TOKEN_ERROR_LOGIN_AGAIN.');
+            }
+
+            const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(decodedToken.email);
+
+            if(!distributerData) {
+                throw new RequiredCredentialsNotGiven('No user with that email, Create account now.');
+            }
+
+            if(!distributerData.OTPVerificationStatus) {
+                // if he or she is not verified then make them verified since they log in with google so it's their account so can be verified
+
+                await this.distributerAuthRepository.makeDistributerVerified(distributerData.email);
+            }else if(distributerData.documentVerificationStatus === "Pending") {
+                throw new AuthenticationError({message: 'document verification is still in process.', statusCode: StatusCodes.Unauthorized, errorField: "document"});
+            }
+            
+            const payload: IPayload = {
+                id: distributerData._id,
+                type: 'Distributer'
+            }
+
+            const token: string = this.jwtService.sign(payload);
+
+            return token;
+        } catch (err: any) {
+            throw err;
+        }
     }
 
     async authenticateUser(email: string | undefined, password: string | undefined): Promise<string | never> {

@@ -11,6 +11,7 @@ import OTPService from "../utils/otpService.utils";
 import EmailService from "../utils/emailService.utils";
 import JWTService from "../utils/jwtService.utils";
 import CloudinaryService from '../utils/cloudinaryService.utils';
+import { GoogleAuthService } from '../utils/googleAuthService.utils';
 
 // importing collections
 import TheaterOwners from '../models/theaterOwner.model';
@@ -27,6 +28,7 @@ import IEmailService from "../../interface/utils/IEmailService";
 import IJWTService from "../../interface/utils/IJWTService";
 import ICloudinaryService from '../../interface/utils/ICloudinaryService';
 import IOTPRepository from '../../interface/repositories/OTP.IOTPRepository.interface';
+import { IGoogleAuthService } from '../../interface/utils/IGoogleAuthService';
 
 const router: Router = express.Router();
 
@@ -36,11 +38,14 @@ const otpService: IOTPService = new OTPService();
 const emailService: IEmailService = new EmailService();
 const jwtService: IJWTService = new JWTService();
 const cloudinaryService: ICloudinaryService = new CloudinaryService();
+const googleAuthService: IGoogleAuthService = new GoogleAuthService();
 
 const theaterOwnerAuthRepository: ITheaterOwnerAuthRepository = new TheaterOwnerAuthRepository(TheaterOwners);
 const otpRepository: IOTPRepository = new OTPRepository(OTPs);
-const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, otpRepository, hashingService, otpService, emailService, jwtService, cloudinaryService);
+const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, otpRepository, hashingService, otpService, emailService, jwtService, cloudinaryService, googleAuthService);
 const theaterOwnerAuthController: ITheaterOwnerAuthenticationController = new TheaterOwnerAuthenticationController(theaterOwnerAuthUseCase);
+
+router.post('/googleauthlogin', theaterOwnerAuthController.googleAuthLogin.bind(theaterOwnerAuthController));
 
 router.post('/login', theaterOwnerAuthController.handleLoginRequest.bind(theaterOwnerAuthController));
 

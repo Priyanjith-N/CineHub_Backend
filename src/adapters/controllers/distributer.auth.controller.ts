@@ -14,6 +14,22 @@ export default class DistributerAuthenticationController implements IDistributer
         this.distributerAuthUseCase = distributerAuthUseCase;
     }
 
+    async googleAuthLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const idToken: string | undefined = req.body.token;
+
+            const token: string = await this.distributerAuthUseCase.googleLoginUser(idToken);
+
+            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
+            
+            res.status(StatusCodes.Success).json({
+                message: "Successfuly login"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
     async handleLoginRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
             const {
