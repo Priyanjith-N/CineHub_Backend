@@ -46,6 +46,8 @@ const distributerAuthController: IDistributerAuthenticationController = new Dist
 
 router.post('/googleauthlogin', distributerAuthController.googleAuthLogin.bind(distributerAuthController));
 
+router.get('/verifyToken', distributerAuthController.verifyTokenRequest.bind(distributerAuthController));
+
 router.post('/login', distributerAuthController.handleLoginRequest.bind(distributerAuthController));
 
 router.post('/register', distributerAuthController.handleRegisterRequest.bind(distributerAuthController));

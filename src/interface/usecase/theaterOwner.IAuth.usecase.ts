@@ -7,4 +7,5 @@ export default interface ITheaterOwnerAuthUseCase {
     register(registerData: ITheaterOwnerRegisterCredentials): Promise<void | never>;
     OTPVerification(email: string | undefined, otp: string | undefined): Promise<string | never>;
     OTPResend(email: string | undefined): Promise<void | never>;
+    verifyToken(token: string | undefined): Promise<void | never>;
 }

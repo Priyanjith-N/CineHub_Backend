@@ -47,6 +47,8 @@ const theaterOwnerAuthController: ITheaterOwnerAuthenticationController = new Th
 
 router.post('/googleauthlogin', theaterOwnerAuthController.googleAuthLogin.bind(theaterOwnerAuthController));
 
+router.get('/verifyToken', theaterOwnerAuthController.verifyTokenRequest.bind(theaterOwnerAuthController));
+
 router.post('/login', theaterOwnerAuthController.handleLoginRequest.bind(theaterOwnerAuthController));
 
 router.post('/register', theaterOwnerAuthController.handleRegisterRequest.bind(theaterOwnerAuthController));

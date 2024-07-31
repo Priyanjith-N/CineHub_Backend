@@ -19,6 +19,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 // errors
 import AuthenticationError from "../errors/authentication.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
+import JWTTokenError from "../errors/jwt.error";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -205,6 +206,22 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             await this.emailService.sendEmail(to, subject, text); // sending email with the verification code (OTP)
 
             await this.otpRepository.createOTP(email, otp); // saving otp in database
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async verifyToken(token: string | undefined): Promise<void | never> {
+        try {
+            if(!token) {
+                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'Distributer not authenticated' })
+            }
+
+            const decoded: IPayload = this.jwtService.verifyToken(token);
+
+            if(decoded.type !== 'Distributer') {
+                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+            }
         } catch (err: any) {
             throw err;
         }

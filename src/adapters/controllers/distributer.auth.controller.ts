@@ -111,4 +111,18 @@ export default class DistributerAuthenticationController implements IDistributer
             next(err);
         }
     }
+
+    async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
+        try {
+            const token: string | undefined = req.cookies.token;
+
+            await this.distributerAuthUseCase.verifyToken(token);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Distributer is authenticated'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

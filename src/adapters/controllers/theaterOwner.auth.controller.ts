@@ -110,4 +110,18 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             next(err);
         }
     }
+
+    async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
+        try {
+            const token: string | undefined = req.cookies.token;
+
+            await this.theaterOwnerAuthUseCase.verifyToken(token);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Theater Owner is authenticated'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }
