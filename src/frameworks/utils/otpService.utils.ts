@@ -12,6 +12,8 @@ export default class OTPService implements IOTPService {
                 const randomIndex = Math.floor(crypto.randomBytes(1)[0] * characters.length / 256);
                 OTP += characters[randomIndex];
             }
+            console.log('OTP is ', OTP);
+            
             return OTP;
         } catch (err: any) {
             throw err;

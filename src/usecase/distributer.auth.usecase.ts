@@ -40,7 +40,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
         this.googleAuthService = googleAuthService;
     }
 
-    async googleLoginUser(idToken: string | undefined): Promise<string | never> {
+    async googleLoginDistributer(idToken: string | undefined): Promise<string | never> {
         try {
             if(!idToken) {
                 throw new RequiredCredentialsNotGiven('GOOGLE_TOKEN_REQUIRE.');
@@ -55,7 +55,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(decodedToken.email);
 
             if(!distributerData) {
-                throw new RequiredCredentialsNotGiven('No user with that email, Create account now.');
+                throw new RequiredCredentialsNotGiven('No distributer with that email, Create account now.');
             }
 
             if(!distributerData.OTPVerificationStatus) {
@@ -81,7 +81,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
         }
     }
 
-    async authenticateUser(email: string | undefined, password: string | undefined): Promise<string | never> {
+    async authenticateDistributer(email: string | undefined, password: string | undefined): Promise<string | never> {
      try {
         if(!email || !password) {
             throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
@@ -154,7 +154,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
         }
     }
 
-    async OTPVerification(email: string | undefined, otp: string | undefined): Promise<string | never> {
+    async OTPVerification(email: string | undefined, otp: string | undefined): Promise<void | never> {
         try {
             if(!email) {
                 throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
@@ -172,16 +172,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
 
             await this.otpRepository.deleteOTPByEmail(email); // delete otp document used for verification
             
-            const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.makeDistributerVerified(email); // return the updated document if found or null;
-
-            const payload: IPayload = {
-                id: distributerData?.id,
-                type: 'Distributer'
-            }
-
-            const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
-
-            return authToken; // for authing user by cookie
+            await this.distributerAuthRepository.makeDistributerVerified(email);
         } catch (err: any) {
             throw err;
         }

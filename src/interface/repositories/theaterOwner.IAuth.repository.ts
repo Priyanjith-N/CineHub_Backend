@@ -7,5 +7,5 @@ export default interface ITheaterOwnerAuthRepository {
     getDataByEmail(email: string): Promise<ITheaterOwnerDocument | null | never>;
     getDataByPhoneNumber(phoneNumber: string): Promise<ITheaterOwnerDocument | null | never>;
     createTheaterOwner(theaterOwnerData: ITheaterOwnerRegisterCredentials): Promise<void | never>;
-    makeTheaterOwnerVerified(email: string): Promise<ITheaterOwnerDocument | null | never>;
+    makeTheaterOwnerVerified(email: string): Promise<void | never>;
 }

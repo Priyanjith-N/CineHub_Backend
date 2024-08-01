@@ -18,7 +18,7 @@ export default class DistributerAuthenticationController implements IDistributer
         try {
             const idToken: string | undefined = req.body.token;
 
-            const token: string = await this.distributerAuthUseCase.googleLoginUser(idToken);
+            const token: string = await this.distributerAuthUseCase.googleLoginDistributer(idToken);
 
             res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
@@ -38,7 +38,7 @@ export default class DistributerAuthenticationController implements IDistributer
             }: IDistributerLoginCredentials = req.body;
 
             // usecase for authenticateing distributer
-            const token: string = await this.distributerAuthUseCase.authenticateUser(email, password); // return token or throw an error
+            const token: string = await this.distributerAuthUseCase.authenticateDistributer(email, password); // return token or throw an error
 
             res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
 
@@ -68,7 +68,7 @@ export default class DistributerAuthenticationController implements IDistributer
             // use case for handling register request
             await this.distributerAuthUseCase.register(registerData);
 
-            res.cookie('distributerEmailToBeVerified', registerData.email); // Set http only cookie for user email to verify the otp
+            res.cookie('distributerEmailToBeVerified', registerData.email); // Set http only cookie for email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -84,10 +84,9 @@ export default class DistributerAuthenticationController implements IDistributer
             const otp: string | undefined = req.body.otp;
 
             // use case for handling otp verification request
-            const token: string = await this.distributerAuthUseCase.OTPVerification(email, otp);
+            await this.distributerAuthUseCase.OTPVerification(email, otp);
 
             res.cookie('distributerEmailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
-            res.cookie('token', token, { httpOnly: true }); // seting token as http only cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

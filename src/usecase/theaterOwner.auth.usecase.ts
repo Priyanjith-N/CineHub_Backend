@@ -153,7 +153,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
         }
     }
 
-    async OTPVerification(email: string | undefined, otp: string | undefined): Promise<string | never> {
+    async OTPVerification(email: string | undefined, otp: string | undefined): Promise<void | never> {
         try {
             if(!email) {
                 throw new AuthenticationError({message: 'Email is not provided.', statusCode: StatusCodes.NotFound, errorField: 'email'});
@@ -171,16 +171,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
 
             await this.otpRepository.deleteOTPByEmail(email); // delete otp document used for verification
             
-            const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.makeTheaterOwnerVerified(email); // return the updated document if found or null;
-
-            const payload: IPayload = {
-                id: theaterOwnerData?.id,
-                type: 'TheaterOwner'
-            }
-
-            const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
-
-            return authToken; // for authing user by cookie
+            await this.theaterOwnerAuthRepository.makeTheaterOwnerVerified(email);
         } catch (err: any) {
             throw err;
         }

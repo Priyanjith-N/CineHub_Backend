@@ -83,10 +83,9 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             const otp: string | undefined = req.body.otp;
 
             // use case for handling otp verification request
-            const token: string = await this.theaterOwnerAuthUseCase.OTPVerification(email, otp);
+            await this.theaterOwnerAuthUseCase.OTPVerification(email, otp);
 
             res.cookie('theaterOwnerEmailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
-            res.cookie('token', token, { httpOnly: true }); // seting token as http only cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

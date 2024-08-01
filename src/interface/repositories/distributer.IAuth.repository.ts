@@ -7,5 +7,5 @@ export default interface IDistributerAuthRepository {
     getDataByEmail(email: string): Promise<IDistributerDocument | null | never>;
     getDataByPhoneNumber(phoneNumber: string): Promise<IDistributerDocument | null | never>;
     createDistributer(distributerData: IDistributerRegisterCredentials): Promise<void | never>;
-    makeDistributerVerified(email: string): Promise<IDistributerDocument | null | never>;
+    makeDistributerVerified(email: string): Promise<void | never>;
 }

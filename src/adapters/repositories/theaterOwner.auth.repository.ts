@@ -46,9 +46,9 @@ export default class TheaterOwnerAuthRepository implements ITheaterOwnerAuthRepo
         }
     }
 
-    async makeTheaterOwnerVerified(email: string): Promise<ITheaterOwnerDocument | null | never> {
+    async makeTheaterOwnerVerified(email: string): Promise<void | never> {
         try {
-            return await this.theaterOwnerCollection.findOneAndUpdate({ email }, { $set: { OTPVerificationStatus: true } }, { new: true });    
+            await this.theaterOwnerCollection.updateOne({ email }, { $set: { OTPVerificationStatus: true } });    
         } catch (err: any) {
             throw err;
         }
