@@ -1,19 +1,16 @@
+// collections
+import Distributers from "../../frameworks/models/distributer.model";
+
 // interfaces
-import { IDistributerCollection, IDistributerDocument } from "../../interface/collections/IDistributer.collection";
-import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
+import { IDistributerDocument } from "../../interface/collections/IDistributer.collection";
 import { IDistributerRegisterCredentials } from "../../interface/controllers/distributer.IAuth.controller";
 import IDistributerAuthRepository from "../../interface/repositories/distributer.IAuth.repository";
 
 export default class DistributerAuthRepository implements IDistributerAuthRepository {
-    private distributerCollection: IDistributerCollection;
-
-    constructor(distributerCollection: IDistributerCollection) {
-        this.distributerCollection = distributerCollection;
-    }
 
     async getDataByEmail(email: string): Promise<IDistributerDocument | null | never> {
         try {
-            const distributerData: IDistributerDocument | null = await this.distributerCollection.findOne({ email });
+            const distributerData: IDistributerDocument | null = await Distributers.findOne({ email });
             return distributerData;
         } catch (err: any) {
             throw err;
@@ -22,7 +19,7 @@ export default class DistributerAuthRepository implements IDistributerAuthReposi
 
     async getDataByPhoneNumber(phoneNumber: string): Promise<IDistributerDocument | null | never> {
         try {
-            const distributerData: IDistributerDocument | null = await this.distributerCollection.findOne({phoneNumber});
+            const distributerData: IDistributerDocument | null = await Distributers.findOne({phoneNumber});
             return distributerData;
         } catch (err: any) {
             throw err;
@@ -31,7 +28,7 @@ export default class DistributerAuthRepository implements IDistributerAuthReposi
 
     async createDistributer(distributerData: IDistributerRegisterCredentials): Promise<void | never> {
         try {
-            const newDistributer: IDistributerDocument = new this.distributerCollection({
+            const newDistributer: IDistributerDocument = new Distributers({
                 name: distributerData.name,
                 email: distributerData.email,
                 phoneNumber: distributerData.phoneNumber,
@@ -49,7 +46,7 @@ export default class DistributerAuthRepository implements IDistributerAuthReposi
 
     async makeDistributerVerified(email: string): Promise<void | never> {
         try {
-            await this.distributerCollection.updateOne({ email }, { $set: { OTPVerificationStatus: true } });
+            await Distributers.updateOne({ email }, { $set: { OTPVerificationStatus: true } });
         } catch (err: any) {
             throw err;
         }

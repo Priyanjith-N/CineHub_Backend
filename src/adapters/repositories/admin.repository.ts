@@ -6,12 +6,13 @@ import TheaterOwners from "../../frameworks/models/theaterOwner.model";
 import Distributers from "../../frameworks/models/distributer.model";
 
 // interfaces
-import { IDistributerCollection, IDistributerDocument } from "../../interface/collections/IDistributer.collection";
-import { ITheaterOwnerCollection, ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
-import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
+import { IDistributerDocument } from "../../interface/collections/IDistributer.collection";
+import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
+import { IUserDocument } from "../../interface/collections/IUsers.collections";
 import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../interface/repositories/admin.repository.interface";
 
 export default class AdminRepository implements IAdminRepository {
+    
     async allUser(): Promise<IUserDocument[] | never> {
         try {
             return await Users.find({}, { password: 0 });

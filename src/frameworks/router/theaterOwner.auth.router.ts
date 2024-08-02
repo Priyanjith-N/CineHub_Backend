@@ -13,11 +13,6 @@ import JWTService from "../utils/jwtService.utils";
 import CloudinaryService from '../utils/cloudinaryService.utils';
 import { GoogleAuthService } from '../utils/googleAuthService.utils';
 
-// importing collections
-import TheaterOwners from '../models/theaterOwner.model';
-import OTPs from "../models/otp.model";
-
-
 // interfaces
 import { ITheaterOwnerAuthenticationController } from '../../interface/controllers/theaterOwner.IAuth.controller';
 import ITheaterOwnerAuthUseCase from '../../interface/usecase/theaterOwner.IAuth.usecase';
@@ -40,8 +35,8 @@ const jwtService: IJWTService = new JWTService();
 const cloudinaryService: ICloudinaryService = new CloudinaryService();
 const googleAuthService: IGoogleAuthService = new GoogleAuthService();
 
-const theaterOwnerAuthRepository: ITheaterOwnerAuthRepository = new TheaterOwnerAuthRepository(TheaterOwners);
-const otpRepository: IOTPRepository = new OTPRepository(OTPs);
+const theaterOwnerAuthRepository: ITheaterOwnerAuthRepository = new TheaterOwnerAuthRepository();
+const otpRepository: IOTPRepository = new OTPRepository();
 const theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase = new TheaterOwnerAuthUseCase(theaterOwnerAuthRepository, otpRepository, hashingService, otpService, emailService, jwtService, cloudinaryService, googleAuthService);
 const theaterOwnerAuthController: ITheaterOwnerAuthenticationController = new TheaterOwnerAuthenticationController(theaterOwnerAuthUseCase);
 

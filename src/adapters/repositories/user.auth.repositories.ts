@@ -1,19 +1,16 @@
+// collections
+import Users from "../../frameworks/models/user.model";
+
 // interfaces
 import IUserAuthRepository from "../../interface/repositories/user.IAuth.repositories";
 import { IUserRegisterCredentials } from "../../interface/controllers/user.IAuth.controller";
-import { IUserDocument, IUsersCollection } from "../../interface/collections/IUsers.collections";
-import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
+import { IUserDocument } from "../../interface/collections/IUsers.collections";
 
 export default class UserAuthRepository implements IUserAuthRepository {
-    private userCollection: IUsersCollection;
-    
-    constructor(userCollection: IUsersCollection) {
-        this.userCollection = userCollection;
-    }
 
     async getDataByEmail(email: string): Promise<IUserDocument | null | never> {
         try {
-            const userData: IUserDocument | null = await this.userCollection.findOne({email});
+            const userData: IUserDocument | null = await Users.findOne({email});
             return userData;
         } catch (err: any) {
             throw err;
@@ -22,7 +19,7 @@ export default class UserAuthRepository implements IUserAuthRepository {
 
     async getDataByPhoneNumber(phoneNumber: string): Promise<IUserDocument | null | never> {
         try {
-            const userData: IUserDocument | null = await this.userCollection.findOne({phoneNumber});
+            const userData: IUserDocument | null = await Users.findOne({phoneNumber});
             return userData;
         } catch (err: any) {
             throw err;
@@ -31,7 +28,7 @@ export default class UserAuthRepository implements IUserAuthRepository {
 
     async createUser(newUserData: IUserRegisterCredentials): Promise<void | never> {
         try {
-            const newUser: IUserDocument = new this.userCollection({
+            const newUser: IUserDocument = new Users({
                 name: newUserData.name,
                 email: newUserData.email,
                 phoneNumber: newUserData.phoneNumber,
@@ -46,7 +43,7 @@ export default class UserAuthRepository implements IUserAuthRepository {
 
     async makeUserVerified(email: string): Promise<void | never> {
         try {
-            await this.userCollection.updateOne({email}, {$set: {OTPVerification: true}});
+            await Users.updateOne({email}, {$set: {OTPVerification: true}});
         } catch (err: any) {
             throw err;
         }

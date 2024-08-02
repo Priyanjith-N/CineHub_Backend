@@ -13,10 +13,6 @@ import JWTService from "../utils/jwtService.utils";
 import CloudinaryService from "../utils/cloudinaryService.utils";
 import { GoogleAuthService } from "../utils/googleAuthService.utils";
 
-// importing collections
-import Distributers from "../models/distributer.model";
-import OTPs from "../models/otp.model";
-
 // interfaces
 import { IDistributerAuthenticationController } from "../../interface/controllers/distributer.IAuth.controller";
 import IDistributerAuthUseCase from "../../interface/usecase/distributer.IAuth.usecase";
@@ -39,8 +35,8 @@ const jwtService: IJWTService = new JWTService();
 const cloudinaryService: ICloudinaryService = new CloudinaryService();
 const googleAuthService: IGoogleAuthService = new GoogleAuthService();
 
-const distributerAuthRepository: IDistributerAuthRepository = new DistributerAuthRepository(Distributers);
-const otpRepository: IOTPRepository = new OTPRepository(OTPs);
+const distributerAuthRepository: IDistributerAuthRepository = new DistributerAuthRepository();
+const otpRepository: IOTPRepository = new OTPRepository();
 const distributerAuthUseCase: IDistributerAuthUseCase = new DistributerAuthUseCase(distributerAuthRepository, otpRepository, hashingService, otpService, emailService, jwtService, cloudinaryService, googleAuthService);
 const distributerAuthController: IDistributerAuthenticationController = new DistributerAuthenticationController(distributerAuthUseCase);
 

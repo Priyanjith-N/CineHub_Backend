@@ -1,19 +1,16 @@
+// collections
+import TheaterOwners from "../../frameworks/models/theaterOwner.model";
+
 // interfaces
-import { ITheaterOwnerCollection, ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
-import { IOTPCollection, IOTPDocument } from "../../interface/collections/IOTP.collections";
+import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
 import ITheaterOwnerAuthRepository from "../../interface/repositories/theaterOwner.IAuth.repository";
 import { ITheaterOwnerRegisterCredentials } from "../../interface/controllers/theaterOwner.IAuth.controller";
 
 export default class TheaterOwnerAuthRepository implements ITheaterOwnerAuthRepository {
-    private theaterOwnerCollection: ITheaterOwnerCollection;
-
-    constructor(theaterOwnerCollection: ITheaterOwnerCollection) {
-        this.theaterOwnerCollection = theaterOwnerCollection;
-    }
 
     async getDataByEmail(email: string): Promise<ITheaterOwnerDocument | null | never> {
         try {
-            const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerCollection.findOne({ email });
+            const theaterOwnerData: ITheaterOwnerDocument | null = await TheaterOwners.findOne({ email });
             return theaterOwnerData;
         } catch (err: any) {
             throw err;
@@ -22,7 +19,7 @@ export default class TheaterOwnerAuthRepository implements ITheaterOwnerAuthRepo
 
     async getDataByPhoneNumber(phoneNumber: string): Promise<ITheaterOwnerDocument | null | never> {
         try {
-            const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerCollection.findOne({phoneNumber});
+            const theaterOwnerData: ITheaterOwnerDocument | null = await TheaterOwners.findOne({phoneNumber});
             return theaterOwnerData;
         } catch (err: any) {
             throw err;
@@ -31,7 +28,7 @@ export default class TheaterOwnerAuthRepository implements ITheaterOwnerAuthRepo
 
     async createTheaterOwner(theaterOwnerData: ITheaterOwnerRegisterCredentials): Promise<void | never> {
         try {
-            const newTheaterOwner: ITheaterOwnerDocument = new this.theaterOwnerCollection({
+            const newTheaterOwner: ITheaterOwnerDocument = new TheaterOwners({
                 name: theaterOwnerData.name,
                 email: theaterOwnerData.email,
                 phoneNumber: theaterOwnerData.phoneNumber,
@@ -48,7 +45,7 @@ export default class TheaterOwnerAuthRepository implements ITheaterOwnerAuthRepo
 
     async makeTheaterOwnerVerified(email: string): Promise<void | never> {
         try {
-            await this.theaterOwnerCollection.updateOne({ email }, { $set: { OTPVerificationStatus: true } });    
+            await TheaterOwners.updateOne({ email }, { $set: { OTPVerificationStatus: true } });    
         } catch (err: any) {
             throw err;
         }

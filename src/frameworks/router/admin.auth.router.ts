@@ -4,9 +4,6 @@ import AdminAuthenticationController from '../../adapters/controllers/admin.auth
 import AdminAuthUseCase from '../../usecase/admin.auth.usecase';
 import AdminAuthRepository from '../../adapters/repositories/admin.auth.repository';
 
-//import collections
-import Admins from '../models/admin.model';
-
 // import utils
 import HashingService from '../utils/hashingService.utils';
 import JWTService from '../utils/jwtService.utils';
@@ -27,7 +24,7 @@ const hashingService: IHashingService = new HashingService();
 const jwtService: IJWTService = new JWTService();
 const emailService: IEmailService = new EmailService();
 
-const adminAuthRepository: IAdminAuthRepository = new AdminAuthRepository(Admins);
+const adminAuthRepository: IAdminAuthRepository = new AdminAuthRepository();
 const adminAuthUseCase: IAdminAuthUseCase = new AdminAuthUseCase(adminAuthRepository, hashingService, emailService, jwtService);
 const adminAuthenticationController:IAdminAuthenticationController = new AdminAuthenticationController(adminAuthUseCase);
 

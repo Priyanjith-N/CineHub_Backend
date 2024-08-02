@@ -11,10 +11,6 @@ import EmailService from '../utils/emailService.utils';
 import OTPService from '../utils/otpService.utils';
 import { GoogleAuthService } from '../utils/googleAuthService.utils';
 
-// importing collections
-import Users from '../models/user.model';
-import OTPs from '../models/otp.model';
-
 // interfaces
 import { IUserAuthenticationController } from '../../interface/controllers/user.IAuth.controller';
 import IHashingService from '../../interface/utils/IHashingService';
@@ -36,8 +32,8 @@ const emailService: IEmailService = new EmailService();
 const otpService: IOTPService = new OTPService();
 const googleAuthService: IGoogleAuthService = new GoogleAuthService();
 
-const userAuthRepository: IUserAuthRepository = new UserAuthRepository(Users);
-const otpRepository: IOTPRepository = new OTPRepository(OTPs);
+const userAuthRepository: IUserAuthRepository = new UserAuthRepository();
+const otpRepository: IOTPRepository = new OTPRepository();
 const userAuthUseCase: IUserAuthUseCase = new UserAuthUseCase(userAuthRepository, otpRepository, hashingService, jwtService, emailService, otpService, googleAuthService);
 const userAuthController: IUserAuthenticationController = new UserAuthenticationController(userAuthUseCase);
 
