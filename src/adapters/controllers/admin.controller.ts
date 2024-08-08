@@ -9,6 +9,7 @@ import { INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../inter
 import { StatusCodes } from "../../enums/statusCode.enum";
 import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
 import { IDistributerDocument } from "../../interface/collections/IDistributer.collection";
+import IMovie, { IMovieData } from "../../entity/movie.entity";
 
 export default class AdminController implements IAdminController {
     private adminUseCase: IAdminUseCase;
@@ -173,6 +174,34 @@ export default class AdminController implements IAdminController {
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfull',
                 data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async addMovieRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const movieData: IMovieData = {
+                name: req.body.name,
+                about: req.body.about,
+                language: req.body.language,
+                duration: req.body.duration,
+                coverPhoto: req.body.coverPhoto,
+                bannerPhoto: req.body.bannerPhoto,
+                trailer: req.body.trailer,
+                category: req.body.category,
+                type: req.body.type,
+                cast: req.body.cast,
+                crew: req.body.crew,
+            }
+            
+
+            // use case for adding movie to list
+            await this.adminUseCase.addMovie(movieData);
+
+            res.status(StatusCodes.Success).json({
+                message: "Movie Added"
             });
         } catch (err: any) {
             next(err);

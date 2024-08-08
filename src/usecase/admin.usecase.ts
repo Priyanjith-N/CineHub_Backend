@@ -10,14 +10,20 @@ import IEmailService from "../interface/utils/IEmailService";
 
 // errors
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
+import IMovie, { IMovieData } from "../entity/movie.entity";
+import { StatusCodes } from "../enums/statusCode.enum";
+import AuthenticationError from "../errors/authentication.error";
+import ICloudinaryService from "../interface/utils/ICloudinaryService";
 
 export default class AdminUseCase implements IAdminUseCase {
     private adminRepository: IAdminRepository;
     private emailService: IEmailService;
+    private cloudinaryService: ICloudinaryService;
 
-    constructor(adminRepository: IAdminRepository, emailService: IEmailService) {
+    constructor(adminRepository: IAdminRepository, emailService: IEmailService, cloudinaryService: ICloudinaryService) {
         this.adminRepository = adminRepository;
         this.emailService = emailService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     async getAllUsersData(): Promise<IUserDocument[] | never> {
@@ -165,6 +171,44 @@ export default class AdminUseCase implements IAdminUseCase {
             }
 
             return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addMovie(movieData: IMovieData): Promise<void | never> {
+        try {
+            if(!movieData.about || !movieData.bannerPhoto || !movieData.coverPhoto || !movieData.trailer || !movieData.name || !movieData.cast || !movieData.crew || !movieData.duration || !movieData.duration.hours || !movieData.duration.minutes || !movieData.language || !movieData.language.length || !movieData.category || !movieData.category.length || !movieData.type || movieData.duration.hours > 5 || movieData.duration.minutes > 60 || movieData.duration.minutes < 0 || movieData.duration.hours < 0 || !movieData.cast.length || !movieData.crew.length) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const isMovieExists: IMovie | null = await this.adminRepository.getMovieByName(movieData.name);
+
+            if(isMovieExists) {
+                throw new AuthenticationError({message: 'This Movie already exist.', statusCode: StatusCodes.BadRequest, errorField: 'name'});
+            }
+
+            movieData.bannerPhoto = await this.cloudinaryService.uploadImage(movieData.bannerPhoto);
+
+            movieData.coverPhoto = await this.cloudinaryService.uploadImage(movieData.coverPhoto);
+
+            for(let i = 0; i < movieData.cast.length; i++) {
+                const each = movieData.cast[i];
+
+                each.image = await this.cloudinaryService.uploadImage(each.image);
+
+                movieData.cast[i] = each;
+            }
+
+            for(let i = 0; i < movieData.crew.length; i++) {
+                const each = movieData.crew[i];
+
+                each.image = await this.cloudinaryService.uploadImage(each.image);
+
+                movieData.crew[i] = each;
+            }
+
+            await this.adminRepository.saveMovie(movieData);
         } catch (err: any) {
             throw err;
         }

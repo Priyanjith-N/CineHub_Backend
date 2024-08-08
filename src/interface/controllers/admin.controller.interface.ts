@@ -12,4 +12,5 @@ export interface IAdminController {
     changeDocumentVerificationStatusDistributer(req: Request, res: Response, next: NextFunction): Promise<void>;
     getTheaterOwnerData(req: Request, res: Response, next: NextFunction): Promise<void>;
     getDistributerData(req: Request, res: Response, next: NextFunction): Promise<void>;
+    addMovieRequest(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

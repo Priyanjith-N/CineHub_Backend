@@ -4,12 +4,14 @@ import mongoose from "mongoose";
 import Users from "../../frameworks/models/user.model";
 import TheaterOwners from "../../frameworks/models/theaterOwner.model";
 import Distributers from "../../frameworks/models/distributer.model";
+import Movies from "../../frameworks/models/movie.model";
 
 // interfaces
 import { IDistributerDocument } from "../../interface/collections/IDistributer.collection";
 import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
 import { IUserDocument } from "../../interface/collections/IUsers.collections";
 import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../interface/repositories/admin.repository.interface";
+import IMovie, { IMovieData } from "../../entity/movie.entity";
 
 export default class AdminRepository implements IAdminRepository {
     
@@ -184,6 +186,36 @@ export default class AdminRepository implements IAdminRepository {
             );
 
             return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getMovieByName(name: string): Promise<IMovie | null | never> {
+        try {
+            return await Movies.findOne({ name: { $regex : new RegExp(name, "i") } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async saveMovie(movieData: IMovieData): Promise<void | never> {
+        try {
+            const newMovie = new Movies({
+                name: movieData.name,
+                about: movieData.about,
+                language: movieData.language,
+                duration: movieData.duration,
+                coverPhoto: movieData.coverPhoto,
+                bannerPhoto: movieData.bannerPhoto,
+                trailer: movieData.trailer,
+                category: movieData.category,
+                type: movieData.type,
+                cast: movieData.cast,
+                crew: movieData.crew
+            });
+
+            await newMovie.save();
         } catch (err: any) {
             throw err;
         }

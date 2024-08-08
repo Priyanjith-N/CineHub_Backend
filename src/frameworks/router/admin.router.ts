@@ -9,20 +9,23 @@ import JWTService from '../utils/jwtService.utils';
 import EmailService from '../utils/emailService.utils';
 import IJWTService from '../../interface/utils/IJWTService';
 import IEmailService from '../../interface/utils/IEmailService';
+import CloudinaryService from '../utils/cloudinaryService.utils';
+
+// interfaces
 import { IAdminRepository } from '../../interface/repositories/admin.repository.interface';
 import { IAdminUseCase } from '../../interface/usecase/admin.usecase.interface';
 import { IAdminController } from '../../interface/controllers/admin.controller.interface';
-
-// interfaces
+import ICloudinaryService from '../../interface/utils/ICloudinaryService';
 
 const router: Router = express.Router();
 
 // services
 const jwtService: IJWTService = new JWTService();
 const emailService: IEmailService = new EmailService();
+const cloudinaryService: ICloudinaryService = new CloudinaryService();
 
 const adminRepository: IAdminRepository = new AdminRepository();
-const adminUseCase: IAdminUseCase = new AdminUseCase(adminRepository, emailService);
+const adminUseCase: IAdminUseCase = new AdminUseCase(adminRepository, emailService, cloudinaryService);
 const adminController: IAdminController = new AdminController(adminUseCase);
 
 // return all users data as response
@@ -50,5 +53,8 @@ router.patch('/distributersVerifyDocument/:id', adminController.changeDocumentVe
 
 // geting all data of new accounts register by theater owners and distributers for document verification
 router.get('/getAllDoumentVerificationRequests', adminController.getAllDocumentVerificationRequest.bind(adminController));
+
+// movie management api's
+router.post('/addmovie', adminController.addMovieRequest.bind(adminController));
 
 export default router;

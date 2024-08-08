@@ -1,4 +1,5 @@
 // interfaces
+import IMovie, { IMovieData } from "../../entity/movie.entity";
 import { IDistributerDocument } from "../collections/IDistributer.collection";
 import { ITheaterOwnerDocument } from "../collections/ITheaterOwner.collection";
 import { IUserDocument } from "../collections/IUsers.collections";
@@ -15,6 +16,8 @@ export interface IAdminRepository {
     changeDocumentVerificationStatusDistributer(id: string, status: string): Promise<string | undefined | never>;
     getTheaterOwner(id: string): Promise<INotVerifiedTheaterOwners | undefined | never>
     getDistributer(id: string): Promise<INotVerifiedDistributers | undefined | never>;
+    getMovieByName(name: string): Promise<IMovie | null | never>;
+    saveMovie(movieData: IMovieData): Promise<void | never>
 }
 
 export interface INotVerifiedTheaterOwners {
