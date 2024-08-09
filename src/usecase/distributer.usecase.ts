@@ -35,4 +35,16 @@ export default class DistributerUseCase implements IDistributerUseCase {
             throw err;
         }
     }
+
+    async getDistributedMovies(distributerId: string | undefined): Promise<IMovie[] | never> {
+        try {
+            if(!distributerId) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            return await this.distributerRepository.getDistibutedMovies(distributerId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

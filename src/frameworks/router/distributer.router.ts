@@ -32,4 +32,6 @@ router.get('/getallavailablemovies', distributerController.getAllAvailableMovies
 
 router.patch('/distributemovie/:id', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.distributeMovie.bind(distributerController));
 
+router.get('/getmymovies', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.getMyMovies.bind(distributerController));
+
 export default router;

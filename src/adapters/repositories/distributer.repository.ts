@@ -29,4 +29,12 @@ export default class DistributerRepository implements IDistributerRepository {
             throw err;
         }
     }
+
+    async getDistibutedMovies(distributerId: string): Promise<IMovie[] | never> {
+        try {
+            return await Movies.find({ distributerId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

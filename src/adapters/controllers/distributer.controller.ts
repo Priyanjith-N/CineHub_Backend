@@ -45,4 +45,19 @@ export default class DistributerController implements IDistributerController {
             next(err);
         }
     }
+
+    async getMyMovies(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const distributerId: string | undefined = req.id;
+
+            const data: IMovie[] = await this.distributerUseCase.getDistributedMovies(distributerId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }
