@@ -220,4 +220,20 @@ export default class AdminRepository implements IAdminRepository {
             throw err;
         }
     }
+
+    async getAllMovies(): Promise<IMovie[] | never> {
+        try {
+            return await Movies.find();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async makeMovieAsListedOrUnlisted(id: string, status: boolean): Promise<void | never> {
+        try {
+            await Movies.updateOne({ _id: id }, { $set: { isListed: status } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

@@ -14,6 +14,7 @@ export default interface IMovie {
     crew: IMovieWorkerDetails[];
     isTakenByDistributer: boolean;
     distributerId: string;
+    isListed: boolean;
 }
 
 export interface IMovieData {

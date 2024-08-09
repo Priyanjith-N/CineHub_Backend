@@ -18,4 +18,6 @@ export interface IAdminUseCase {
     getTheaterOwner(id: string | undefined): Promise<INotVerifiedTheaterOwners | never>;
     getDistributer(id: string | undefined): Promise<INotVerifiedDistributers | never>;
     addMovie(movieData: IMovieData): Promise<void | never>;
+    getAllMovies(): Promise<IMovie[] | never>;
+    listOrUnlistMovies(id: string | undefined, status: boolean | undefined): Promise<void | never>;
 }

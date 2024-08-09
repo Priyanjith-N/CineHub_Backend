@@ -55,6 +55,10 @@ router.patch('/distributersVerifyDocument/:id', adminController.changeDocumentVe
 router.get('/getAllDoumentVerificationRequests', adminController.getAllDocumentVerificationRequest.bind(adminController));
 
 // movie management api's
+router.get('/movie', adminController.getAllMovies.bind(adminController));
+
+router.patch('/listorunlist/:id', adminController.listOrUnlistMovies.bind(adminController));
+
 router.post('/addmovie', adminController.addMovieRequest.bind(adminController));
 
 export default router;

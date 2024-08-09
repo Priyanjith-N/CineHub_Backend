@@ -70,6 +70,11 @@ const movieSchema: Schema = new Schema<IMovie>({
         type: String,
         required: false,
         default: ''
+    },
+    isListed: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 });
 

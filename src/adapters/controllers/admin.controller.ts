@@ -207,4 +207,32 @@ export default class AdminController implements IAdminController {
             next(err);
         }
     }
+
+    async getAllMovies(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const movies: IMovie[] = await this.adminUseCase.getAllMovies();
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data: movies
+            });
+        } catch (err: any) {
+           next(err); 
+        }
+    }
+
+    async listOrUnlistMovies(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const id: string | undefined = req.params.id;
+            const status: boolean | undefined = req.body.isListed;
+
+            await this.adminUseCase.listOrUnlistMovies(id, status);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Sucessfull',
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

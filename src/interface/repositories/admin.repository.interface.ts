@@ -17,7 +17,9 @@ export interface IAdminRepository {
     getTheaterOwner(id: string): Promise<INotVerifiedTheaterOwners | undefined | never>
     getDistributer(id: string): Promise<INotVerifiedDistributers | undefined | never>;
     getMovieByName(name: string): Promise<IMovie | null | never>;
-    saveMovie(movieData: IMovieData): Promise<void | never>
+    saveMovie(movieData: IMovieData): Promise<void | never>;
+    getAllMovies(): Promise<IMovie[] | never>;
+    makeMovieAsListedOrUnlisted(id: string, status: boolean): Promise<void | never>;
 }
 
 export interface INotVerifiedTheaterOwners {

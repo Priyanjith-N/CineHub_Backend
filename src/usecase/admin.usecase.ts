@@ -213,4 +213,26 @@ export default class AdminUseCase implements IAdminUseCase {
             throw err;
         }
     }
+
+    async getAllMovies(): Promise<IMovie[] | never> {
+        try {
+            const movies: IMovie[] = await this.adminRepository.getAllMovies();
+
+            return movies;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async listOrUnlistMovies(id: string | undefined, status: boolean | undefined): Promise<void | never> {
+        try {
+            if(!id || typeof status !== "boolean" || !isObjectIdOrHexString(id) ){
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            await this.adminRepository.makeMovieAsListedOrUnlisted(id, status);
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }
