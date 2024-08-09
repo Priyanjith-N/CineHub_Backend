@@ -6,4 +6,5 @@ export default interface IDistributerRepository {
     isDistributed(id: string): Promise<IMovie | null | never>;
     distributeMovie(distributerId: string, movieId: string, releaseDate: Date, profitSharingPerTicket: number): Promise<void | never>;
     getDistibutedMovies(distributerId: string): Promise<IMovie[] | never>;
+    editProfitSharingOfDistributedMovie(distributerId: string, movieId: string, releaseDate: Date, profitSharingPerTicket: number): Promise<void | never>;
 }

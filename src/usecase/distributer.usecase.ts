@@ -47,4 +47,16 @@ export default class DistributerUseCase implements IDistributerUseCase {
             throw err;
         }
     }
+
+    async editProfitSharingOfDistributedMovie(distributerId: string | undefined, movieId: string | undefined, releaseDate:  Date | undefined, profitSharingPerTicket: number | undefined): Promise<void | never> {
+        try {
+            if(!distributerId || !movieId || !isObjectIdOrHexString(movieId) || !releaseDate || !profitSharingPerTicket || profitSharingPerTicket < 0 || profitSharingPerTicket > 95) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            await this.distributerRepository.editProfitSharingOfDistributedMovie(distributerId, movieId, releaseDate, profitSharingPerTicket);
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

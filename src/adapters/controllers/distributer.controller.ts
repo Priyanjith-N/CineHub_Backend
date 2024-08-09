@@ -60,4 +60,21 @@ export default class DistributerController implements IDistributerController {
             next(err);
         }
     }
+
+    async editProfitSharingOfDistributedMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const distributerId: string | undefined = req.id;
+            const movieId: string | undefined = req.params.id;
+            const releaseDate: Date | undefined = req.body.releaseDate;
+            const profitSharingPerTicket: number | undefined = req.body.profitSharingPerTicket;
+
+            await this.distributerUseCase.editProfitSharingOfDistributedMovie(distributerId, movieId, releaseDate, profitSharingPerTicket);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Successfully updated.'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

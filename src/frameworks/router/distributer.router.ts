@@ -34,4 +34,6 @@ router.patch('/distributemovie/:id', authMiddleware.isAuthenticate.bind(authMidd
 
 router.get('/getmymovies', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.getMyMovies.bind(distributerController));
 
+router.patch('/editprofitsharingofdistributedmovie/:id', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.editProfitSharingOfDistributedMovie.bind(distributerController));
+
 export default router;

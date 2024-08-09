@@ -37,4 +37,12 @@ export default class DistributerRepository implements IDistributerRepository {
             throw err;
         }
     }
+
+    async editProfitSharingOfDistributedMovie(distributerId: string, movieId: string, releaseDate: Date, profitSharingPerTicket: number): Promise<void | never> {
+        try {
+            await Movies.updateOne({ _id: movieId, distributerId }, { $set: { releaseDate, profitSharingPerTicket } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

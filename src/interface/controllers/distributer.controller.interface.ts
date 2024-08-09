@@ -7,4 +7,5 @@ export default interface IDistributerController {
     getAllAvailableMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
     distributeMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getMyMovies(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    editProfitSharingOfDistributedMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
