@@ -13,7 +13,8 @@ export default interface IMovie {
     cast: IMovieWorkerDetails[];
     crew: IMovieWorkerDetails[];
     isTakenByDistributer: boolean;
-    distributerId: string;
+    distributerId?: string;
+    profitSharingPerTicket: number;
     isListed: boolean;
 }
 

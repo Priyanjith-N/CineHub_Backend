@@ -28,7 +28,7 @@ const movieSchema: Schema = new Schema<IMovie>({
         minutes: { type: Number, required: true }
     },
     releaseDate: {
-        type: String,
+        type: Date,
         required: false,
     },
     category: [
@@ -67,9 +67,13 @@ const movieSchema: Schema = new Schema<IMovie>({
         default: false
     },
     distributerId: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: false,
-        default: ''
+    },
+    profitSharingPerTicket: {
+        type: Number,
+        required: true,
+        default: 0
     },
     isListed: {
         type: Boolean,
