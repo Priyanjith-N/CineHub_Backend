@@ -44,6 +44,11 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
         default: "Pending",
         required: true
     },
+    distributedMoviesList: [
+        {
+            type: Schema.Types.ObjectId
+        }
+    ],
     licenceUpdateDocument: {
         type: String,
         required: false

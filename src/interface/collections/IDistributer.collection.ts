@@ -11,6 +11,7 @@ export interface IDistributerDocument extends Document {
     idProofImage: string[];
     OTPVerificationStatus: boolean;
     documentVerificationStatus: string;
+    distributedMoviesList: string[],
     licenceUpdateDocument: string | undefined | null
     licenceUpdateVerificationStatus: boolean;
     idProofUpdateVerificationStatus: boolean;
