@@ -30,4 +30,6 @@ const theaterOwnerController: ITheaterOwnerController = new TheaterOwnerControll
 
 router.get('/getdistributerlist', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getDistributerList.bind(theaterOwnerController));
 
+router.get('/getmovielist/:distributerId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getMovieListOfDistributer.bind(theaterOwnerController));
+
 export default router;
