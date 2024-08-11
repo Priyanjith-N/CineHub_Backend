@@ -21,6 +21,7 @@ import distributerRouter from './router/distributer.router';
 
 // importing theater owner router
 import theaterOwnerAuthRouter from './router/theaterOwner.auth.router';
+import theaterOwnerRouter from './router/theaterOwner.router';
 
 //importing user router
 import userAuthRouter from './router/user.auth.router';
@@ -66,6 +67,9 @@ app.use('/admin', adminRouter);
 
 // distributerRoutes
 app.use('/distributer', distributerRouter);
+
+// distributerRoutes
+app.use('/theaterOwner', theaterOwnerRouter);
 
 
 // error middleware for handling errors
