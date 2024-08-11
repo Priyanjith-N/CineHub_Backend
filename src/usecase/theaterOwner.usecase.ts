@@ -86,4 +86,12 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             throw err;
         }
     }
+
+    async getAllTheaters(theaterOwnerId: string): Promise<ITheater[] | never> {
+        try {
+            return await this.theaterOwnerRepository.getTheatersByOwnerId(theaterOwnerId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

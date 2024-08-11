@@ -6,6 +6,7 @@ import ITheaterOwnerUseCase from "../../interface/usecase/theaterOwner.usecase";
 import { IDistributerList } from "../../entity/distributer.entity";
 import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
+import ITheater from "../../entity/theater.entity";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -54,6 +55,21 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
 
             res.status(StatusCodes.Success).json({
                 message: "Successfully Theater Added."
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getAllTheaters(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterOwnerId: string = req.id!;
+
+            const data: ITheater[] = await this.theaterOwnerUseCase.getAllTheaters(theaterOwnerId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
             });
         } catch (err: any) {
             next(err);

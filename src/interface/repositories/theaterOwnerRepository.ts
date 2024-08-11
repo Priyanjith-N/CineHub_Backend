@@ -10,4 +10,5 @@ export default interface ITheaterOwnerRepository {
     getMovieListOfDistributer(distributerId: string): Promise<IMovie[] | never>;
     getTheaterByName(name: string): Promise<ITheater | null | never>;
     saveTheater(data: IAddTheaterCredentials): Promise<void | never>;
+    getTheatersByOwnerId(theaterOwnerId: string): Promise<ITheater[] | never>;
 }

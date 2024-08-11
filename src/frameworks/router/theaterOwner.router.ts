@@ -37,4 +37,6 @@ router.get('/getmovielist/:distributerId', authMiddleware.isAuthenticate.bind(au
 
 router.post('/addtheater', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addTheater.bind(theaterOwnerController));
 
+router.get('/theater', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getAllTheaters.bind(theaterOwnerController));
+
 export default router;

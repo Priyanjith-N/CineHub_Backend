@@ -57,4 +57,12 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             throw err;
         }
     }
+
+    async getTheatersByOwnerId(theaterOwnerId: string): Promise<ITheater[] | never> {
+        try {
+            return await Theaters.find({ ownerId: theaterOwnerId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }
