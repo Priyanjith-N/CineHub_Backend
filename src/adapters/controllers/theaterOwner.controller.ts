@@ -41,4 +41,22 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             next(err);
         }
     }
+
+    async addTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterOwnerId: string | undefined = req.id;
+
+            const name: string | undefined = req.body.name;
+            const images: string[] | undefined = req.body.images;
+            const licence: string | undefined = req.body.licence;
+
+            await this.theaterOwnerUseCase.addTheater(theaterOwnerId, name, images, licence);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfully Theater Added."
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

@@ -7,13 +7,19 @@ import ITheaterOwnerUseCase from "../interface/usecase/theaterOwner.usecase";
 // error
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import IMovie from "../entity/movie.entity";
-import { IGetMovieListOfDistributerData } from "../interface/controllers/theaterOwner.controller";
+import { IAddTheaterCredentials, IGetMovieListOfDistributerData } from "../interface/controllers/theaterOwner.controller";
+import ICloudinaryService from "../interface/utils/ICloudinaryService";
+import ITheater from "../entity/theater.entity";
+import AuthenticationError from "../errors/authentication.error";
+import { StatusCodes } from "../enums/statusCode.enum";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
+    private cloudinaryService: ICloudinaryService;
 
-    constructor(theaterOwnerRepository: ITheaterOwnerRepository) {
+    constructor(theaterOwnerRepository: ITheaterOwnerRepository, cloudinaryService: ICloudinaryService) {
         this.theaterOwnerRepository = theaterOwnerRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -44,6 +50,38 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             }
 
             return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addTheater(theaterOwnerId: string | undefined, name: string | undefined, images: string[] | undefined, licence: string | undefined): Promise<void | never> {
+        try {
+            if(!theaterOwnerId || !name || !images || !licence || !images.length) {
+                throw new RequiredCredentialsNotGiven('Distributer NOT FOUND.');
+            }
+
+            const isTheaterExist: ITheater | null = await this.theaterOwnerRepository.getTheaterByName(name);
+
+            if(isTheaterExist) {
+                throw new AuthenticationError({message: 'This name already taken.', statusCode: StatusCodes.BadRequest, errorField: 'name'});
+            }
+
+            const theaterCredentials: IAddTheaterCredentials = {
+                theaterOwnerId,
+                name,
+                images,
+                licence
+            }
+
+            theaterCredentials.licence = await this.cloudinaryService.uploadImage(theaterCredentials.licence);
+
+            for(let i = 0; i<theaterCredentials.images.length;i++) {
+                const url: string = await this.cloudinaryService.uploadImage(theaterCredentials.images[i]);
+                theaterCredentials.images[i] = url;
+            }
+
+            await this.theaterOwnerRepository.saveTheater(theaterCredentials);
         } catch (err: any) {
             throw err;
         }

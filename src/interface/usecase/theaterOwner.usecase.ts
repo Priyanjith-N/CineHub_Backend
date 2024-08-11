@@ -5,4 +5,5 @@ import { IGetMovieListOfDistributerData } from "../controllers/theaterOwner.cont
 export default interface ITheaterOwnerUseCase {
     getDistributerList(): Promise<IDistributerList[] | never>;
     getMovieListOfDistributer(distributerId: string | undefined): Promise<IGetMovieListOfDistributerData | never>;
+    addTheater(theaterOwnerId: string | undefined, name: string | undefined, images: string[] | undefined, licence: string | undefined): Promise<void | never>;
 }

@@ -6,9 +6,17 @@ import IMovie from "../../entity/movie.entity";
 export default interface ITheaterOwnerController {
     getDistributerList(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getMovieListOfDistributer(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    addTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IGetMovieListOfDistributerData {
     distributer: IDistributerList,
     movieList: IMovie[];
+}
+
+export interface IAddTheaterCredentials {
+    name: string;
+    theaterOwnerId: string;
+    images: string[];
+    licence: string;
 }
