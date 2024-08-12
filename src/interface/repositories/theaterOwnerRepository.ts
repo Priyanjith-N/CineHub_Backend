@@ -16,4 +16,5 @@ export default interface ITheaterOwnerRepository {
     getTheaterById(_id: string): Promise<ITheater | null | never>;
     getScreenByName(name: string, theaterId: string): Promise<IScreen | null | never>;
     saveScreen(data: IScreenData): Promise<void | never>;
+    getAllScreens(theaterId: string): Promise<IScreen[] | never>;
 }

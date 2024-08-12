@@ -96,6 +96,15 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             });
 
             await newScreen.save();
+            await Theaters.updateOne({ _id: data.theaterId }, { $inc: { numberOfScreen: 1 } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllScreens(theaterId: string): Promise<IScreen[] | never> {
+        try {
+            return await Screens.find({ theaterId });
         } catch (err: any) {
             throw err;
         }

@@ -7,6 +7,7 @@ import { IDistributerList } from "../../entity/distributer.entity";
 import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
 import ITheater from "../../entity/theater.entity";
+import IScreen from "../../entity/screen.entity";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -96,6 +97,21 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             });
         } catch (err: any) {
             throw err;
+        }
+    }
+
+    async getScreens(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterId: string | undefined = req.params.theaterId;
+
+            const data: IScreen[] = await this.theaterOwnerUseCase.getAllScreens(theaterId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            next(err);
         }
     }
 }

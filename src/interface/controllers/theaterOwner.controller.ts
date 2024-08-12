@@ -9,6 +9,7 @@ export default interface ITheaterOwnerController {
     addTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllTheaters(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     addScreen(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getScreens(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IGetMovieListOfDistributerData {

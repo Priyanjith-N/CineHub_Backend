@@ -5,11 +5,16 @@ export default interface IScreen {
     name: string;
     capacity: number;
     seatCategory: ISeatCategory[];
-    seatLayout: (ISeatCategory | null)[];
+    seatLayout: (ISeatLayout | null)[][];
     theaterId: string | ObjectId;
 }
 
 export interface ISeatCategory {
+    category: string;
+    rowNumbers: number[];
+}
+
+export interface ISeatCategoryPattern {
     category: string;
     price: number;
 }

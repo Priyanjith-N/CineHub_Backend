@@ -41,4 +41,6 @@ router.get('/theater', authMiddleware.isAuthenticate.bind(authMiddleware), theat
 
 router.post('/addScreen/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addScreen.bind(theaterOwnerController));
 
+router.get('/screens/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getScreens.bind(theaterOwnerController));
+
 export default router;

@@ -12,7 +12,7 @@ import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import ITheater from "../entity/theater.entity";
 import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
-import IScreen, { ISeatCategory, ISeatLayout } from "../entity/screen.entity";
+import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -114,34 +114,48 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
                 throw new AuthenticationError({message: 'This Screen name already exist.', statusCode: StatusCodes.BadRequest, errorField: 'name'});
             }
 
-            const seatCategory: ISeatCategory[] = data.seatCategory;
-            const seatLayout: (ISeatLayout | null)[] = [];
+            const seatLayout: (ISeatLayout | null)[][] = [];
 
             let rowNumber = 0;
+            const seatCategoryWithRowNumber: Record<string, number[]> = {}
             
             for(let i = 0; i < data.seatLayout.length ; i++) {
+                seatLayout.push([]);
                 const row: boolean[] = data.seatLayout[i];
-                const seatCategory: ISeatCategory | undefined | null = data.seatCategoryPattern[i];
+                const seatCategory: ISeatCategoryPattern | undefined | null = data.seatCategoryPattern[i];
 
-                if(!seatCategory) continue;
+                if(seatCategory){
+                    rowNumber++;
+                    if(seatCategoryWithRowNumber[seatCategory.category]) {
+                        seatCategoryWithRowNumber[seatCategory.category].push(rowNumber);
+                    }else{
+                        seatCategoryWithRowNumber[seatCategory.category] = [rowNumber];
+                    }
+                }
 
-                rowNumber++;
                 let colNumber = 1;
                 for(const seat of row) {
                     if(seat) {
                         const seatObj: ISeatLayout = {
                             name: `${String.fromCharCode(64 + rowNumber)}${colNumber}`,
-                            category: seatCategory.category,
-                            price: seatCategory.price
+                            category: seatCategory!.category,
+                            price: seatCategory!.price
                         }
 
-                        seatLayout.push(seatObj);
+                        seatLayout[i].push(seatObj);
                         colNumber++;
                     }else{
-                        seatLayout.push(null);
+                        seatLayout[i].push(null);
                     }
                 }
             }
+
+            const seatCategory: ISeatCategory[] = Object.entries(seatCategoryWithRowNumber).map((val) => {
+                return {
+                    category: val[0],
+                    rowNumbers: val[1]
+                }
+            })
 
             const screenData: IScreenData = {
                 name: data.name,
@@ -153,6 +167,22 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
 
             
             await this.theaterOwnerRepository.saveScreen(screenData);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllScreens(theaterId: string | undefined): Promise<IScreen[] | never> {
+        try {
+            if(!theaterId || !isObjectIdOrHexString(theaterId)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const theaterData: ITheater | null = await this.theaterOwnerRepository.getTheaterById(theaterId);
+    
+            if(!theaterData) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            
+            return await this.theaterOwnerRepository.getAllScreens(theaterId);
         } catch (err: any) {
             throw err;
         }

@@ -13,15 +13,17 @@ const screenSchema: Schema = new Schema<IScreen>({
     seatCategory: [
         {
             category: { type: String, required: true },
-            price: { type: Number, required: true }
+            rowNumbers: { type: [Number], required: true }
         }
     ],
     seatLayout: [
-        {
-            name: { type: String },
-            category: { type: String },
-            price: { type: Number }
-        }
+        [
+            {
+                name: { type: String },
+                category: { type: String },
+                price: { type: Number }
+            }
+        ]
     ],
     theaterId: {
         type: Schema.Types.ObjectId,
