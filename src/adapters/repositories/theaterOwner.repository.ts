@@ -71,7 +71,7 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
 
     async getTheaterById(_id: string): Promise<ITheater | null | never> {
         try {
-            return await Theaters.findOne({ _id });
+            return await Theaters.findOne({ _id }, { licence: 0 });
         } catch (err: any) {
             throw err;
         }

@@ -12,6 +12,7 @@ export default interface ITheaterOwnerUseCase {
     getAllTheaters(theaterOwnerId: string): Promise<ITheater[] | never>;
     addScreen(data: IAddScreenCredentials, theaterId: string | undefined): Promise<void>;
     getAllScreens(theaterId: string | undefined): Promise<IScreen[] | never>;
+    getTheater(theaterId: string): Promise<ITheater | never>;
 }
 
 export interface IScreenData {

@@ -187,4 +187,16 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             throw err;
         }
     }
+
+    async getTheater(theaterId: string): Promise<ITheater | never> {
+        try {
+            const data: ITheater | null = await this.theaterOwnerRepository.getTheaterById(theaterId);
+
+            if(!data) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

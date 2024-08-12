@@ -114,4 +114,19 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             next(err);
         }
     }
+
+    async getTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterId: string | undefined = req.params.theaterId;
+
+            const data: ITheater = await this.theaterOwnerUseCase.getTheater(theaterId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

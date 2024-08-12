@@ -39,6 +39,8 @@ router.post('/addtheater', authMiddleware.isAuthenticate.bind(authMiddleware), t
 
 router.get('/theater', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getAllTheaters.bind(theaterOwnerController));
 
+router.get('/theater/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getTheater.bind(theaterOwnerController));
+
 router.post('/addScreen/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addScreen.bind(theaterOwnerController));
 
 router.get('/screens/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getScreens.bind(theaterOwnerController));
