@@ -39,4 +39,6 @@ router.post('/addtheater', authMiddleware.isAuthenticate.bind(authMiddleware), t
 
 router.get('/theater', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getAllTheaters.bind(theaterOwnerController));
 
+router.post('/addScreen/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addScreen.bind(theaterOwnerController));
+
 export default router;

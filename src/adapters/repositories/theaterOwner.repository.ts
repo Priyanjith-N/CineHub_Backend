@@ -9,6 +9,9 @@ import IMovie from "../../entity/movie.entity";
 import { IAddTheaterCredentials } from "../../interface/controllers/theaterOwner.controller";
 import Theaters from "../../frameworks/models/theater.model";
 import ITheater from "../../entity/theater.entity";
+import IScreen from "../../entity/screen.entity";
+import Screens from "../../frameworks/models/screen.model";
+import { IScreenData } from "../../interface/usecase/theaterOwner.usecase";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -61,6 +64,38 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getTheatersByOwnerId(theaterOwnerId: string): Promise<ITheater[] | never> {
         try {
             return await Theaters.find({ ownerId: theaterOwnerId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTheaterById(_id: string): Promise<ITheater | null | never> {
+        try {
+            return await Theaters.findOne({ _id });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getScreenByName(name: string, theaterId: string): Promise<IScreen | null | never> {
+        try {
+            return await Screens.findOne({ name: { $regex : new RegExp(name, "i") }, theaterId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async saveScreen(data: IScreenData): Promise<void | never> {
+        try {
+            const newScreen = new Screens({
+                name: data.name,
+                capacity: data.capacity,
+                seatCategory: data.seatCategory,
+                seatLayout: data.seatLayout,
+                theaterId: data.theaterId
+            });
+
+            await newScreen.save();
         } catch (err: any) {
             throw err;
         }

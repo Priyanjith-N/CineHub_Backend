@@ -2,16 +2,17 @@
 import { isObjectIdOrHexString } from "mongoose";
 import { IDistributerList } from "../entity/distributer.entity";
 import ITheaterOwnerRepository from "../interface/repositories/theaterOwnerRepository";
-import ITheaterOwnerUseCase from "../interface/usecase/theaterOwner.usecase";
+import ITheaterOwnerUseCase, { IScreenData } from "../interface/usecase/theaterOwner.usecase";
 
 // error
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import IMovie from "../entity/movie.entity";
-import { IAddTheaterCredentials, IGetMovieListOfDistributerData } from "../interface/controllers/theaterOwner.controller";
+import { IAddScreenCredentials, IAddTheaterCredentials, IGetMovieListOfDistributerData } from "../interface/controllers/theaterOwner.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import ITheater from "../entity/theater.entity";
 import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
+import IScreen, { ISeatCategory, ISeatLayout } from "../entity/screen.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -58,7 +59,7 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     async addTheater(theaterOwnerId: string | undefined, name: string | undefined, images: string[] | undefined, licence: string | undefined): Promise<void | never> {
         try {
             if(!theaterOwnerId || !name || !images || !licence || !images.length) {
-                throw new RequiredCredentialsNotGiven('Distributer NOT FOUND.');
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
             }
 
             const isTheaterExist: ITheater | null = await this.theaterOwnerRepository.getTheaterByName(name);
@@ -90,6 +91,68 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     async getAllTheaters(theaterOwnerId: string): Promise<ITheater[] | never> {
         try {
             return await this.theaterOwnerRepository.getTheatersByOwnerId(theaterOwnerId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addScreen(data: IAddScreenCredentials, theaterId: string | undefined): Promise<void> {
+        try {
+            if(!theaterId || !isObjectIdOrHexString(theaterId) || !data.name || !data.capacity || !data.seatCategory || !data.seatCategory.length || !data.seatCategoryPattern || !data.seatCategoryPattern.length || !data.seatLayout || !data.seatLayout.length || !data.seatNumberPattern || !data.seatNumberPattern.pattern || !data.seatNumberPattern.startFrom) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+            
+            const theaterData: ITheater | null = await this.theaterOwnerRepository.getTheaterById(theaterId);
+            
+            if(!theaterData) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const isScreenExist: IScreen | null = await this.theaterOwnerRepository.getScreenByName(data.name, theaterId);
+
+            if(isScreenExist) {
+                throw new AuthenticationError({message: 'This Screen name already exist.', statusCode: StatusCodes.BadRequest, errorField: 'name'});
+            }
+
+            const seatCategory: ISeatCategory[] = data.seatCategory;
+            const seatLayout: (ISeatLayout | null)[] = [];
+
+            let rowNumber = 0;
+            
+            for(let i = 0; i < data.seatLayout.length ; i++) {
+                const row: boolean[] = data.seatLayout[i];
+                const seatCategory: ISeatCategory | undefined | null = data.seatCategoryPattern[i];
+
+                if(!seatCategory) continue;
+
+                rowNumber++;
+                let colNumber = 1;
+                for(const seat of row) {
+                    if(seat) {
+                        const seatObj: ISeatLayout = {
+                            name: `${String.fromCharCode(64 + rowNumber)}${colNumber}`,
+                            category: seatCategory.category,
+                            price: seatCategory.price
+                        }
+
+                        seatLayout.push(seatObj);
+                        colNumber++;
+                    }else{
+                        seatLayout.push(null);
+                    }
+                }
+            }
+
+            const screenData: IScreenData = {
+                name: data.name,
+                capacity: data.capacity,
+                seatCategory,
+                seatLayout,
+                theaterId
+            }
+
+            
+            await this.theaterOwnerRepository.saveScreen(screenData);
         } catch (err: any) {
             throw err;
         }

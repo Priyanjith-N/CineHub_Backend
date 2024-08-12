@@ -1,6 +1,6 @@
 // interfaces
 import { NextFunction, Response } from "express";
-import ITheaterOwnerController, { IGetMovieListOfDistributerData } from "../../interface/controllers/theaterOwner.controller";
+import ITheaterOwnerController, { IAddScreenCredentials, IGetMovieListOfDistributerData } from "../../interface/controllers/theaterOwner.controller";
 import { AuthRequest } from "../../interface/middlewares/authMiddleware.interface";
 import ITheaterOwnerUseCase from "../../interface/usecase/theaterOwner.usecase";
 import { IDistributerList } from "../../entity/distributer.entity";
@@ -73,6 +73,29 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             });
         } catch (err: any) {
             next(err);
+        }
+    }
+
+    async addScreen(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterId: string | undefined = req.params.theaterId;
+
+            const data: IAddScreenCredentials = {
+                name: req.body.name,
+                capacity: req.body.capacity,
+                seatCategory: req.body.seatCategory,
+                seatCategoryPattern: req.body.seatCategoryPattern,
+                seatLayout: req.body.seatLayout,
+                seatNumberPattern: req.body.seatNumberPattern
+            }
+
+            await this.theaterOwnerUseCase.addScreen(data, theaterId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfully Screen added.",
+            });
+        } catch (err: any) {
+            throw err;
         }
     }
 }

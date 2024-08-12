@@ -1,8 +1,10 @@
 // interfaces
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
+import IScreen from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
 import { IAddTheaterCredentials } from "../controllers/theaterOwner.controller";
+import { IScreenData } from "../usecase/theaterOwner.usecase";
 
 export default interface ITheaterOwnerRepository {
     getDistributerList(): Promise<IDistributerList[] | never>;
@@ -11,4 +13,7 @@ export default interface ITheaterOwnerRepository {
     getTheaterByName(name: string): Promise<ITheater | null | never>;
     saveTheater(data: IAddTheaterCredentials): Promise<void | never>;
     getTheatersByOwnerId(theaterOwnerId: string): Promise<ITheater[] | never>;
+    getTheaterById(_id: string): Promise<ITheater | null | never>;
+    getScreenByName(name: string, theaterId: string): Promise<IScreen | null | never>;
+    saveScreen(data: IScreenData): Promise<void | never>;
 }

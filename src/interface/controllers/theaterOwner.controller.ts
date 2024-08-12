@@ -8,6 +8,7 @@ export default interface ITheaterOwnerController {
     getMovieListOfDistributer(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     addTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllTheaters(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    addScreen(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IGetMovieListOfDistributerData {
@@ -20,4 +21,16 @@ export interface IAddTheaterCredentials {
     theaterOwnerId: string;
     images: string[];
     licence: string;
+}
+
+export interface IAddScreenCredentials {
+    name: string | undefined;
+    capacity: number | undefined;
+    seatCategory: { category: string, price: number }[] | undefined;
+    seatLayout: boolean[][] | undefined;
+    seatNumberPattern: {
+        pattern: "Alphanumerical" | undefined;
+        startFrom: "left" | "right" | undefined
+    } | undefined,
+    seatCategoryPattern: ({ category: string, price: number } | undefined | null)[] | undefined;
 }
