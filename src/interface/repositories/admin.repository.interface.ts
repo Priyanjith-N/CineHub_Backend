@@ -1,13 +1,13 @@
 // interfaces
+import { IDistributer } from "../../entity/distributer.entity";
 import IMovie, { IMovieData } from "../../entity/movie.entity";
-import { IDistributerDocument } from "../collections/IDistributer.collection";
-import { ITheaterOwnerDocument } from "../collections/ITheaterOwner.collection";
-import { IUserDocument } from "../collections/IUsers.collections";
+import ITheaterOwner from "../../entity/theaterOwner.entity";
+import IUser from "../../entity/user.entity";
 
 export interface IAdminRepository {
-    allUser(): Promise<IUserDocument[] | never>;
-    allTheaterOwners(): Promise<ITheaterOwnerDocument[] | never>;
-    allDistributers(): Promise<IDistributerDocument[] | never>;
+    allUser(): Promise<IUser[] | never>;
+    allTheaterOwners(): Promise<ITheaterOwner[] | never>;
+    allDistributers(): Promise<IDistributer[] | never>;
     updateUserIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null>;
     updateTheaterOwnerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null>;
     updateDistributerIsBlockedStatus(id: string, isBlocked: boolean): Promise<void | null>;

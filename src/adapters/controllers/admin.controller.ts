@@ -2,14 +2,14 @@
 import { Request, Response, NextFunction } from "express";
 import { IAdminController } from "../../interface/controllers/admin.controller.interface";
 import { IAdminUseCase } from "../../interface/usecase/admin.usecase.interface";
-import { IUserDocument } from "../../interface/collections/IUsers.collections";
 import { INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../interface/repositories/admin.repository.interface";
 
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
-import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
-import { IDistributerDocument } from "../../interface/collections/IDistributer.collection";
 import IMovie, { IMovieData } from "../../entity/movie.entity";
+import { IDistributer } from "../../entity/distributer.entity";
+import ITheaterOwner from "../../entity/theaterOwner.entity";
+import IUser from "../../entity/user.entity";
 
 export default class AdminController implements IAdminController {
     private adminUseCase: IAdminUseCase;
@@ -20,7 +20,7 @@ export default class AdminController implements IAdminController {
 
     async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allUserData: IUserDocument[] = await this.adminUseCase.getAllUsersData();
+            const allUserData: IUser[] = await this.adminUseCase.getAllUsersData();
 
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfully retrived users data',
@@ -33,7 +33,7 @@ export default class AdminController implements IAdminController {
 
     async getAllTheaterOwners(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allTheaterOwnerData: ITheaterOwnerDocument[] = await this.adminUseCase.getAllTheaterOwnersData();
+            const allTheaterOwnerData: ITheaterOwner[] = await this.adminUseCase.getAllTheaterOwnersData();
 
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfully retrived theater owners data',
@@ -46,7 +46,7 @@ export default class AdminController implements IAdminController {
 
     async getAllDistributers(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const allDistributerData: IDistributerDocument[] = await this.adminUseCase.getAllDistributersData();
+            const allDistributerData: IDistributer[] = await this.adminUseCase.getAllDistributersData();
 
             res.status(StatusCodes.Success).json({
                 message: 'Sucessfully retrived distributers data',

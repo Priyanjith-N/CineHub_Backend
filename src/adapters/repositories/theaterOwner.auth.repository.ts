@@ -5,21 +5,22 @@ import TheaterOwners from "../../frameworks/models/theaterOwner.model";
 import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
 import ITheaterOwnerAuthRepository from "../../interface/repositories/theaterOwner.IAuth.repository";
 import { ITheaterOwnerRegisterCredentials } from "../../interface/controllers/theaterOwner.IAuth.controller";
+import ITheaterOwner from "../../entity/theaterOwner.entity";
 
 export default class TheaterOwnerAuthRepository implements ITheaterOwnerAuthRepository {
 
-    async getDataByEmail(email: string): Promise<ITheaterOwnerDocument | null | never> {
+    async getDataByEmail(email: string): Promise<ITheaterOwner | null | never> {
         try {
-            const theaterOwnerData: ITheaterOwnerDocument | null = await TheaterOwners.findOne({ email });
+            const theaterOwnerData: ITheaterOwner | null = await TheaterOwners.findOne({ email });
             return theaterOwnerData;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async getDataByPhoneNumber(phoneNumber: string): Promise<ITheaterOwnerDocument | null | never> {
+    async getDataByPhoneNumber(phoneNumber: string): Promise<ITheaterOwner | null | never> {
         try {
-            const theaterOwnerData: ITheaterOwnerDocument | null = await TheaterOwners.findOne({phoneNumber});
+            const theaterOwnerData: ITheaterOwner | null = await TheaterOwners.findOne({phoneNumber});
             return theaterOwnerData;
         } catch (err: any) {
             throw err;

@@ -2,7 +2,6 @@
 import IUserAuthUseCase from "../interface/usecase/user.IAuth.usecase";
 import IUserAuthRepository from "../interface/repositories/user.IAuth.repositories";
 import { IUserRegisterCredentials } from "../interface/controllers/user.IAuth.controller";
-import { IUserDocument } from "../interface/collections/IUsers.collections";
 import IEmailService from "../interface/utils/IEmailService";
 import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
@@ -19,6 +18,7 @@ import JWTTokenError from "../errors/jwt.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import { IGoogleAuthService } from "../interface/utils/IGoogleAuthService";
 import { TokenPayload } from "google-auth-library";
+import IUser from "../entity/user.entity";
 
 export default class UserAuthUseCase implements IUserAuthUseCase {
     private userAuthRepository: IUserAuthRepository;
@@ -51,7 +51,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 throw new RequiredCredentialsNotGiven('TOKEN_ERROR_LOGIN_AGAIN.');
             }
 
-            const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(decodedToken.email);
+            const userData: IUser | null = await this.userAuthRepository.getDataByEmail(decodedToken.email);
 
             if(!userData) {
                 throw new RequiredCredentialsNotGiven('No user with that email, Create account now.');
@@ -80,7 +80,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
 
     async authenticateUser(email: string, password: string): Promise<string | never> {
         try {
-            const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(email);
+            const userData: IUser | null = await this.userAuthRepository.getDataByEmail(email);
 
             if(!userData) {
                 throw new AuthenticationError({message: 'The provided email address is not found.', statusCode: StatusCodes.Unauthorized, errorField: 'email'});
@@ -108,8 +108,8 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
 
     async userRegister(registerData: IUserRegisterCredentials): Promise<void | never> {
         try {
-            const isEmailTaken: IUserDocument | null = await this.userAuthRepository.getDataByEmail(registerData.email); // if there is any user with same email
-            const isPhoneNumberTaken: IUserDocument | null = await this.userAuthRepository.getDataByPhoneNumber(registerData.phoneNumber); // if there is any user with same phonenumber
+            const isEmailTaken: IUser | null = await this.userAuthRepository.getDataByEmail(registerData.email); // if there is any user with same email
+            const isPhoneNumberTaken: IUser | null = await this.userAuthRepository.getDataByPhoneNumber(registerData.phoneNumber); // if there is any user with same phonenumber
 
             if(isEmailTaken) {
                 throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});
@@ -145,10 +145,10 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
             
             await this.userAuthRepository.makeUserVerified(email);
 
-            const userData: IUserDocument | null = await this.userAuthRepository.getDataByEmail(email);
+            const userData: IUser | null = await this.userAuthRepository.getDataByEmail(email);
 
             const payload: IPayload = {
-                id: userData?.id,
+                id: userData?._id!,
                 type: 'User'
             }
 

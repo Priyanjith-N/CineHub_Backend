@@ -1,7 +1,6 @@
 // interfaces
 import ITheaterOwnerAuthUseCase from "../interface/usecase/theaterOwner.IAuth.usecase";
 import ITheaterOwnerAuthRepository from "../interface/repositories/theaterOwner.IAuth.repository";
-import { ITheaterOwnerDocument } from "../interface/collections/ITheaterOwner.collection";
 import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import IEmailService from "../interface/utils/IEmailService";
@@ -20,6 +19,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import JWTTokenError from "../errors/jwt.error";
+import ITheaterOwner from "../entity/theaterOwner.entity";
 
 export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase {
     private theaterOwnerAuthRepository: ITheaterOwnerAuthRepository;
@@ -54,7 +54,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 throw new RequiredCredentialsNotGiven('TOKEN_ERROR_LOGIN_AGAIN.');
             }
 
-            const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.getDataByEmail(decodedToken.email);
+            const theaterOwnerData: ITheaterOwner | null = await this.theaterOwnerAuthRepository.getDataByEmail(decodedToken.email);
 
             if(!theaterOwnerData) {
                 throw new RequiredCredentialsNotGiven('No user with that email, Create account now.');
@@ -89,7 +89,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
             throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
         }
 
-        const theaterOwnerData: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.getDataByEmail(email);
+        const theaterOwnerData: ITheaterOwner | null = await this.theaterOwnerAuthRepository.getDataByEmail(email);
 
         if(!theaterOwnerData) {
             throw new AuthenticationError({message: 'The provided email address is not found.', statusCode: StatusCodes.Unauthorized, errorField: 'email'});
@@ -123,8 +123,8 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
             }
 
-            const isEmailTaken: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.getDataByEmail(registerData.email);
-            const isPhoneNumberTaken: ITheaterOwnerDocument | null = await this.theaterOwnerAuthRepository.getDataByPhoneNumber(registerData.phoneNumber);
+            const isEmailTaken: ITheaterOwner | null = await this.theaterOwnerAuthRepository.getDataByEmail(registerData.email);
+            const isPhoneNumberTaken: ITheaterOwner | null = await this.theaterOwnerAuthRepository.getDataByPhoneNumber(registerData.phoneNumber);
 
             if(isEmailTaken) {
                 throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});

@@ -5,21 +5,22 @@ import Users from "../../frameworks/models/user.model";
 import IUserAuthRepository from "../../interface/repositories/user.IAuth.repositories";
 import { IUserRegisterCredentials } from "../../interface/controllers/user.IAuth.controller";
 import { IUserDocument } from "../../interface/collections/IUsers.collections";
+import IUser from "../../entity/user.entity";
 
 export default class UserAuthRepository implements IUserAuthRepository {
 
-    async getDataByEmail(email: string): Promise<IUserDocument | null | never> {
+    async getDataByEmail(email: string): Promise<IUser | null | never> {
         try {
-            const userData: IUserDocument | null = await Users.findOne({email});
+            const userData: IUser | null = await Users.findOne({email});
             return userData;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async getDataByPhoneNumber(phoneNumber: string): Promise<IUserDocument | null | never> {
+    async getDataByPhoneNumber(phoneNumber: string): Promise<IUser | null | never> {
         try {
-            const userData: IUserDocument | null = await Users.findOne({phoneNumber});
+            const userData: IUser | null = await Users.findOne({phoneNumber});
             return userData;
         } catch (err: any) {
             throw err;

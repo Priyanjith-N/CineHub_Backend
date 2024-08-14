@@ -1,10 +1,9 @@
-import { ObjectId } from "mongoose";
-
 export default interface IUser {
-    _id: ObjectId;
+    _id: string;
     name: string;
     email: string;
     phoneNumber: string;
+    password: string;
     OTPVerification: boolean;
-    password?: string;
+    isBlocked: boolean;
 }

@@ -4,7 +4,6 @@ import IAdminAuthRepository from "../interface/repositories/admin.IAuth.reposito
 import IEmailService from "../interface/utils/IEmailService";
 import IHashingService from "../interface/utils/IHashingService";
 import IJWTService, { IPayload } from "../interface/utils/IJWTService";
-import { IAdminDocument } from "../interface/collections/IAdmin.collections";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -12,6 +11,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 // errors
 import AuthenticationError from "../errors/authentication.error";
 import JWTTokenError from "../errors/jwt.error";
+import IAdmin from "../entity/admin.entity";
 
 export default class AdminAuthUseCase implements IAdminAuthUseCase {
     private adminAuthRepository: IAdminAuthRepository;
@@ -28,7 +28,7 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
 
     async authenticateUser(email: string, password: string): Promise<string | never> {
         try {
-            const adminData: IAdminDocument | null = await this.adminAuthRepository.getDataByEmail(email);
+            const adminData: IAdmin | null = await this.adminAuthRepository.getDataByEmail(email);
 
             if(!adminData) {
                 throw new AuthenticationError({message: 'The provided email address is not found.', statusCode: StatusCodes.Unauthorized, errorField: 'email'});

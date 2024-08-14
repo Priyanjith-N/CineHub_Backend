@@ -1,7 +1,6 @@
 // interfaces
 import IDistributerAuthUseCase from "../interface/usecase/distributer.IAuth.usecase";
 import IDistributerAuthRepository from "../interface/repositories/distributer.IAuth.repository";
-import { IDistributerDocument } from "../interface/collections/IDistributer.collection";
 import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import IEmailService from "../interface/utils/IEmailService";
@@ -20,6 +19,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import JWTTokenError from "../errors/jwt.error";
+import { IDistributer } from "../entity/distributer.entity";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -52,7 +52,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 throw new RequiredCredentialsNotGiven('TOKEN_ERROR_LOGIN_AGAIN.');
             }
 
-            const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(decodedToken.email);
+            const distributerData: IDistributer | null = await this.distributerAuthRepository.getDataByEmail(decodedToken.email);
 
             if(!distributerData) {
                 throw new RequiredCredentialsNotGiven('No distributer with that email, Create account now.');
@@ -87,7 +87,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
         }
 
-        const distributerData: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(email);
+        const distributerData: IDistributer | null = await this.distributerAuthRepository.getDataByEmail(email);
 
         if(!distributerData) {
             throw new AuthenticationError({message: 'The provided email address is not found.', statusCode: StatusCodes.Unauthorized, errorField: 'email'});
@@ -121,8 +121,8 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 throw new AuthenticationError({message: 'Provide all required details correctly.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
             }
 
-            const isEmailTaken: IDistributerDocument | null = await this.distributerAuthRepository.getDataByEmail(registerData.email);
-            const isPhoneNumberTaken: IDistributerDocument | null = await this.distributerAuthRepository.getDataByPhoneNumber(registerData.phoneNumber);
+            const isEmailTaken: IDistributer | null = await this.distributerAuthRepository.getDataByEmail(registerData.email);
+            const isPhoneNumberTaken: IDistributer | null = await this.distributerAuthRepository.getDataByPhoneNumber(registerData.phoneNumber);
 
             if(isEmailTaken) {
                 throw new AuthenticationError({message: 'The email address you entered is already registered.', statusCode: StatusCodes.BadRequest, errorField: 'email'});

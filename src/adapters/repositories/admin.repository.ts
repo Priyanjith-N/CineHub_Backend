@@ -7,15 +7,15 @@ import Distributers from "../../frameworks/models/distributer.model";
 import Movies from "../../frameworks/models/movie.model";
 
 // interfaces
-import { IDistributerDocument } from "../../interface/collections/IDistributer.collection";
-import { ITheaterOwnerDocument } from "../../interface/collections/ITheaterOwner.collection";
-import { IUserDocument } from "../../interface/collections/IUsers.collections";
 import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../interface/repositories/admin.repository.interface";
 import IMovie, { IMovieData } from "../../entity/movie.entity";
+import { IDistributer } from "../../entity/distributer.entity";
+import ITheaterOwner from "../../entity/theaterOwner.entity";
+import IUser from "../../entity/user.entity";
 
 export default class AdminRepository implements IAdminRepository {
     
-    async allUser(): Promise<IUserDocument[] | never> {
+    async allUser(): Promise<IUser[] | never> {
         try {
             return await Users.find({}, { password: 0 });
         } catch (err: any) {
@@ -23,7 +23,7 @@ export default class AdminRepository implements IAdminRepository {
         }
     }
 
-    async allTheaterOwners(): Promise<ITheaterOwnerDocument[] | never> {
+    async allTheaterOwners(): Promise<ITheaterOwner[] | never> {
         try {
             return await TheaterOwners.find({}, { password: 0 });
         } catch (err: any) {
@@ -31,7 +31,7 @@ export default class AdminRepository implements IAdminRepository {
         }
     }
 
-    async allDistributers(): Promise<IDistributerDocument[] | never> {
+    async allDistributers(): Promise<IDistributer[] | never> {
         try {
             return await Distributers.find({}, { password: 0 });
         } catch (err: any) {
@@ -115,7 +115,7 @@ export default class AdminRepository implements IAdminRepository {
 
     async changeDocumentVerificationStatusTheaterOwner(id: string, status: string): Promise<string | undefined | never> {
         try {
-            const updatedData: ITheaterOwnerDocument | null = await TheaterOwners.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
+            const updatedData: ITheaterOwner | null = await TheaterOwners.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
 
             return updatedData?.email;
         } catch (err: any) {
@@ -127,7 +127,7 @@ export default class AdminRepository implements IAdminRepository {
         try {
             console.log(status);
             
-            const updatedData: IDistributerDocument | null = await Distributers.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
+            const updatedData: IDistributer | null = await Distributers.findOneAndUpdate({ _id: id }, { $set: { documentVerificationStatus: status } }, { new: true });
 
             return updatedData?.email;
         } catch (err: any) {

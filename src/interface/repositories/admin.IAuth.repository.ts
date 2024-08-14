@@ -1,5 +1,5 @@
-import { IAdminDocument } from "../collections/IAdmin.collections";
+import IAdmin from "../../entity/admin.entity";
 
 export default interface IAdminAuthRepository {
-    getDataByEmail(email: string): Promise<IAdminDocument | null | never>;
+    getDataByEmail(email: string): Promise<IAdmin | null | never>;
 }

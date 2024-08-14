@@ -1,9 +1,6 @@
 import { isObjectIdOrHexString } from "mongoose";
 
 // interfaces
-import { IDistributerDocument } from "../interface/collections/IDistributer.collection";
-import { ITheaterOwnerDocument } from "../interface/collections/ITheaterOwner.collection";
-import { IUserDocument } from "../interface/collections/IUsers.collections";
 import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../interface/repositories/admin.repository.interface";
 import { IAdminUseCase } from "../interface/usecase/admin.usecase.interface";
 import IEmailService from "../interface/utils/IEmailService";
@@ -14,6 +11,9 @@ import IMovie, { IMovieData } from "../entity/movie.entity";
 import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
+import { IDistributer } from "../entity/distributer.entity";
+import ITheaterOwner from "../entity/theaterOwner.entity";
+import IUser from "../entity/user.entity";
 
 export default class AdminUseCase implements IAdminUseCase {
     private adminRepository: IAdminRepository;
@@ -26,27 +26,27 @@ export default class AdminUseCase implements IAdminUseCase {
         this.cloudinaryService = cloudinaryService;
     }
 
-    async getAllUsersData(): Promise<IUserDocument[] | never> {
+    async getAllUsersData(): Promise<IUser[] | never> {
         try {
-            const allUserData: IUserDocument[] = await this.adminRepository.allUser();
+            const allUserData: IUser[] = await this.adminRepository.allUser();
             return allUserData;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async getAllTheaterOwnersData(): Promise<ITheaterOwnerDocument[] | never> {
+    async getAllTheaterOwnersData(): Promise<ITheaterOwner[] | never> {
         try {
-            const allTheaterOwnerData: ITheaterOwnerDocument[] = await this.adminRepository.allTheaterOwners();
+            const allTheaterOwnerData: ITheaterOwner[] = await this.adminRepository.allTheaterOwners();
             return allTheaterOwnerData;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async getAllDistributersData(): Promise<IDistributerDocument[] | never> {
+    async getAllDistributersData(): Promise<IDistributer[] | never> {
         try {
-            const allDistributerData: IDistributerDocument[] = await this.adminRepository.allDistributers();
+            const allDistributerData: IDistributer[] = await this.adminRepository.allDistributers();
             return allDistributerData;
         } catch (err: any) {
             throw err;

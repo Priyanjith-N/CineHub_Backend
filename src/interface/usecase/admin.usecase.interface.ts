@@ -1,14 +1,14 @@
 // interfaces
+import { IDistributer } from "../../entity/distributer.entity";
 import IMovie, { IMovieData } from "../../entity/movie.entity";
-import { IDistributerDocument } from "../collections/IDistributer.collection";
-import { ITheaterOwnerDocument } from "../collections/ITheaterOwner.collection";
-import { IUserDocument } from "../collections/IUsers.collections";
+import ITheaterOwner from "../../entity/theaterOwner.entity";
+import IUser from "../../entity/user.entity";
 import { INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../repositories/admin.repository.interface";
 
 export interface IAdminUseCase {
-    getAllUsersData(): Promise<IUserDocument[] | never>;
-    getAllTheaterOwnersData(): Promise<ITheaterOwnerDocument[] | never>;
-    getAllDistributersData(): Promise<IDistributerDocument[] | never>;
+    getAllUsersData(): Promise<IUser[] | never>;
+    getAllTheaterOwnersData(): Promise<ITheaterOwner[] | never>;
+    getAllDistributersData(): Promise<IDistributer[] | never>;
     blockOrUnblockUser(id: string | undefined, isBlocked: boolean | undefined): Promise<void | never>;
     blockOrUnblockTheaterOwner(id: string | undefined, isBlocked: boolean | undefined): Promise<void | never>;
     blockOrUnblockDistributer(id: string | undefined, isBlocked: boolean | undefined): Promise<void | never>;
