@@ -13,6 +13,7 @@ export interface IAdminController {
     getTheaterOwnerData(req: Request, res: Response, next: NextFunction): Promise<void>;
     getDistributerData(req: Request, res: Response, next: NextFunction): Promise<void>;
     addMovieRequest(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getMovie(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
     listOrUnlistMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

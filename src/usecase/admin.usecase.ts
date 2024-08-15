@@ -214,6 +214,22 @@ export default class AdminUseCase implements IAdminUseCase {
         }
     }
 
+    async getMovie(movieId: string | undefined): Promise<IMovie | never> {
+        try {
+            if(!movieId || !isObjectIdOrHexString(movieId)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const data: IMovie | null = await this.adminRepository.getMovie(movieId);
+
+            if(!data) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
     async getAllMovies(): Promise<IMovie[] | never> {
         try {
             const movies: IMovie[] = await this.adminRepository.getAllMovies();

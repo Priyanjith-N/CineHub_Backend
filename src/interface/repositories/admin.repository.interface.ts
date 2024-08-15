@@ -18,6 +18,7 @@ export interface IAdminRepository {
     getDistributer(id: string): Promise<INotVerifiedDistributers | undefined | never>;
     getMovieByName(name: string): Promise<IMovie | null | never>;
     saveMovie(movieData: IMovieData): Promise<void | never>;
+    getMovie(movieId: string): Promise<IMovie | null | never>;
     getAllMovies(): Promise<IMovie[] | never>;
     makeMovieAsListedOrUnlisted(id: string, status: boolean): Promise<void | never>;
 }

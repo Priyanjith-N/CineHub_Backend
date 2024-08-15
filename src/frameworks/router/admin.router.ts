@@ -57,6 +57,8 @@ router.get('/getAllDoumentVerificationRequests', adminController.getAllDocumentV
 // movie management api's
 router.get('/movie', adminController.getAllMovies.bind(adminController));
 
+router.get('/movie/:movieId', adminController.getMovie.bind(adminController));
+
 router.patch('/listorunlist/:id', adminController.listOrUnlistMovies.bind(adminController));
 
 router.post('/addmovie', adminController.addMovieRequest.bind(adminController));

@@ -221,6 +221,14 @@ export default class AdminRepository implements IAdminRepository {
         }
     }
 
+    async getMovie(movieId: string): Promise<IMovie | null | never> {
+        try {
+            return await Movies.findOne({ _id: movieId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
     async getAllMovies(): Promise<IMovie[] | never> {
         try {
             return await Movies.find();
