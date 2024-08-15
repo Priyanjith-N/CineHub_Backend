@@ -29,4 +29,12 @@ export default class CloudinaryService implements ICloudinaryService {
             throw err;
         }
     }
+
+    async deleteImage(public_id: string): Promise<void | never> {
+        try {
+            await cloudinary.v2.uploader.destroy(public_id);
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

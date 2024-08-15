@@ -16,4 +16,5 @@ export interface IAdminController {
     getMovie(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
     listOrUnlistMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
+    updateMovie(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

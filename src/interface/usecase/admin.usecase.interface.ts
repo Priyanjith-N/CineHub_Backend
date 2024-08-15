@@ -21,4 +21,5 @@ export interface IAdminUseCase {
     getMovie(movieId: string | undefined): Promise<IMovie | never>;
     getAllMovies(): Promise<IMovie[] | never>;
     listOrUnlistMovies(id: string | undefined, status: boolean | undefined): Promise<void | never>;
+    editMovie(movieData: IMovieData, movieId: string | undefined): Promise<void | never>;
 }

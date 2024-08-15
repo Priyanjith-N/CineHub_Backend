@@ -1,4 +1,4 @@
-import { isObjectIdOrHexString } from "mongoose";
+import { isObjectIdOrHexString, Schema } from "mongoose";
 
 // interfaces
 import { IAdminRepository, INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../interface/repositories/admin.repository.interface";
@@ -14,6 +14,7 @@ import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import { IDistributer } from "../entity/distributer.entity";
 import ITheaterOwner from "../entity/theaterOwner.entity";
 import IUser from "../entity/user.entity";
+import IImage from "../interface/common/IImage.interface";
 
 export default class AdminUseCase implements IAdminUseCase {
     private adminRepository: IAdminRepository;
@@ -247,6 +248,60 @@ export default class AdminUseCase implements IAdminUseCase {
             }
 
             await this.adminRepository.makeMovieAsListedOrUnlisted(id, status);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async editMovie(movieData: IMovieData, movieId: string | undefined): Promise<void | never> {
+        try {
+            if(!movieId || !isObjectIdOrHexString(movieId) || !movieData.about || !movieData.bannerPhoto || !movieData.coverPhoto || !movieData.trailer || !movieData.name || !movieData.cast || !movieData.crew || !movieData.duration || !movieData.duration.hours || !movieData.duration.minutes || !movieData.language || !movieData.language.length || !movieData.category || !movieData.category.length || !movieData.type || movieData.duration.hours > 5 || movieData.duration.minutes > 60 || movieData.duration.minutes < 0 || movieData.duration.hours < 0 || !movieData.cast.length || !movieData.crew.length) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const editMovieData: IMovie | null = await this.adminRepository.getMovie(movieId);
+
+            const isMovieExists: IMovie | null = await this.adminRepository.getMovieByName(movieData.name);
+
+            if(!editMovieData || (isMovieExists && String(isMovieExists._id) !== movieId)) {
+                throw new AuthenticationError({message: 'This Movie already exist.', statusCode: StatusCodes.BadRequest, errorField: 'name'});
+            }
+
+            // delete all existing images
+            await this.cloudinaryService.deleteImage(editMovieData.bannerPhoto.publicId);
+            await this.cloudinaryService.deleteImage(editMovieData.coverPhoto.publicId);
+
+            for(const cast of editMovieData.cast) {
+                const imgObj: IImage = cast.image as IImage;
+                await this.cloudinaryService.deleteImage(imgObj.publicId);
+            }
+
+            for(const crew of editMovieData.crew) {
+                const imgObj: IImage = crew.image as IImage;
+                await this.cloudinaryService.deleteImage(imgObj.publicId);
+            }
+
+            movieData.bannerPhoto = await this.cloudinaryService.uploadImage(movieData.bannerPhoto as string);
+
+            movieData.coverPhoto = await this.cloudinaryService.uploadImage(movieData.coverPhoto as string);
+
+            for(let i = 0; i < movieData.cast.length; i++) {
+                const each = movieData.cast[i];
+
+                each.image = await this.cloudinaryService.uploadImage(each.image as string);
+
+                movieData.cast[i] = each;
+            }
+
+            for(let i = 0; i < movieData.crew.length; i++) {
+                const each = movieData.crew[i];
+
+                each.image = await this.cloudinaryService.uploadImage(each.image as string);
+
+                movieData.crew[i] = each;
+            }
+
+            await this.adminRepository.updateMovie(movieId, movieData);
         } catch (err: any) {
             throw err;
         }

@@ -63,4 +63,6 @@ router.patch('/listorunlist/:id', adminController.listOrUnlistMovies.bind(adminC
 
 router.post('/addmovie', adminController.addMovieRequest.bind(adminController));
 
+router.patch('/editmovie/:movieId', adminController.updateMovie.bind(adminController));
+
 export default router;

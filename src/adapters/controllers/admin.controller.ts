@@ -250,4 +250,32 @@ export default class AdminController implements IAdminController {
             next(err);
         }
     }
+
+    async updateMovie(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const movieId: string | undefined = req.params.movieId;
+            
+            const movieData: IMovieData = {
+                name: req.body.name,
+                about: req.body.about,
+                language: req.body.language,
+                duration: req.body.duration,
+                coverPhoto: req.body.coverPhoto,
+                bannerPhoto: req.body.bannerPhoto,
+                trailer: req.body.trailer,
+                category: req.body.category,
+                type: req.body.type,
+                cast: req.body.cast,
+                crew: req.body.crew,
+            }
+            
+            await this.adminUseCase.editMovie(movieData, movieId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Movie Edited"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

@@ -244,4 +244,24 @@ export default class AdminRepository implements IAdminRepository {
             throw err;
         }
     }
+
+    async updateMovie(movieId: string, movieData: IMovieData): Promise<void | never> {
+        try {
+            await Movies.updateOne({ _id: movieId }, { $set: {
+                name: movieData.name,
+                about: movieData.about,
+                language: movieData.language,
+                duration: movieData.duration,
+                coverPhoto: movieData.coverPhoto,
+                bannerPhoto: movieData.bannerPhoto,
+                trailer: movieData.trailer,
+                category: movieData.category,
+                type: movieData.type,
+                cast: movieData.cast,
+                crew: movieData.crew
+            } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

@@ -21,6 +21,7 @@ export interface IAdminRepository {
     getMovie(movieId: string): Promise<IMovie | null | never>;
     getAllMovies(): Promise<IMovie[] | never>;
     makeMovieAsListedOrUnlisted(id: string, status: boolean): Promise<void | never>;
+    updateMovie(movieId: string, movieData: IMovieData): Promise<void | never>;
 }
 
 export interface INotVerifiedTheaterOwners {
