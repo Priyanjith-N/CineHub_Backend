@@ -13,6 +13,7 @@ import ITheater from "../entity/theater.entity";
 import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
+import IImage from "../interface/common/IImage.interface";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -75,11 +76,11 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
                 licence
             }
 
-            theaterCredentials.licence = await this.cloudinaryService.uploadImage(theaterCredentials.licence);
+            theaterCredentials.licence = await this.cloudinaryService.uploadImage(theaterCredentials.licence as string);
 
             for(let i = 0; i<theaterCredentials.images.length;i++) {
-                const url: string = await this.cloudinaryService.uploadImage(theaterCredentials.images[i]);
-                theaterCredentials.images[i] = url;
+                const imgObj: IImage = await this.cloudinaryService.uploadImage(theaterCredentials.images[i] as string);
+                theaterCredentials.images[i] = imgObj;
             }
 
             await this.theaterOwnerRepository.saveTheater(theaterCredentials);

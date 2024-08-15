@@ -20,6 +20,7 @@ import AuthenticationError from "../errors/authentication.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import JWTTokenError from "../errors/jwt.error";
 import { IDistributer } from "../entity/distributer.entity";
+import IImage from "../interface/common/IImage.interface";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -134,16 +135,16 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
 
             registerData.password = hashedPassword;
 
-            const secureUrlIDProofImage: string[] = [];
+            const secureUrlIDProofImage: IImage[] = [];
 
             for(const imageDataBase64 of registerData.IDProofImage) {
-                const secure_url = await this.cloudinaryService.uploadImage(imageDataBase64); // returns secure url
+                const secure_url = await this.cloudinaryService.uploadImage(imageDataBase64 as string); // returns secure url
                 secureUrlIDProofImage.push(secure_url);
             }
 
             registerData.IDProofImage = secureUrlIDProofImage; // change property value to array of secure url of the uploaded image to store it in database to see images
 
-            const secure_url = await this.cloudinaryService.uploadImage(registerData.licence); // returns secure url
+            const secure_url = await this.cloudinaryService.uploadImage(registerData.licence as string); // returns secure url
             registerData.licence = secure_url;
 
             await this.distributerAuthRepository.createDistributer(registerData);

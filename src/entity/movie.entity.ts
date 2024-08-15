@@ -1,3 +1,5 @@
+import IImage from "../interface/common/IImage.interface";
+
 export default interface IMovie {
     _id: string;
     name: string;
@@ -5,8 +7,8 @@ export default interface IMovie {
     language: string[];
     duration: IDuration;
     releaseDate: Date | undefined;
-    coverPhoto: string;
-    bannerPhoto: string;
+    coverPhoto: IImage;
+    bannerPhoto: IImage;
     trailer: string;
     category: string[];
     type: "2D" | "3D" | string;
@@ -23,8 +25,8 @@ export interface IMovieData {
     about: string | undefined;
     language: string[] | undefined;
     duration: IDuration | undefined;
-    coverPhoto: string | undefined;
-    bannerPhoto: string | undefined;
+    coverPhoto: string | IImage | undefined;
+    bannerPhoto: string | IImage | undefined;
     trailer: string | undefined;
     category: string[] | undefined;
     type: "2D" | "3D" | string | undefined;
@@ -38,7 +40,7 @@ interface IDuration {
 }
 
 interface IMovieWorkerDetails {
-    image: string;
+    image: IImage | string;
     name: string;
     role: string;
 }

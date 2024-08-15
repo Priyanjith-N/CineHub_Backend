@@ -25,8 +25,8 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
     },
     idProofImage: [
         {
-            type: String,
-            required: true
+            publicId: { type: String, required: true },
+            imageURL: { type: String, required: true }
         }
     ],
     OTPVerificationStatus: {
@@ -40,17 +40,6 @@ const theaterOwnerSchema: Schema = new Schema<ITheaterOwnerDocument>({
         default: "Pending",
         required: true
     },
-    idProofUpdateVerificationStatus: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
-    idProofUpdateDocumentImage: [
-        {
-            type: String,
-            required: false
-        }
-    ],
     isBlocked: {
         type: Boolean,
         required: true,

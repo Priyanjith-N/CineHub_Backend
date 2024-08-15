@@ -1,4 +1,5 @@
 import { Document, Model, ObjectId } from "mongoose";
+import IImage from "../common/IImage.interface";
 
 export interface IDistributerDocument extends Document {
     _id: ObjectId;
@@ -6,16 +7,12 @@ export interface IDistributerDocument extends Document {
     email: string;
     phoneNumber: string;
     password: string;
-    licence: string;
+    licence: IImage;
     idProof: string;
-    idProofImage: string[];
+    idProofImage: IImage[];
     OTPVerificationStatus: boolean;
     documentVerificationStatus: string;
     distributedMoviesList: string[],
-    licenceUpdateDocument: string | undefined | null
-    licenceUpdateVerificationStatus: boolean;
-    idProofUpdateVerificationStatus: boolean;
-    idProofUpdateDocumentImage: string[] | undefined | null;
     isBlocked: boolean;
 }
 

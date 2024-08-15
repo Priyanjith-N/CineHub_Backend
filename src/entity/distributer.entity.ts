@@ -1,19 +1,17 @@
+import IImage from "../interface/common/IImage.interface";
+
 export interface IDistributer {
     _id: string;
     name: string;
     email: string;
     phoneNumber: string;
     password: string;
-    licence: string;
+    licence: IImage;
     idProof: string;
-    idProofImage: string[];
+    idProofImage: IImage[];
     OTPVerificationStatus: boolean;
     documentVerificationStatus: string;
     distributedMoviesList: string[],
-    licenceUpdateDocument: string | undefined | null
-    licenceUpdateVerificationStatus: boolean;
-    idProofUpdateVerificationStatus: boolean;
-    idProofUpdateDocumentImage: string[] | undefined | null;
     isBlocked: boolean;
 }
 

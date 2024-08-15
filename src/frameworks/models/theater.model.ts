@@ -12,8 +12,8 @@ const theaterSchema: Schema = new Schema<ITheater>({
     },
     images: [
         {
-            type: String,
-            required: true
+            publicId: { type: String, required: true },
+            imageURL: { type: String, required: true }
         }
     ],
     numberOfScreen: {
@@ -22,8 +22,8 @@ const theaterSchema: Schema = new Schema<ITheater>({
         required: true
     },
     licence: {
-        type: String,
-        required: true
+        publicId: { type: String, required: true },
+        imageURL: { type: String, required: true }
     },
     isListed: {
         type: Boolean,

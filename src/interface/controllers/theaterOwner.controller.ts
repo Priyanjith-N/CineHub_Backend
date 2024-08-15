@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware.interface";
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
+import IImage from "../common/IImage.interface";
 
 export default interface ITheaterOwnerController {
     getDistributerList(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
@@ -21,8 +22,8 @@ export interface IGetMovieListOfDistributerData {
 export interface IAddTheaterCredentials {
     name: string;
     theaterOwnerId: string;
-    images: string[];
-    licence: string;
+    images: (string | IImage)[];
+    licence: string | IImage;
 }
 
 export interface IAddScreenCredentials {

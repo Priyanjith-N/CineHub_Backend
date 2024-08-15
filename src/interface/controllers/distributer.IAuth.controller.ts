@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import IImage from "../common/IImage.interface";
 
 export interface IDistributerAuthenticationController {
     googleAuthLogin(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -22,6 +23,6 @@ export interface IDistributerRegisterCredentials {
     password: string | undefined;
     confirmPassword: string | undefined;
     IDProof: string | undefined;
-    IDProofImage: string[] | undefined;
-    licence: string | undefined;
+    IDProofImage: (string | IImage)[] | undefined;
+    licence: string | IImage | undefined;
 }

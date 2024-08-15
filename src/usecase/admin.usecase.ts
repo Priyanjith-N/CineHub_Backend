@@ -188,14 +188,14 @@ export default class AdminUseCase implements IAdminUseCase {
                 throw new AuthenticationError({message: 'This Movie already exist.', statusCode: StatusCodes.BadRequest, errorField: 'name'});
             }
 
-            movieData.bannerPhoto = await this.cloudinaryService.uploadImage(movieData.bannerPhoto);
+            movieData.bannerPhoto = await this.cloudinaryService.uploadImage(movieData.bannerPhoto as string);
 
-            movieData.coverPhoto = await this.cloudinaryService.uploadImage(movieData.coverPhoto);
+            movieData.coverPhoto = await this.cloudinaryService.uploadImage(movieData.coverPhoto as string);
 
             for(let i = 0; i < movieData.cast.length; i++) {
                 const each = movieData.cast[i];
 
-                each.image = await this.cloudinaryService.uploadImage(each.image);
+                each.image = await this.cloudinaryService.uploadImage(each.image as string);
 
                 movieData.cast[i] = each;
             }
@@ -203,7 +203,7 @@ export default class AdminUseCase implements IAdminUseCase {
             for(let i = 0; i < movieData.crew.length; i++) {
                 const each = movieData.crew[i];
 
-                each.image = await this.cloudinaryService.uploadImage(each.image);
+                each.image = await this.cloudinaryService.uploadImage(each.image as string);
 
                 movieData.crew[i] = each;
             }

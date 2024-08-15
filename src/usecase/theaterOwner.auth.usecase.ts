@@ -20,6 +20,7 @@ import AuthenticationError from "../errors/authentication.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import JWTTokenError from "../errors/jwt.error";
 import ITheaterOwner from "../entity/theaterOwner.entity";
+import IImage from "../interface/common/IImage.interface";
 
 export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase {
     private theaterOwnerAuthRepository: ITheaterOwnerAuthRepository;
@@ -136,10 +137,10 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
 
             registerData.password = hashedPassword;
 
-            const secureUrlIDProofImage: string[] = [];
+            const secureUrlIDProofImage: IImage[] = [];
 
             for(const imageDataBase64 of registerData.IDProofImage) {
-                const secure_url = await this.cloudinaryService.uploadImage(imageDataBase64); // returns secure url
+                const secure_url = await this.cloudinaryService.uploadImage(imageDataBase64 as string); // returns secure url
                 secureUrlIDProofImage.push(secure_url);
             }
 

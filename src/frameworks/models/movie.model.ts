@@ -10,13 +10,13 @@ const movieSchema: Schema = new Schema<IMovie>({
         type: String,
         required: true
     },
-    coverPhoto: {
-        type: String,
-        required: true
+    coverPhoto: { 
+        publicId: { type: String, required: true },
+        imageURL: { type: String, required: true }
     },
-    bannerPhoto: {
-        type: String,
-        required: true
+    bannerPhoto: { 
+        publicId: { type: String, required: true },
+        imageURL: { type: String, required: true }
     },
     trailer: {
         type: String,
@@ -49,14 +49,20 @@ const movieSchema: Schema = new Schema<IMovie>({
     },
     cast: [
         {
-            image: { type: String, required: true },
+            image: { 
+                publicId: { type: String, required: true },
+                imageURL: { type: String, required: true }
+            },
             name: { type: String, required: true },
             role: { type: String, required: true }
         }
     ],
     crew: [
         {
-            image: { type: String, required: true },
+            image: { 
+                publicId: { type: String, required: true },
+                imageURL: { type: String, required: true }
+            },
             name: { type: String, required: true },
             role: { type: String, required: true }
         }

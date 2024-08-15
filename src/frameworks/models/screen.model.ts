@@ -28,8 +28,7 @@ const screenSchema: Schema = new Schema<IScreen>({
     theaterId: {
         type: Schema.Types.ObjectId,
         required: true
-    },
-
+    }
 });
 
 const Screens: Model<IScreen> = mongoose.model<IScreen>('Screens', screenSchema);

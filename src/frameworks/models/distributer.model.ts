@@ -19,8 +19,8 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
         required: true
     },
     licence: {
-        type: String,
-        required: true
+        publicId: { type: String, required: true },
+        imageURL: { type: String, required: true },
     },
     idProof: {
         type: String,
@@ -29,8 +29,8 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
     },
     idProofImage: [
         {
-            type: String,
-            required: true
+            publicId: { type: String, required: true },
+            imageURL: { type: String, required: true }
         }
     ],
     OTPVerificationStatus: {
@@ -47,26 +47,6 @@ const distributerSchema: Schema = new Schema<IDistributerDocument>({
     distributedMoviesList: [
         {
             type: Schema.Types.ObjectId
-        }
-    ],
-    licenceUpdateDocument: {
-        type: String,
-        required: false
-    },
-    licenceUpdateVerificationStatus: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
-    idProofUpdateVerificationStatus: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
-    idProofUpdateDocumentImage: [
-        {
-            type: String,
-            required: false
         }
     ],
     isBlocked: {

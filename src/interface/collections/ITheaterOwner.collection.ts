@@ -1,4 +1,5 @@
 import { Document, Model, ObjectId } from "mongoose";
+import IImage from "../common/IImage.interface";
 
 export interface ITheaterOwnerDocument extends Document {
     _id: ObjectId;
@@ -7,11 +8,9 @@ export interface ITheaterOwnerDocument extends Document {
     phoneNumber: string;
     password: string;
     idProof: string;
-    idProofImage: string[];
+    idProofImage: IImage[];
     OTPVerificationStatus: boolean;
     documentVerificationStatus: string;
-    idProofUpdateVerificationStatus: boolean;
-    idProofUpdateDocumentImage: string[] | null | undefined;
     isBlocked: boolean;
 }
 
