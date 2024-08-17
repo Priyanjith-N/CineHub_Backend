@@ -1,7 +1,7 @@
 // interfaces
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
-import IMovieRequest, { IMovieRequestCredentials } from "../../entity/movieRequest.entity";
+import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
 import IScreen from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
 import { IAddTheaterCredentials } from "../controllers/theaterOwner.controller";
@@ -19,5 +19,6 @@ export default interface ITheaterOwnerRepository {
     saveScreen(data: IScreenData): Promise<void | never>;
     getAllScreens(theaterId: string): Promise<IScreen[] | never>;
     isAlreadyRequested(movieId: string, theaterOwnerId: string): Promise<IMovieRequest | null | never>;
-    saveRequest(data: IMovieRequestCredentials): Promise<void | never>
+    saveRequest(data: IMovieRequestCredentials): Promise<void | never>;
+    getAllRequests(theaterOwner: string): Promise<IMovieRequestDetails[] | never>;
 }

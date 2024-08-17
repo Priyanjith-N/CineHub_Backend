@@ -12,8 +12,9 @@ import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import Screens from "../../frameworks/models/screen.model";
 import { IScreenData } from "../../interface/usecase/theaterOwner.usecase";
-import IMovieRequest, { IMovieRequestCredentials } from "../../entity/movieRequest.entity";
+import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
 import MovieRequests from "../../frameworks/models/movieRequest.model";
+import mongoose from "mongoose";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -132,6 +133,48 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             });
 
             await newRequest.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllRequests(theaterOwner: string): Promise<IMovieRequestDetails[] | never> {
+        try {
+            const agg = [
+                {
+                    $match: {
+                        theaterOwnerId: new mongoose.Types.ObjectId(theaterOwner)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'movies', 
+                        localField: 'requestedMovieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                    }
+                }, 
+                {
+                    $unwind: {
+                        path: '$movieData'
+                    }
+                }, 
+                {
+                    $lookup: {
+                        from: 'distributers', 
+                        localField: 'requestedMovieDistributerId', 
+                        foreignField: '_id', 
+                        as: 'distributerData'
+                    }
+                }, 
+                {
+                    $unwind: {
+                        path: '$distributerData'
+                    }
+                }
+            ];
+
+            return await MovieRequests.aggregate(agg);
         } catch (err: any) {
             throw err;
         }

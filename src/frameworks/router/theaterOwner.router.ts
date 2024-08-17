@@ -47,4 +47,6 @@ router.get('/screens/:theaterId', authMiddleware.isAuthenticate.bind(authMiddlew
 
 router.post('/requestmovie', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.requestForMovie.bind(theaterOwnerController));
 
+router.get('/getallmovierequest', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getAllMovieRequests.bind(theaterOwnerController));
+
 export default router;

@@ -14,7 +14,7 @@ import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
 import IImage from "../interface/common/IImage.interface";
-import IMovieRequest, { IMovieRequestCredentials } from "../entity/movieRequest.entity";
+import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../entity/movieRequest.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -215,6 +215,16 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             }
 
             await this.theaterOwnerRepository.saveRequest(data);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllMovieRequests(theaterOwnerId: string | undefined): Promise<IMovieRequestDetails[] | never> {
+        try {
+            if(!theaterOwnerId || !isObjectIdOrHexString(theaterOwnerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.theaterOwnerRepository.getAllRequests(theaterOwnerId);
         } catch (err: any) {
             throw err;
         }
