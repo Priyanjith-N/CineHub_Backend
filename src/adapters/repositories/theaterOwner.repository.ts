@@ -3,7 +3,7 @@ import Distributers from "../../frameworks/models/distributer.model";
 import Movies from "../../frameworks/models/movie.model";
 
 // interfaces
-import ITheaterOwnerRepository from "../../interface/repositories/theaterOwnerRepository";
+import ITheaterOwnerRepository from "../../interface/repositories/theaterOwnerRepository.interface";
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
 import { IAddTheaterCredentials } from "../../interface/controllers/theaterOwner.controller";
@@ -12,6 +12,8 @@ import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import Screens from "../../frameworks/models/screen.model";
 import { IScreenData } from "../../interface/usecase/theaterOwner.usecase";
+import IMovieRequest, { IMovieRequestCredentials } from "../../entity/movieRequest.entity";
+import MovieRequests from "../../frameworks/models/movieRequest.model";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -105,6 +107,31 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getAllScreens(theaterId: string): Promise<IScreen[] | never> {
         try {
             return await Screens.find({ theaterId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async isAlreadyRequested(movieId: string, theaterOwnerId: string): Promise<IMovieRequest | null | never> {
+        try {
+            return await MovieRequests.findOne({ requestedMovieId: movieId, theaterOwnerId, requestStatus: "Pending" });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async saveRequest(data: IMovieRequestCredentials): Promise<void | never> {
+        try {
+            const newRequest = new MovieRequests({
+                profitSharingPerTicket: data.profitSharingPerTicket,
+                timePeriod: data.timePeriod,
+                requestedMovieDistributerId: data.requestedMovieDistributerId,
+                requestedMovieId: data.requestedMovieId,
+                theaterOwnerId: data.theaterOwnerId,
+                date: new Date(Date.now())
+            });
+
+            await newRequest.save();
         } catch (err: any) {
             throw err;
         }

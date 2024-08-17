@@ -11,7 +11,7 @@ import CloudinaryService from '../utils/cloudinaryService.utils';
 import AuthMiddleware from '../middleware/auth.middleware';
 
 // interfaces
-import ITheaterOwnerRepository from '../../interface/repositories/theaterOwnerRepository';
+import ITheaterOwnerRepository from '../../interface/repositories/theaterOwnerRepository.interface';
 import ITheaterOwnerUseCase from '../../interface/usecase/theaterOwner.usecase';
 import ITheaterOwnerController from '../../interface/controllers/theaterOwner.controller';
 import IJWTService from '../../interface/utils/IJWTService';
@@ -44,5 +44,7 @@ router.get('/theater/:theaterId', authMiddleware.isAuthenticate.bind(authMiddlew
 router.post('/addScreen/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addScreen.bind(theaterOwnerController));
 
 router.get('/screens/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getScreens.bind(theaterOwnerController));
+
+router.post('/requestmovie', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.requestForMovie.bind(theaterOwnerController));
 
 export default router;

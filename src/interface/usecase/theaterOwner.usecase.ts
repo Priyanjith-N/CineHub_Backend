@@ -4,6 +4,7 @@ import { IDistributerList } from "../../entity/distributer.entity";
 import IScreen, { ISeatCategory, ISeatLayout } from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
 import { IAddScreenCredentials, IGetMovieListOfDistributerData } from "../controllers/theaterOwner.controller";
+import { IMovieRequestCredentials } from "../../entity/movieRequest.entity";
 
 export default interface ITheaterOwnerUseCase {
     getDistributerList(): Promise<IDistributerList[] | never>;
@@ -13,6 +14,7 @@ export default interface ITheaterOwnerUseCase {
     addScreen(data: IAddScreenCredentials, theaterId: string | undefined): Promise<void>;
     getAllScreens(theaterId: string | undefined): Promise<IScreen[] | never>;
     getTheater(theaterId: string): Promise<ITheater | never>;
+    requestMovie(data: IMovieRequestCredentials): Promise<void | never>
 }
 
 export interface IScreenData {

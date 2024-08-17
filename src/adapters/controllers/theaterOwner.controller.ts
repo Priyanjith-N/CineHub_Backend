@@ -8,6 +8,7 @@ import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
 import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
+import { IMovieRequestCredentials } from "../../entity/movieRequest.entity";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -124,6 +125,26 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             res.status(StatusCodes.Success).json({
                 message: "Successfull",
                 data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async requestForMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data: IMovieRequestCredentials = {
+                profitSharingPerTicket: req.body.profitSharingPerTicket,
+                timePeriod: req.body.timePeriod,
+                requestedMovieId: req.body.requestedMovieId,
+                requestedMovieDistributerId: req.body.requestedMovieDistributerId,
+                theaterOwnerId: req.id
+            }
+
+            await this.theaterOwnerUseCase.requestMovie(data);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfully Movie requested."
             });
         } catch (err: any) {
             next(err);

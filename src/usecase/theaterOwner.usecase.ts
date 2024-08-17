@@ -1,7 +1,7 @@
 // interfaces
 import { isObjectIdOrHexString } from "mongoose";
 import { IDistributerList } from "../entity/distributer.entity";
-import ITheaterOwnerRepository from "../interface/repositories/theaterOwnerRepository";
+import ITheaterOwnerRepository from "../interface/repositories/theaterOwnerRepository.interface";
 import ITheaterOwnerUseCase, { IScreenData } from "../interface/usecase/theaterOwner.usecase";
 
 // error
@@ -14,6 +14,7 @@ import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
 import IImage from "../interface/common/IImage.interface";
+import IMovieRequest, { IMovieRequestCredentials } from "../entity/movieRequest.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -196,6 +197,24 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             if(!data) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async requestMovie(data: IMovieRequestCredentials): Promise<void | never> {
+        try {
+            if(!data.profitSharingPerTicket || !data.timePeriod || !data.requestedMovieDistributerId || !isObjectIdOrHexString(data.requestedMovieDistributerId) || !data.requestedMovieId || !isObjectIdOrHexString(data.requestedMovieId) || !data.theaterOwnerId || !isObjectIdOrHexString(data.theaterOwnerId)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            const isAlreadyRequested: IMovieRequest | null = await this.theaterOwnerRepository.isAlreadyRequested(data.requestedMovieId, data.theaterOwnerId);
+
+            if(isAlreadyRequested) {
+                throw new AuthenticationError({message: `Already requested for this movie.`, statusCode: StatusCodes.BadRequest, errorField: 'AlreadyRequested'});
+            }
+
+            await this.theaterOwnerRepository.saveRequest(data);
         } catch (err: any) {
             throw err;
         }
