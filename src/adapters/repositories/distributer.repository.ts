@@ -5,6 +5,9 @@ import Movies from "../../frameworks/models/movie.model";
 import IMovie from "../../entity/movie.entity";
 import IDistributerRepository from "../../interface/repositories/distributer.repository";
 import Distributers from "../../frameworks/models/distributer.model";
+import mongoose from "mongoose";
+import MovieRequests from "../../frameworks/models/movieRequest.model";
+import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 
 export default class DistributerRepository implements IDistributerRepository {
     async getAllAvailableMovies(): Promise<IMovie[] | never> {
@@ -43,6 +46,48 @@ export default class DistributerRepository implements IDistributerRepository {
     async editProfitSharingOfDistributedMovie(distributerId: string, movieId: string, releaseDate: Date, profitSharingPerTicket: number): Promise<void | never> {
         try {
             await Movies.updateOne({ _id: movieId, distributerId }, { $set: { releaseDate, profitSharingPerTicket } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllMovieRequests(distributerId: string): Promise<IMovieRequestDetailsForDistributer[] | never> {
+        try {
+            const agg = [
+                {
+                    $match: {
+                        requestedMovieDistributerId: new mongoose.Types.ObjectId(distributerId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'movies', 
+                        localField: 'requestedMovieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                    }
+                }, 
+                {
+                    $unwind: {
+                        path: '$movieData'
+                    }
+                }, 
+                {
+                    $lookup: {
+                        from: 'theaterowners', 
+                        localField: 'theaterOwnerId', 
+                        foreignField: '_id', 
+                        as: 'theaterOwnerData'
+                    }
+                }, 
+                {
+                    $unwind: {
+                        path: '$theaterOwnerData'
+                    }
+                }
+            ];
+
+            return await MovieRequests.aggregate(agg);
         } catch (err: any) {
             throw err;
         }

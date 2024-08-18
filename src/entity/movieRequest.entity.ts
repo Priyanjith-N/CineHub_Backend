@@ -1,6 +1,7 @@
 import { Schema } from "mongoose";
 import { IDistributer } from "./distributer.entity";
 import IMovie from "./movie.entity";
+import ITheaterOwner from "./theaterOwner.entity";
 
 export default interface IMovieRequest {
     _id: string;
@@ -23,5 +24,10 @@ export interface IMovieRequestCredentials {
 
 export interface IMovieRequestDetails extends IMovieRequest {
     distributerData: IDistributer,
+    movieData: IMovie
+}
+
+export interface IMovieRequestDetailsForDistributer extends IMovieRequest {
+    theaterOwnerData: ITheaterOwner,
     movieData: IMovie
 }

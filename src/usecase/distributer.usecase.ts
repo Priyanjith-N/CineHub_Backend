@@ -4,6 +4,7 @@ import IMovie from "../entity/movie.entity";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import IDistributerRepository from "../interface/repositories/distributer.repository";
 import IDistributerUseCase from "../interface/usecase/distributer.usecase.interface";
+import { IMovieRequestDetailsForDistributer } from "../entity/movieRequest.entity";
 
 export default class DistributerUseCase implements IDistributerUseCase {
     private distributerRepository: IDistributerRepository;
@@ -55,6 +56,16 @@ export default class DistributerUseCase implements IDistributerUseCase {
             }
 
             await this.distributerRepository.editProfitSharingOfDistributedMovie(distributerId, movieId, releaseDate, profitSharingPerTicket);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllMovieRequests(distributerId: string | undefined): Promise<IMovieRequestDetailsForDistributer[] | never> {
+        try {
+            if(!distributerId || !isObjectIdOrHexString(distributerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.distributerRepository.getAllMovieRequests(distributerId);
         } catch (err: any) {
             throw err;
         }

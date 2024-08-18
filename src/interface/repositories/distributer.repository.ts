@@ -1,5 +1,6 @@
 // interfaces
 import IMovie from "../../entity/movie.entity";
+import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 
 export default interface IDistributerRepository {
     getAllAvailableMovies(): Promise<IMovie[] | never>;
@@ -7,4 +8,5 @@ export default interface IDistributerRepository {
     distributeMovie(distributerId: string, movieId: string, releaseDate: Date, profitSharingPerTicket: number): Promise<void | never>;
     getDistibutedMovies(distributerId: string): Promise<IMovie[] | never>;
     editProfitSharingOfDistributedMovie(distributerId: string, movieId: string, releaseDate: Date, profitSharingPerTicket: number): Promise<void | never>;
+    getAllMovieRequests(distributerId: string): Promise<IMovieRequestDetailsForDistributer[] | never>;
 }

@@ -8,6 +8,7 @@ import IMovie from "../../entity/movie.entity";
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
 import { AuthRequest } from "../../interface/middlewares/authMiddleware.interface";
+import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 
 export default class DistributerController implements IDistributerController {
     private distributerUseCase: IDistributerUseCase;
@@ -72,6 +73,21 @@ export default class DistributerController implements IDistributerController {
 
             res.status(StatusCodes.Success).json({
                 message: 'Successfully updated.'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getAllMovieRequests(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const distributerId: string | undefined = req.id;
+
+            const data: IMovieRequestDetailsForDistributer[] = await this.distributerUseCase.getAllMovieRequests(distributerId);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Successfull',
+                data
             });
         } catch (err: any) {
             next(err);
