@@ -4,6 +4,7 @@ import IMovie from "../../entity/movie.entity";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
 import IScreen from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
+import ITheaterOwnerMovieCollection from "../../entity/theaterOwnerMovieCollection.entity";
 import { IAddTheaterCredentials } from "../controllers/theaterOwner.controller";
 import { IScreenData } from "../usecase/theaterOwner.usecase";
 
@@ -21,4 +22,5 @@ export default interface ITheaterOwnerRepository {
     isAlreadyRequested(movieId: string, theaterOwnerId: string): Promise<IMovieRequest | null | never>;
     saveRequest(data: IMovieRequestCredentials): Promise<void | never>;
     getAllRequests(theaterOwner: string): Promise<IMovieRequestDetails[] | never>;
+    isAlreadyInCollection(movieId: string, theaterOwnerId: string): Promise<ITheaterOwnerMovieCollection | null | never>;
 }

@@ -93,4 +93,37 @@ export default class DistributerController implements IDistributerController {
             next(err);
         }
     }
+
+    async approveMovieRequest(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const requestId: string | undefined = req.params.requestId;
+            const theaterOwnerEmail: string | undefined = req.body.theaterOwnerEmail; 
+            const movieName: string | undefined = req.body.movieName;
+
+            await this.distributerUseCase.approveMovieRequest(requestId, theaterOwnerEmail, movieName);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Request Approved'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async rejectMovieRequest(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const requestId: string | undefined = req.params.requestId; 
+            const theaterOwnerEmail: string | undefined = req.body.theaterOwnerEmail; 
+            const movieName: string | undefined = req.body.movieName;
+            const reason: string | undefined = req.body.reason; 
+
+            await this.distributerUseCase.rejectMovieRequest(requestId, theaterOwnerEmail, movieName, reason);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Request Rejected'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
 }

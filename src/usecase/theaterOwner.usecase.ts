@@ -15,6 +15,7 @@ import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
 import IImage from "../interface/common/IImage.interface";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../entity/movieRequest.entity";
+import ITheaterOwnerMovieCollection from "../entity/theaterOwnerMovieCollection.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -210,8 +211,12 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
 
             const isAlreadyRequested: IMovieRequest | null = await this.theaterOwnerRepository.isAlreadyRequested(data.requestedMovieId, data.theaterOwnerId);
 
+            const isMovieExistInCollection: ITheaterOwnerMovieCollection | null = await this.theaterOwnerRepository.isAlreadyInCollection(data.requestedMovieId, data.theaterOwnerId);
+
             if(isAlreadyRequested) {
-                throw new AuthenticationError({message: `Already requested for this movie.`, statusCode: StatusCodes.BadRequest, errorField: 'AlreadyRequested'});
+                throw new AuthenticationError({message: `Already requested for this movie.`, statusCode: StatusCodes.BadRequest,   errorField: 'AlreadyRequested'});
+            }else if(isMovieExistInCollection) {
+                throw new AuthenticationError({message: `Already exist movie in collection.`, statusCode: StatusCodes.BadRequest,   errorField: 'AlreadyExists'});
             }
 
             await this.theaterOwnerRepository.saveRequest(data);

@@ -15,6 +15,8 @@ import { IScreenData } from "../../interface/usecase/theaterOwner.usecase";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
 import MovieRequests from "../../frameworks/models/movieRequest.model";
 import mongoose from "mongoose";
+import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMovieCollection.model";
+import ITheaterOwnerMovieCollection from "../../entity/theaterOwnerMovieCollection.entity";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -118,6 +120,26 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             return await MovieRequests.findOne({ requestedMovieId: movieId, theaterOwnerId, requestStatus: "Pending" });
         } catch (err: any) {
             throw err;
+        }
+    }
+
+    async isAlreadyInCollection(movieId: string, theaterOwnerId: string): Promise<ITheaterOwnerMovieCollection | null | never> {
+        try {
+            await this.deleteAllDueValiditiyMovies();
+
+            return await TheaterOwnerMovieCollections.findOne({ theaterOwnerId, movieId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    private async deleteAllDueValiditiyMovies(): Promise<void | never> {
+        try {
+            const currentData: Date = new Date(Date.now());
+
+            await TheaterOwnerMovieCollections.deleteMany({ movieValidity: { $gt: { currentData } } })
+        } catch (err: any) {
+            
         }
     }
 

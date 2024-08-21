@@ -7,7 +7,9 @@ import IDistributerRepository from "../../interface/repositories/distributer.rep
 import Distributers from "../../frameworks/models/distributer.model";
 import mongoose from "mongoose";
 import MovieRequests from "../../frameworks/models/movieRequest.model";
-import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
+import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
+import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMovieCollection.model";
+import { IDistributer, IDistributerList } from "../../entity/distributer.entity";
 
 export default class DistributerRepository implements IDistributerRepository {
     async getAllAvailableMovies(): Promise<IMovie[] | never> {
@@ -56,7 +58,8 @@ export default class DistributerRepository implements IDistributerRepository {
             const agg = [
                 {
                     $match: {
-                        requestedMovieDistributerId: new mongoose.Types.ObjectId(distributerId)
+                        requestedMovieDistributerId: new mongoose.Types.ObjectId(distributerId),
+                        requestStatus: "Pending"
                     }
                 },
                 {
@@ -88,6 +91,52 @@ export default class DistributerRepository implements IDistributerRepository {
             ];
 
             return await MovieRequests.aggregate(agg);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+
+    async getDistributerById(id: string): Promise<IDistributerList | null | never> {
+        try {
+            return await Distributers.findOne({ _id: id }, { _id: 1, name: 1, distributedMoviesList: 1 });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+    
+    async approveMovieRequest(requestId: string): Promise<IMovieRequest | null | never> {
+        try {
+          return await MovieRequests.findOneAndUpdate({ _id: requestId }, { $set: { requestStatus: "Approved" } }, { new: true });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async rejectMovieRequest(requestId: string): Promise<void | never> {
+        try {
+            await MovieRequests.findOneAndUpdate({ _id: requestId }, { $set: { requestStatus: "Rejected" } }, { new: true });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addMovieToCollection(approvedRequest: IMovieRequest): Promise<void | never> {
+        try {
+
+            const movieValidity: Date = new Date(Date.now());
+            movieValidity.setDate(movieValidity.getDate() + approvedRequest.timePeriod);
+
+            const newMovieInCollection = new TheaterOwnerMovieCollections({
+                movieDistributerId: approvedRequest.requestedMovieDistributerId,
+                movieId: approvedRequest.requestedMovieId,
+                profitSharingPerTicket: approvedRequest.profitSharingPerTicket,
+                theaterOwnerId: approvedRequest.theaterOwnerId,
+                timePeriod: approvedRequest.timePeriod,
+                movieValidity
+            });
+
+            await newMovieInCollection.save();
         } catch (err: any) {
             throw err;
         }

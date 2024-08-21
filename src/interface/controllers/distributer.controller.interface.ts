@@ -9,4 +9,6 @@ export default interface IDistributerController {
     getMyMovies(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     editProfitSharingOfDistributedMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllMovieRequests(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    approveMovieRequest(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    rejectMovieRequest(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
