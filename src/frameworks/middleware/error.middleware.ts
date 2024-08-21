@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "../../enums/statusCode.enum";
 
 // errors
-import { TokenExpiredError } from 'jsonwebtoken';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import AuthenticationError from "../../errors/authentication.error";
 import JWTTokenError from "../../errors/jwt.error";
 import RequiredCredentialsNotGiven from "../../errors/requiredCredentialsNotGiven.error";
@@ -17,7 +17,7 @@ export default function errorHandler(err: any, req: Request, res: Response, next
         }
         
         res.status(err.details.statusCode!).json({message: err.message, errorField: err.details.errorField});
-    }else if(err instanceof TokenExpiredError) {
+    }else if(err instanceof TokenExpiredError || err instanceof JsonWebTokenError) {
         res.status(401).json({ errorField: "Token", message: 'Token expired' });
     }else if(err instanceof JWTTokenError){
         res.status(err.details.statusCode).json({ errorField: "Token", message: err.message });
