@@ -28,11 +28,13 @@ export default class AuthMiddleware implements IAuthMiddleware {
 
     async isAuthenticate(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
         try {
-            const token: string | undefined = req.cookies.token;
+            const authorizationHeader: string | undefined = req.headers.authorization;
 
-            if(!token) {
+            if(!authorizationHeader) {
                 throw new JWTTokenError({ message: "NOT AUTHENTICATED", statusCode: StatusCodes.Unauthorized });
             }
+
+            const token = authorizationHeader.split(' ')[1];
 
             const decoded: IPayload = this.jwtService.verifyToken(token);
 

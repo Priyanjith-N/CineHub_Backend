@@ -19,11 +19,10 @@ export default class UserAuthenticationController implements IUserAuthentication
             const idToken: string | undefined = req.body.token;
 
             const token: string = await this.userAuthUseCase.googleLoginUser(idToken);
-
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -39,11 +38,10 @@ export default class UserAuthenticationController implements IUserAuthentication
             
             // usecase for authenticateing User
             const token: string = await this.userAuthUseCase.authenticateUser(email, password); // return token if credentials and user is verified or error
-
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -89,10 +87,10 @@ export default class UserAuthenticationController implements IUserAuthentication
             const token: string = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
 
             res.cookie('emailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
-            res.cookie('token', token, { httpOnly: true }); // seting token as http only cookie
 
             res.status(StatusCodes.Success).json({
-                message: "Successfuly account verified"
+                message: "Successfuly account verified",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -115,9 +113,9 @@ export default class UserAuthenticationController implements IUserAuthentication
 
     async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            const token: string | undefined = req.cookies.token;
+            const authorizationHeader: string | undefined = req.headers.authorization;
 
-            await this.userAuthUseCase.verifyToken(token);
+            await this.userAuthUseCase.verifyToken(authorizationHeader);
 
             res.status(StatusCodes.Success).json({
                 message: 'User is authenticated'

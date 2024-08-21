@@ -22,11 +22,10 @@ export default class AdminAuthenticationController implements IAdminAuthenticati
             }: IAdminLoginCredentials = req.body;
 
             const token: string = await this.adminAuthUseCase.authenticateUser(email, password);
-
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -35,9 +34,9 @@ export default class AdminAuthenticationController implements IAdminAuthenticati
 
     async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            const token: string | undefined = req.cookies.token;
+            const authorizationHeader: string | undefined = req.headers.authorization;
 
-            await this.adminAuthUseCase.verifyToken(token);
+            await this.adminAuthUseCase.verifyToken(authorizationHeader);
 
             res.status(StatusCodes.Success).json({
                 message: 'Admin is authenticated'

@@ -7,5 +7,5 @@ export default interface IDistributerAuthUseCase {
     register(registerData: IDistributerRegisterCredentials): Promise<void | never>;
     OTPVerification(email: string | undefined, otp: string | undefined): Promise<void | never>;
     OTPResend(email: string | undefined): Promise<void | never>;
-    verifyToken(token: string | undefined): Promise<void | never>;
+    verifyToken(authorizationHeader: string | undefined): Promise<void | never>;
 }

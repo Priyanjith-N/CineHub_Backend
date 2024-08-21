@@ -49,11 +49,13 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
         }
     }
 
-    async verifyToken(token: string | undefined): Promise<void | never> {
+    async verifyToken(authorizationHeader: string | undefined): Promise<void | never> {
         try {
-            if(!token) {
+            if(!authorizationHeader) {
                 throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'Admin not authenticated' })
             }
+
+            const token = authorizationHeader.split(' ')[1];
 
             const decoded: IPayload = this.jwtService.verifyToken(token);
 

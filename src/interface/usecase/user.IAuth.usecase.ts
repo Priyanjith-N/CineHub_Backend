@@ -6,6 +6,6 @@ export default interface IUserAuthUseCase {
     userRegister(registerData: IUserRegisterCredentials): Promise<void | never>;
     OTPVerification(email: string | undefined, otp: string): Promise<string | never>;
     OTPResend(email: string | undefined): Promise<void | never>;
-    verifyToken(token: string | undefined): Promise<void | never>;
+    verifyToken(authorizationHeader: string | undefined): Promise<void | never>;
 }
 

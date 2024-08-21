@@ -188,11 +188,13 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
         }
     }
 
-    async verifyToken(token: string | undefined): Promise<void | never> {
+    async verifyToken(authorizationHeader: string | undefined): Promise<void | never> {
         try {
-            if(!token) {
+            if(!authorizationHeader) {
                 throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not authenticated' })
             }
+
+            const token = authorizationHeader.split(' ')[1];
 
             const decoded: IPayload = this.jwtService.verifyToken(token);
 

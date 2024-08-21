@@ -19,11 +19,10 @@ export default class DistributerAuthenticationController implements IDistributer
             const idToken: string | undefined = req.body.token;
 
             const token: string = await this.distributerAuthUseCase.googleLoginDistributer(idToken);
-
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -40,10 +39,9 @@ export default class DistributerAuthenticationController implements IDistributer
             // usecase for authenticateing distributer
             const token: string = await this.distributerAuthUseCase.authenticateDistributer(email, password); // return token or throw an error
 
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
-
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -113,9 +111,9 @@ export default class DistributerAuthenticationController implements IDistributer
 
     async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            const token: string | undefined = req.cookies.token;
+            const authorizationHeader: string | undefined = req.headers.authorization;
 
-            await this.distributerAuthUseCase.verifyToken(token);
+            await this.distributerAuthUseCase.verifyToken(authorizationHeader);
 
             res.status(StatusCodes.Success).json({
                 message: 'Distributer is authenticated'

@@ -18,14 +18,8 @@ export default function errorHandler(err: any, req: Request, res: Response, next
         
         res.status(err.details.statusCode!).json({message: err.message, errorField: err.details.errorField});
     }else if(err instanceof TokenExpiredError) {
-        // clearing http only cookie
-        res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) });
-
         res.status(401).json({ errorField: "Token", message: 'Token expired' });
     }else if(err instanceof JWTTokenError){
-        // clearing http only cookie
-        res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) });
-        
         res.status(err.details.statusCode).json({ errorField: "Token", message: err.message });
     }else if(err instanceof RequiredCredentialsNotGiven) {
         res.status(StatusCodes.BadRequest).json({ requiredCredentialsError: true, message: err.message })

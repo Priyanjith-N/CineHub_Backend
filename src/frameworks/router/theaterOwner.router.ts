@@ -31,22 +31,25 @@ const theaterOwnerRepository: ITheaterOwnerRepository = new TheaterOwnerReposito
 const theaterOwnerUseCase: ITheaterOwnerUseCase = new TheaterOwnerUseCase(theaterOwnerRepository, cloudinaryService);
 const theaterOwnerController: ITheaterOwnerController = new TheaterOwnerController(theaterOwnerUseCase);
 
-router.get('/getdistributerlist', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getDistributerList.bind(theaterOwnerController));
+// router middleware
+router.use(authMiddleware.isAuthenticate.bind(authMiddleware));
 
-router.get('/getmovielist/:distributerId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getMovieListOfDistributer.bind(theaterOwnerController));
+router.get('/getdistributerlist', theaterOwnerController.getDistributerList.bind(theaterOwnerController));
 
-router.post('/addtheater', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addTheater.bind(theaterOwnerController));
+router.get('/getmovielist/:distributerId', theaterOwnerController.getMovieListOfDistributer.bind(theaterOwnerController));
 
-router.get('/theater', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getAllTheaters.bind(theaterOwnerController));
+router.post('/addtheater', theaterOwnerController.addTheater.bind(theaterOwnerController));
 
-router.get('/theater/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getTheater.bind(theaterOwnerController));
+router.get('/theater', theaterOwnerController.getAllTheaters.bind(theaterOwnerController));
 
-router.post('/addScreen/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.addScreen.bind(theaterOwnerController));
+router.get('/theater/:theaterId', theaterOwnerController.getTheater.bind(theaterOwnerController));
 
-router.get('/screens/:theaterId', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getScreens.bind(theaterOwnerController));
+router.post('/addScreen/:theaterId', theaterOwnerController.addScreen.bind(theaterOwnerController));
 
-router.post('/requestmovie', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.requestForMovie.bind(theaterOwnerController));
+router.get('/screens/:theaterId', theaterOwnerController.getScreens.bind(theaterOwnerController));
 
-router.get('/getallmovierequest', authMiddleware.isAuthenticate.bind(authMiddleware), theaterOwnerController.getAllMovieRequests.bind(theaterOwnerController));
+router.post('/requestmovie', theaterOwnerController.requestForMovie.bind(theaterOwnerController));
+
+router.get('/getallmovierequest', theaterOwnerController.getAllMovieRequests.bind(theaterOwnerController));
 
 export default router;

@@ -19,11 +19,10 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             const idToken: string | undefined = req.body.token;
 
             const token: string = await this.theaterOwnerAuthUseCase.googleLoginUser(idToken);
-
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
             
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -40,10 +39,9 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             // usecase for authenticateing theater owners
             const token: string = await this.theaterOwnerAuthUseCase.authenticateUser(email, password); // return token or throw an error
 
-            res.cookie('token', token, { httpOnly: true }); // Set http only cookie for token
-
             res.status(StatusCodes.Success).json({
-                message: "Successfuly login"
+                message: "Successfuly login",
+                token
             });
         } catch (err: any) {
             next(err);
@@ -112,9 +110,9 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
 
     async verifyTokenRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            const token: string | undefined = req.cookies.token;
+            const authorizationHeader: string | undefined = req.headers.authorization;
 
-            await this.theaterOwnerAuthUseCase.verifyToken(token);
+            await this.theaterOwnerAuthUseCase.verifyToken(authorizationHeader);
 
             res.status(StatusCodes.Success).json({
                 message: 'Theater Owner is authenticated'

@@ -31,18 +31,21 @@ const distributerRepository: IDistributerRepository = new DistributerRepository(
 const distributerUseCase: IDistributerUseCase = new DistributerUseCase(distributerRepository, emailService);
 const distributerController: IDistributerController = new DistributerController(distributerUseCase);
 
+// router middleware
+router.use(authMiddleware.isAuthenticate.bind(authMiddleware));
+
 router.get('/getallavailablemovies', distributerController.getAllAvailableMovies.bind(distributerController));
 
-router.patch('/distributemovie/:id', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.distributeMovie.bind(distributerController));
+router.patch('/distributemovie/:id', distributerController.distributeMovie.bind(distributerController));
 
-router.get('/getmymovies', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.getMyMovies.bind(distributerController));
+router.get('/getmymovies', distributerController.getMyMovies.bind(distributerController));
 
-router.patch('/editprofitsharingofdistributedmovie/:id', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.editProfitSharingOfDistributedMovie.bind(distributerController));
+router.patch('/editprofitsharingofdistributedmovie/:id', distributerController.editProfitSharingOfDistributedMovie.bind(distributerController));
 
-router.get('/getallmovierequests', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.getAllMovieRequests.bind(distributerController));
+router.get('/getallmovierequests', distributerController.getAllMovieRequests.bind(distributerController));
 
-router.patch('/approvemovierequest/:requestId', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.approveMovieRequest.bind(distributerController));
+router.patch('/approvemovierequest/:requestId', distributerController.approveMovieRequest.bind(distributerController));
 
-router.patch('/rejectmovierequest/:requestId', authMiddleware.isAuthenticate.bind(authMiddleware), distributerController.rejectMovieRequest.bind(distributerController));
+router.patch('/rejectmovierequest/:requestId', distributerController.rejectMovieRequest.bind(distributerController));
 
 export default router;
