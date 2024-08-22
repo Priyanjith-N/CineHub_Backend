@@ -229,9 +229,18 @@ export default class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getAllMovies(): Promise<IMovie[] | never> {
+    async getAllMovies(page: number, isListed: boolean, limit: number): Promise<IMovie[] | never> {
         try {
-            return await Movies.find();
+            const skipNumber: number = (page - 1) * limit;
+            return await Movies.find({ isListed }).skip(skipNumber).limit(limit);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalMovieCount(isListed: boolean): Promise<number | never> {
+        try {
+            return await Movies.find({ isListed }).countDocuments();
         } catch (err: any) {
             throw err;
         }

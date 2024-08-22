@@ -6,7 +6,7 @@ import { INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../../inter
 
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
-import IMovie, { IMovieData } from "../../entity/movie.entity";
+import IMovie, { IDataMovies, IMovieData } from "../../entity/movie.entity";
 import { IDistributer } from "../../entity/distributer.entity";
 import ITheaterOwner from "../../entity/theaterOwner.entity";
 import IUser from "../../entity/user.entity";
@@ -225,11 +225,15 @@ export default class AdminController implements IAdminController {
 
     async getAllMovies(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const movies: IMovie[] = await this.adminUseCase.getAllMovies();
+            const page: number = Number(req.query.page);
+            const limit: number = Number(req.query.limit);
+            const isListed: boolean = req.query.isListed === "true";
+
+            const data: IDataMovies = await this.adminUseCase.getAllMovies(page, isListed, limit);
 
             res.status(StatusCodes.Success).json({
                 message: "Successfull",
-                data: movies
+                data
             });
         } catch (err: any) {
            next(err); 

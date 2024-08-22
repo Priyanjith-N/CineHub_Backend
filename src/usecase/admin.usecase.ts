@@ -7,7 +7,7 @@ import IEmailService from "../interface/utils/IEmailService";
 
 // errors
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
-import IMovie, { IMovieData } from "../entity/movie.entity";
+import IMovie, { IDataMovies, IMovieData } from "../entity/movie.entity";
 import { StatusCodes } from "../enums/statusCode.enum";
 import AuthenticationError from "../errors/authentication.error";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
@@ -231,11 +231,19 @@ export default class AdminUseCase implements IAdminUseCase {
         }
     }
 
-    async getAllMovies(): Promise<IMovie[] | never> {
+    async getAllMovies(page: number, isListed: boolean, limit: number): Promise<IDataMovies | never> {
         try {
-            const movies: IMovie[] = await this.adminRepository.getAllMovies();
+            if(page === 0 || !page || !limit) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
-            return movies;
+            const movies: IMovie[] = await this.adminRepository.getAllMovies(page, isListed, limit);
+            const totalMovieCount: number = await this.adminRepository.getTotalMovieCount(isListed);
+
+            const data: IDataMovies = {
+                movies,
+                totalMovieCount
+            }
+
+            return data;
         } catch (err: any) {
             throw err;
         }

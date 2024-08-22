@@ -1,6 +1,6 @@
 // interfaces
 import { IDistributer } from "../../entity/distributer.entity";
-import IMovie, { IMovieData } from "../../entity/movie.entity";
+import IMovie, { IDataMovies, IMovieData } from "../../entity/movie.entity";
 import ITheaterOwner from "../../entity/theaterOwner.entity";
 import IUser from "../../entity/user.entity";
 import { INotVerifiedDistributers, INotVerifiedTheaterOwners } from "../repositories/admin.repository.interface";
@@ -19,7 +19,7 @@ export interface IAdminUseCase {
     getDistributer(id: string | undefined): Promise<INotVerifiedDistributers | never>;
     addMovie(movieData: IMovieData): Promise<void | never>;
     getMovie(movieId: string | undefined): Promise<IMovie | never>;
-    getAllMovies(): Promise<IMovie[] | never>;
+    getAllMovies(page: number, isListed: boolean, limit: number): Promise<IDataMovies | never>;
     listOrUnlistMovies(id: string | undefined, status: boolean | undefined): Promise<void | never>;
     editMovie(movieData: IMovieData, movieId: string | undefined): Promise<void | never>;
 }

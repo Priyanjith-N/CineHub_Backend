@@ -44,3 +44,8 @@ interface IMovieWorkerDetails {
     name: string;
     role: string;
 }
+
+export interface IDataMovies {
+    movies: IMovie[];
+    totalMovieCount: number;
+}
