@@ -57,7 +57,8 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
                 name: data.name,
                 images: data.images,
                 ownerId: data.theaterOwnerId,
-                licence: data.licence
+                licence: data.licence,
+                location: data.location
             });
 
             await newTheater.save();

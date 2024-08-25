@@ -13,7 +13,7 @@ import ITheater from "../entity/theater.entity";
 import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
-import IImage from "../interface/common/IImage.interface";
+import IImage, { ILocation } from "../interface/common/IImage.interface";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../entity/movieRequest.entity";
 import ITheaterOwnerMovieCollection from "../entity/theaterOwnerMovieCollection.entity";
 
@@ -59,9 +59,9 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
         }
     }
 
-    async addTheater(theaterOwnerId: string | undefined, name: string | undefined, images: string[] | undefined, licence: string | undefined): Promise<void | never> {
+    async addTheater(theaterOwnerId: string | undefined, name: string | undefined, images: string[] | undefined, licence: string | undefined, location: ILocation | undefined): Promise<void | never> {
         try {
-            if(!theaterOwnerId || !name || !images || !licence || !images.length) {
+            if(!theaterOwnerId || !name || !images || !licence || !images.length || !location || !location.lng || !location.lat) {
                 throw new RequiredCredentialsNotGiven('Provide all required details.');
             }
 
@@ -75,7 +75,8 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
                 theaterOwnerId,
                 name,
                 images,
-                licence
+                licence,
+                location
             }
 
             theaterCredentials.licence = await this.cloudinaryService.uploadImage(theaterCredentials.licence as string);

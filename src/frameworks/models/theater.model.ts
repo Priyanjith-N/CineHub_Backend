@@ -16,6 +16,10 @@ const theaterSchema: Schema = new Schema<ITheater>({
             imageURL: { type: String, required: true }
         }
     ],
+    location: {
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true }
+    },
     numberOfScreen: {
         type: Number,
         default: 0,

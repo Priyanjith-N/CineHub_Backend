@@ -9,6 +9,7 @@ import IMovie from "../../entity/movie.entity";
 import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
+import { ILocation } from "../../interface/common/IImage.interface";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -52,8 +53,9 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             const name: string | undefined = req.body.name;
             const images: string[] | undefined = req.body.images;
             const licence: string | undefined = req.body.licence;
+            const location: ILocation | undefined = req.body.location;
 
-            await this.theaterOwnerUseCase.addTheater(theaterOwnerId, name, images, licence);
+            await this.theaterOwnerUseCase.addTheater(theaterOwnerId, name, images, licence, location);
 
             res.status(StatusCodes.Success).json({
                 message: "Successfully Theater Added."

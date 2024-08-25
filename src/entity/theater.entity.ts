@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose";
-import IImage from "../interface/common/IImage.interface";
+import IImage, { ILocation } from "../interface/common/IImage.interface";
 
 export default interface ITheater {
     _id: string;
@@ -7,6 +7,7 @@ export default interface ITheater {
     ownerId: string | ObjectId;
     numberOfScreen: number;
     images: IImage[];
+    location: ILocation;
     licence: IImage;
     isListed: boolean;
 }
