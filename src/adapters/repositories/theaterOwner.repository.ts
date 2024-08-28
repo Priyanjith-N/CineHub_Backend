@@ -16,7 +16,9 @@ import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from ".
 import MovieRequests from "../../frameworks/models/movieRequest.model";
 import mongoose from "mongoose";
 import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMovieCollection.model";
-import ITheaterOwnerMovieCollection from "../../entity/theaterOwnerMovieCollection.entity";
+import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
+import IMovieSchedule, { IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
+import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -198,6 +200,68 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             ];
 
             return await MovieRequests.aggregate(agg);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllOwnedMoviesFromCollection(theaterOwnerId: string): Promise<ITheaterOwnerMovieDetails[] | never> {
+        try {
+            const agg = [
+                {
+                    $match: {
+                        theaterOwnerId: new mongoose.Types.ObjectId(theaterOwnerId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'movies', 
+                        localField: 'movieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                    }
+                }, 
+                {
+                    $unwind: {
+                    path: '$movieData'
+                    }
+                }
+            ]
+
+            return await TheaterOwnerMovieCollections.aggregate(agg);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getScreenById(screenId: string): Promise<IScreen | null | never> {
+        try {
+            return await Screens.findOne({ _id: screenId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][]): Promise<void | never> {
+        try {
+            const newSchedule = new MovieSchedules({
+                date: new Date(data.date!),
+                screenId: data.screenId,
+                movieId: data.movieId,
+                startTime: data.startTime,
+                endTime: data.endTime,
+                seats: seatLayout
+            });
+
+            await newSchedule.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllSchedulesBasedOnDates(screenId: string, date: Date): Promise<IMovieSchedule[] | never> {
+        try {
+            return await MovieSchedules.find({ screenId, date: new Date(date) });
         } catch (err: any) {
             throw err;
         }

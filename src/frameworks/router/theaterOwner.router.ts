@@ -52,4 +52,10 @@ router.post('/requestmovie', theaterOwnerController.requestForMovie.bind(theater
 
 router.get('/getallmovierequest', theaterOwnerController.getAllMovieRequests.bind(theaterOwnerController));
 
+router.get('/getallmoviesfromcollection', theaterOwnerController.getAllMoviesFromOwnerCollection.bind(theaterOwnerController));
+
+router.post('/addMovieSchedule', theaterOwnerController.addMovieSchedule.bind(theaterOwnerController));
+
+router.get('/getAllSchedulesOn', theaterOwnerController.getAllSchedulesBasedOnDate.bind(theaterOwnerController));
+
 export default router;

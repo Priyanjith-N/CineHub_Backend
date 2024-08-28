@@ -2,9 +2,10 @@
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
+import IMovieSchedule, { IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
 import IScreen from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
-import ITheaterOwnerMovieCollection from "../../entity/theaterOwnerMovieCollection.entity";
+import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import { IAddTheaterCredentials } from "../controllers/theaterOwner.controller";
 import { IScreenData } from "../usecase/theaterOwner.usecase";
 
@@ -23,4 +24,8 @@ export default interface ITheaterOwnerRepository {
     saveRequest(data: IMovieRequestCredentials): Promise<void | never>;
     getAllRequests(theaterOwner: string): Promise<IMovieRequestDetails[] | never>;
     isAlreadyInCollection(movieId: string, theaterOwnerId: string): Promise<ITheaterOwnerMovieCollection | null | never>;
+    getAllOwnedMoviesFromCollection(theaterOwnerId: string): Promise<ITheaterOwnerMovieDetails[] | never>;
+    getScreenById(screenId: string): Promise<IScreen | null | never>;
+    addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][]): Promise<void | never>;
+    getAllSchedulesBasedOnDates(screenId: string, date: Date): Promise<IMovieSchedule[] | never>;
 }

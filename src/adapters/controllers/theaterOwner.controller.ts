@@ -10,6 +10,8 @@ import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
 import { ILocation } from "../../interface/common/IImage.interface";
+import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
+import IMovieSchedule, { IScheduleCredentials } from "../../entity/movieSchedule.entity";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -158,6 +160,57 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             const theaterOwnerId: string | undefined = req.id;
 
             const data: IMovieRequestDetails[] = await this.theaterOwnerUseCase.getAllMovieRequests(theaterOwnerId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getAllMoviesFromOwnerCollection(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const theaterOwnerId: string | undefined = req.id;
+
+            const data: ITheaterOwnerMovieDetails[] = await this.theaterOwnerUseCase.getAllMoviesFromOwnerCollection(theaterOwnerId);
+            
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addMovieSchedule(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const credentials: IScheduleCredentials = {
+                date: req.body.date,
+                screenId: req.body.screenId,
+                startTime: req.body.startTime,
+                endTime: req.body.endTime,
+                movieId: req.body.movieId
+            }
+
+            await this.theaterOwnerUseCase.addMovieSchedule(credentials);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfully Schedule added."
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getAllSchedulesBasedOnDate(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const screenId: string = req.query.screenId as string;
+            const date: string = req.query.date as string;
+
+            const data: IMovieSchedule[] = await this.theaterOwnerUseCase.getShecdulesBasedOnDate(screenId, date);
 
             res.status(StatusCodes.Success).json({
                 message: "Successfull",

@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import IMovie from "./movie.entity";
 
 export default interface ITheaterOwnerMovieCollection {
     _id: string;
@@ -8,4 +9,8 @@ export default interface ITheaterOwnerMovieCollection {
     movieDistributerId: string | Schema.Types.ObjectId;
     theaterOwnerId: string | Schema.Types.ObjectId;
     movieValidity: Date;
+}
+
+export interface ITheaterOwnerMovieDetails extends ITheaterOwnerMovieCollection {
+    movieData: IMovie;
 }

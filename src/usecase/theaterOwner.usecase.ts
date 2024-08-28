@@ -15,7 +15,8 @@ import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
 import IImage, { ILocation } from "../interface/common/IImage.interface";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../entity/movieRequest.entity";
-import ITheaterOwnerMovieCollection from "../entity/theaterOwnerMovieCollection.entity";
+import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../entity/theaterOwnerMovieCollection.entity";
+import IMovieSchedule, { IScheduleCredentials, IScheduleSeatLayout } from "../entity/movieSchedule.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -231,6 +232,67 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             if(!theaterOwnerId || !isObjectIdOrHexString(theaterOwnerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return await this.theaterOwnerRepository.getAllRequests(theaterOwnerId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllMoviesFromOwnerCollection(theaterOwnerId: string | undefined): Promise<ITheaterOwnerMovieDetails[] | never> {
+        try {
+            if(!theaterOwnerId || !isObjectIdOrHexString(theaterOwnerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            
+            return await this.theaterOwnerRepository.getAllOwnedMoviesFromCollection(theaterOwnerId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addMovieSchedule(data: IScheduleCredentials): Promise<void | never> {
+        try {
+            if(!data || !data.date || !data.screenId || !isObjectIdOrHexString(data.screenId) || !data.movieId || !isObjectIdOrHexString(data.movieId) || !data.startTime || !data.endTime) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            
+            const screenData: IScreen | null = await this.theaterOwnerRepository.getScreenById(data.screenId);
+
+            if(!screenData) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const seatLayout: (IScheduleSeatLayout | null)[][] = [];
+
+            for(let i = 0; i < screenData.seatLayout.length; i++) {
+                const row: (ISeatLayout | null)[] = screenData.seatLayout[i];
+
+                seatLayout.push([]); // inserted new row
+
+                for(let j = 0; j < row.length; j++) {
+                    const seat: ISeatLayout | null = row[j];
+
+                    if(!seat){
+                        seatLayout[i].push(null);
+                        continue;
+                    }
+
+                    const newSeat: IScheduleSeatLayout = {
+                        name: seat.name,
+                        category: seat.category,
+                        price: seat.price,
+                        isBooked: false,
+                        bookedUserId: null
+                    }
+
+                    seatLayout[i].push(newSeat);
+                }
+            }
+
+            await this.theaterOwnerRepository.addMovieSchedule(data, seatLayout);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getShecdulesBasedOnDate(screenId: string | undefined, date: string | undefined): Promise<IMovieSchedule[] | never> {
+        try {
+            if(!screenId || !isObjectIdOrHexString(screenId) || !date) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.theaterOwnerRepository.getAllSchedulesBasedOnDates(screenId, new Date(date));
         } catch (err: any) {
             throw err;
         }

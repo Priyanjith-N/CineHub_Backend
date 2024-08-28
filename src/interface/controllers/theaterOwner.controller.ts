@@ -14,6 +14,9 @@ export default interface ITheaterOwnerController {
     getTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     requestForMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllMovieRequests(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getAllMoviesFromOwnerCollection(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    addMovieSchedule(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getAllSchedulesBasedOnDate(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IGetMovieListOfDistributerData {
