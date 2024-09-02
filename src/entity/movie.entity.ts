@@ -49,3 +49,7 @@ export interface IDataMovies {
     movies: IMovie[];
     totalMovieCount: number;
 }
+
+export interface INowPlayingMovies {
+    movieData: IMovie;
+}
