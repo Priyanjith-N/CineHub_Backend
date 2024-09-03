@@ -22,6 +22,11 @@ export interface IMovieRequestCredentials {
     theaterOwnerId: string | undefined;
 }
 
+export interface IMovieReRequestCredentials {
+    profitSharingPerTicket: number | undefined;
+    timePeriod: number | undefined;
+}
+
 export interface IMovieRequestDetails extends IMovieRequest {
     distributerData: IDistributer,
     movieData: IMovie

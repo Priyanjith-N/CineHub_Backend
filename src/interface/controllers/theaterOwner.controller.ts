@@ -13,6 +13,7 @@ export default interface ITheaterOwnerController {
     getScreens(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getTheater(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     requestForMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    reRequestForMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllMovieRequests(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllMoviesFromOwnerCollection(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     addMovieSchedule(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;

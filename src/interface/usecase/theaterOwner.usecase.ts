@@ -4,7 +4,7 @@ import { IDistributerList } from "../../entity/distributer.entity";
 import IScreen, { ISeatCategory, ISeatLayout } from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
 import { IAddScreenCredentials, IGetMovieListOfDistributerData } from "../controllers/theaterOwner.controller";
-import { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
+import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../common/IImage.interface";
 import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IScheduleCredentials } from "../../entity/movieSchedule.entity";
@@ -18,6 +18,7 @@ export default interface ITheaterOwnerUseCase {
     getAllScreens(theaterId: string | undefined): Promise<IScreen[] | never>;
     getTheater(theaterId: string): Promise<ITheater | never>;
     requestMovie(data: IMovieRequestCredentials): Promise<void | never>;
+    reRequestMovie(data: IMovieReRequestCredentials, movieRequestId: string | undefined): Promise<void | never>;
     getAllMovieRequests(theaterOwnerId: string | undefined): Promise<IMovieRequestDetails[] | never>;
     getAllMoviesFromOwnerCollection(theaterOwnerId: string | undefined): Promise<ITheaterOwnerMovieDetails[] | never>;
     addMovieSchedule(data: IScheduleCredentials): Promise<void | never>;

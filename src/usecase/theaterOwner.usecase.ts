@@ -14,7 +14,7 @@ import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
 import IImage, { ILocation } from "../interface/common/IImage.interface";
-import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../entity/movieRequest.entity";
+import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../entity/movieRequest.entity";
 import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IScheduleCredentials, IScheduleSeatLayout } from "../entity/movieSchedule.entity";
 
@@ -222,6 +222,18 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             }
 
             await this.theaterOwnerRepository.saveRequest(data);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async reRequestMovie(data: IMovieReRequestCredentials, movieRequestId: string | undefined): Promise<void | never> {
+        try {
+            if(!data.profitSharingPerTicket || !data.timePeriod || !movieRequestId || !isObjectIdOrHexString(movieRequestId)) {
+                throw new RequiredCredentialsNotGiven('Provide all required details.');
+            }
+
+            await this.theaterOwnerRepository.reRequestUpdate(data, movieRequestId);
         } catch (err: any) {
             throw err;
         }

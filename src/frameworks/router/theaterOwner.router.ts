@@ -50,6 +50,8 @@ router.get('/screens/:theaterId', theaterOwnerController.getScreens.bind(theater
 
 router.post('/requestmovie', theaterOwnerController.requestForMovie.bind(theaterOwnerController));
 
+router.patch('/rerequestformovie/:movieRequestId', theaterOwnerController.reRequestForMovie.bind(theaterOwnerController));
+
 router.get('/getallmovierequest', theaterOwnerController.getAllMovieRequests.bind(theaterOwnerController));
 
 router.get('/getallmoviesfromcollection', theaterOwnerController.getAllMoviesFromOwnerCollection.bind(theaterOwnerController));

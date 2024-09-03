@@ -12,7 +12,7 @@ import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import Screens from "../../frameworks/models/screen.model";
 import { IScreenData } from "../../interface/usecase/theaterOwner.usecase";
-import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
+import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import MovieRequests from "../../frameworks/models/movieRequest.model";
 import mongoose from "mongoose";
 import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMovieCollection.model";
@@ -158,6 +158,14 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             });
 
             await newRequest.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async reRequestUpdate(data: IMovieReRequestCredentials, movieRequestId: string): Promise<void | never> {
+        try {
+            await MovieRequests.updateOne({ _id: movieRequestId }, { $set: { profitSharingPerTicket: data.profitSharingPerTicket, timePeriod: data.timePeriod, requestStatus: "Pending" } });
         } catch (err: any) {
             throw err;
         }

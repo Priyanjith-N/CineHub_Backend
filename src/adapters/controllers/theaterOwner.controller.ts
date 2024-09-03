@@ -8,7 +8,7 @@ import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
 import ITheater from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
-import { IMovieRequestCredentials, IMovieRequestDetails } from "../../entity/movieRequest.entity";
+import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../../interface/common/IImage.interface";
 import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IScheduleCredentials } from "../../entity/movieSchedule.entity";
@@ -152,6 +152,25 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             });
         } catch (err: any) {
             next(err);
+        }
+    }
+
+    async reRequestForMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const movieRequestId: string | undefined = req.params.movieRequestId;
+
+            const data: IMovieReRequestCredentials = {
+                profitSharingPerTicket: req.body.profitSharingPerTicket,
+                timePeriod: req.body.timePeriod
+            }
+
+            await this.theaterOwnerUseCase.reRequestMovie(data, movieRequestId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfully Movie re-requested."
+            });
+        } catch (err: any) {
+            throw err;
         }
     }
 
