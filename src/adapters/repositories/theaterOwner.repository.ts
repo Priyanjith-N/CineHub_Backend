@@ -242,7 +242,7 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
         }
     }
 
-    async addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][]): Promise<void | never> {
+    async addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][], totalCapacity: number): Promise<void | never> {
         try {
             const newSchedule = new MovieSchedules({
                 date: new Date(data.date!),
@@ -250,7 +250,8 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
                 movieId: data.movieId,
                 startTime: data.startTime,
                 endTime: data.endTime,
-                seats: seatLayout
+                seats: seatLayout,
+                availableSeats: totalCapacity
             });
 
             await newSchedule.save();

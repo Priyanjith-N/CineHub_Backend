@@ -1,4 +1,6 @@
+import { isObjectIdOrHexString } from "mongoose";
 import IMovie, { INowPlayingMovies } from "../entity/movie.entity";
+import { IMovieSchedulesWithTheaterDetails } from "../entity/movieSchedule.entity";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import IUserRepository from "../interface/repositories/user.repository";
 import IUserUseCase, { IHomeMovieData } from "../interface/usecase/user.usercase";
@@ -37,6 +39,16 @@ export default class UserUseCase implements IUserUseCase {
             if(!data) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllShowsForAMovie(movieId: string | undefined): Promise<IMovieSchedulesWithTheaterDetails[] | never> {
+        try {
+            if(!movieId || !isObjectIdOrHexString(movieId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.userRepository.getAllShowsForAMovie(movieId);
         } catch (err: any) {
             throw err;
         }

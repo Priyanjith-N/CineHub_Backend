@@ -282,7 +282,7 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
                 }
             }
 
-            await this.theaterOwnerRepository.addMovieSchedule(data, seatLayout);
+            await this.theaterOwnerRepository.addMovieSchedule(data, seatLayout, screenData.capacity);
         } catch (err: any) {
             throw err;
         }

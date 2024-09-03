@@ -4,6 +4,7 @@ import { AuthRequest } from "../../interface/middlewares/authMiddleware.interfac
 import IUserUseCase, { IHomeMovieData } from "../../interface/usecase/user.usercase";
 import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
+import { IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 
 export default class UserController implements IUserController {
     private userUseCase: IUserUseCase;
@@ -36,6 +37,21 @@ export default class UserController implements IUserController {
         });
       } catch (err: any) {
         next(err);
+      }
+    }
+
+    async getAllShowsForAMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const movieId: string | undefined = req.params.movieId;
+
+        const data: IMovieSchedulesWithTheaterDetails[] = await this.userUseCase.getAllShowsForAMovie(movieId);
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull",
+          data
+        });
+      } catch (err: any) {
+        throw err;
       }
     }
 }

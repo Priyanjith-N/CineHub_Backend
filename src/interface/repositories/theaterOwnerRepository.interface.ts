@@ -26,6 +26,6 @@ export default interface ITheaterOwnerRepository {
     isAlreadyInCollection(movieId: string, theaterOwnerId: string): Promise<ITheaterOwnerMovieCollection | null | never>;
     getAllOwnedMoviesFromCollection(theaterOwnerId: string): Promise<ITheaterOwnerMovieDetails[] | never>;
     getScreenById(screenId: string): Promise<IScreen | null | never>;
-    addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][]): Promise<void | never>;
+    addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][], totalCapacity: number): Promise<void | never>;
     getAllSchedulesBasedOnDates(screenId: string, date: Date): Promise<IMovieSchedule[] | never>;
 }

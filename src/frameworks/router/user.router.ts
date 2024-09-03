@@ -32,6 +32,8 @@ router.get("/getdataforhome", userController.getDataForHomePage.bind(userControl
 
 router.get("/getmoviedetails/:movieId", userController.getMovieDetails.bind(userController));
 
+router.get("/getAllShowsForAMovie/:movieId", userController.getAllShowsForAMovie.bind(userController));
+
 // router middleware
 router.use(authMiddleware.isAuthenticate.bind(authMiddleware));
 

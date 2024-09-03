@@ -1,7 +1,9 @@
+import mongoose from "mongoose";
 import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import Movies from "../../frameworks/models/movie.model";
 import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import IUserRepository from "../../interface/repositories/user.repository";
+import { IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 
 export default class UserRepository implements IUserRepository {
     async upcommingMovies(): Promise<IMovie[] | never> {
@@ -23,37 +25,35 @@ export default class UserRepository implements IUserRepository {
     async nowPlayingMovies(): Promise<INowPlayingMovies[] | never> {
         try {
             const agg = [
-                {
-                  $match: {
-                    date: {
-                      $lte: new Date(Date.now())
-                    }
-                  }
-                }, 
-                {
-                  $lookup: {
-                        from: 'movies', 
-                        localField: 'movieId', 
-                        foreignField: '_id', 
-                        as: 'movieData'
-                    }
-                },
-                {
-                  $unwind: {
-                        path: '$movieData'
-                    }
-                }, 
-                {
-                  $project: {
-                    _id: 0, 
-                    date: 0, 
-                    screenId: 0, 
-                    movieId: 0, 
-                    seats: 0, 
-                    startTime: 0, 
-                    endTime: 0
-                  }
+              {
+                $group: {
+                  _id: '$movieId'
                 }
+              }, 
+              {
+                $project: {
+                  movieId: '$_id', 
+                  _id: 0
+                }
+              }, 
+              {
+                $lookup: {
+                  from: 'movies', 
+                  localField: 'movieId', 
+                  foreignField: '_id', 
+                  as: 'movieData'
+                }
+              }, 
+              {
+                $unwind: {
+                  path: '$movieData'
+                }
+              }, 
+              {
+                $project: {
+                  movieId: 0
+                }
+              }
             ]
 
             return await MovieSchedules.aggregate(agg);
@@ -65,6 +65,78 @@ export default class UserRepository implements IUserRepository {
     async getMovieDetails(movieId: string): Promise<IMovie | null | never> {
         try {
             return await Movies.findOne({ _id: movieId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllShowsForAMovie(movieId: string): Promise<IMovieSchedulesWithTheaterDetails[] | never> {
+        try {
+          const agg = [
+            {
+              $match: {
+                movieId: new mongoose.Types.ObjectId(movieId),
+                date: {
+                  $gte: new Date(Date.now())
+                }
+              }
+            },
+            {
+              $lookup: {
+                from: 'screens', 
+                localField: 'screenId', 
+                foreignField: '_id', 
+                as: 'screenData'
+              }
+            }, 
+            {
+              $unwind: {
+                path: '$screenData'
+              }
+            }, 
+            {
+              $lookup: {
+                from: 'theaters', 
+                localField: 'screenData.theaterId', 
+                foreignField: '_id', 
+                as: 'theaterData'
+              }
+            }, 
+            {
+              $unwind: {
+                path: '$theaterData'
+              }
+            }, 
+            {
+              $group: {
+                _id: {
+                  date: '$date', 
+                  theaterId: '$theaterData._id'
+                }, 
+                scheduledDate: {
+                  $first: '$date'
+                }, 
+                theaterData: {
+                  $first: '$theaterData'
+                }, 
+                schedules: {
+                  $push: {
+                    scheduleId: '$_id', 
+                    startTime: '$startTime', 
+                    endTime: '$endTime',
+                    availableSeats: '$availableSeats'
+                  }
+                }
+              }
+            }, 
+            {
+              $project: {
+                _id: 0
+              }
+            }
+          ]
+
+          return await MovieSchedules.aggregate(agg);
         } catch (err: any) {
             throw err;
         }

@@ -32,6 +32,10 @@ const movieSchedule: Schema = new Schema<IMovieSchedule>({
     endTime: {
         type: String,
         required: true
+    },
+    availableSeats: {
+        type: Number,
+        required: true
     }
 });
 
