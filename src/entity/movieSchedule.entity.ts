@@ -1,6 +1,7 @@
 import { Schema } from "mongoose";
-import { ISeatLayout } from "./screen.entity";
+import IScreen, { ISeatLayout } from "./screen.entity";
 import ITheater from "./theater.entity";
+import IMovie from "./movie.entity";
 
 export default interface IMovieSchedule {
     _id: string | Schema.Types.ObjectId;
@@ -37,4 +38,10 @@ export interface IMovieSchedulesWithTheaterDetails {
     scheduledDate: Date;
     theaterData: ITheater;
     schedules: ISchedulesForMovie[];
+}
+
+export interface IMovieSchedulesForBooking extends IMovieSchedule {
+    movieData: IMovie;
+    screenData: IScreen;
+    theaterData: ITheater;
 }

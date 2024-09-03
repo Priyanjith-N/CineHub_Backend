@@ -34,6 +34,8 @@ router.get("/getmoviedetails/:movieId", userController.getMovieDetails.bind(user
 
 router.get("/getAllShowsForAMovie/:movieId", userController.getAllShowsForAMovie.bind(userController));
 
+router.get("/getTheaterScreenLayout/:scheduleId", userController.getTheaterScreenLayout.bind(userController));
+
 // router middleware
 router.use(authMiddleware.isAuthenticate.bind(authMiddleware));
 

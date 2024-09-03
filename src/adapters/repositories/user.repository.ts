@@ -3,7 +3,7 @@ import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import Movies from "../../frameworks/models/movie.model";
 import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import IUserRepository from "../../interface/repositories/user.repository";
-import { IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 
 export default class UserRepository implements IUserRepository {
     async upcommingMovies(): Promise<IMovie[] | never> {
@@ -140,5 +140,60 @@ export default class UserRepository implements IUserRepository {
         } catch (err: any) {
             throw err;
         }
+    }
+
+    async getTheaterScreenLayout(scheduleId: string): Promise<IMovieSchedulesForBooking | never> {
+      try {
+        const agg = [
+          {
+            $match: {
+              _id: new mongoose.Types.ObjectId(scheduleId)
+            }
+          },
+          {
+            $lookup: {
+              from: 'movies', 
+              localField: 'movieId', 
+              foreignField: '_id', 
+              as: 'movieData'
+            }
+          }, {
+            $unwind: {
+              path: '$movieData'
+            }
+          }, 
+          {
+            $lookup: {
+              from: 'screens', 
+              localField: 'screenId', 
+              foreignField: '_id', 
+              as: 'screenData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$screenData'
+            }
+          },
+          {
+            $lookup: {
+              from: 'theaters', 
+              localField: 'screenData.theaterId', 
+              foreignField: '_id', 
+              as: 'theaterData'
+            }
+          }, {
+            $unwind: {
+              path: '$theaterData'
+            }
+          }
+        ];
+  
+        const [ schedule ]: IMovieSchedulesForBooking[] = await MovieSchedules.aggregate(agg);
+  
+        return schedule;
+      } catch (err: any) {
+        throw err;
+      }
     }
 }

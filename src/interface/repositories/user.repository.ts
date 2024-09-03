@@ -1,5 +1,5 @@
 import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
-import { IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 
 export default interface IUserRepository {
     upcommingMovies(): Promise<IMovie[] | never>;
@@ -7,4 +7,5 @@ export default interface IUserRepository {
     nowPlayingMovies(): Promise<INowPlayingMovies[] | never>;
     getMovieDetails(movieId: string): Promise<IMovie | null | never>;
     getAllShowsForAMovie(movieId: string): Promise<IMovieSchedulesWithTheaterDetails[] | never>;
+    getTheaterScreenLayout(scheduleId: string): Promise<IMovieSchedulesForBooking | never>;
 }

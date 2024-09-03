@@ -1,6 +1,6 @@
 import { isObjectIdOrHexString } from "mongoose";
 import IMovie, { INowPlayingMovies } from "../entity/movie.entity";
-import { IMovieSchedulesWithTheaterDetails } from "../entity/movieSchedule.entity";
+import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../entity/movieSchedule.entity";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import IUserRepository from "../interface/repositories/user.repository";
 import IUserUseCase, { IHomeMovieData } from "../interface/usecase/user.usercase";
@@ -32,7 +32,7 @@ export default class UserUseCase implements IUserUseCase {
 
     async getMovieDetails(movieId: string | undefined): Promise<IMovie | never> {
         try {
-            if(!movieId) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            if(!movieId || !isObjectIdOrHexString(movieId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             const data: IMovie | null = await this.userRepository.getMovieDetails(movieId);
 
@@ -49,6 +49,16 @@ export default class UserUseCase implements IUserUseCase {
             if(!movieId || !isObjectIdOrHexString(movieId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return await this.userRepository.getAllShowsForAMovie(movieId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTheaterScreenLayout(scheduleId: string | undefined): Promise<IMovieSchedulesForBooking | never> {
+        try {
+            if(!scheduleId || !isObjectIdOrHexString(scheduleId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.userRepository.getTheaterScreenLayout(scheduleId);
         } catch (err: any) {
             throw err;
         }
