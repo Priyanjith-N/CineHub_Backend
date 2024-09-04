@@ -11,7 +11,7 @@ import IScreen from "../../entity/screen.entity";
 import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../../interface/common/IImage.interface";
 import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
-import IMovieSchedule, { IScheduleCredentials } from "../../entity/movieSchedule.entity";
+import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials } from "../../entity/movieSchedule.entity";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -237,6 +237,23 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             });
         } catch (err: any) {
             next(err);
+        }
+    }
+
+    async getAllMovieSchedule(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const screenId: string | undefined = req.params.screenId;
+
+            const theaterId: string | undefined = req.params.theaterId;
+
+            const data: IMovieScheduleWithDetails[] = await this.theaterOwnerUseCase.getAllMovieSchedule(screenId, theaterId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            throw err;
         }
     }
 }

@@ -60,4 +60,6 @@ router.post('/addMovieSchedule', theaterOwnerController.addMovieSchedule.bind(th
 
 router.get('/getAllSchedulesOn', theaterOwnerController.getAllSchedulesBasedOnDate.bind(theaterOwnerController));
 
+router.get('/getallmovieschedule/:screenId/:theaterId', theaterOwnerController.getAllMovieSchedule.bind(theaterOwnerController));
+
 export default router;

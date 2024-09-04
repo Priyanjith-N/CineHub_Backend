@@ -45,3 +45,15 @@ export interface IMovieSchedulesForBooking extends IMovieSchedule {
     screenData: IScreen;
     theaterData: ITheater;
 }
+
+export interface ISchedulesWithDetails {
+    _id: string;
+    movieData: IMovie;
+    startTime: string;
+    endTime: string;
+}
+
+export interface IMovieScheduleWithDetails {
+    scheduledDate: Date;
+    schedules: ISchedulesWithDetails[];
+}

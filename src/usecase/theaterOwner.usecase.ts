@@ -16,7 +16,7 @@ import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../en
 import IImage, { ILocation } from "../interface/common/IImage.interface";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../entity/movieRequest.entity";
 import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../entity/theaterOwnerMovieCollection.entity";
-import IMovieSchedule, { IScheduleCredentials, IScheduleSeatLayout } from "../entity/movieSchedule.entity";
+import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials, IScheduleSeatLayout } from "../entity/movieSchedule.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -305,6 +305,16 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             if(!screenId || !isObjectIdOrHexString(screenId) || !date) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return await this.theaterOwnerRepository.getAllSchedulesBasedOnDates(screenId, new Date(date));
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllMovieSchedule(screenId: string | undefined, theaterId: string | undefined): Promise<IMovieScheduleWithDetails[] | never> {
+        try {
+            if(!screenId || !isObjectIdOrHexString(screenId) || !theaterId || !isObjectIdOrHexString(theaterId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.theaterOwnerRepository.getAllMovieSchedule(screenId, theaterId);
         } catch (err: any) {
             throw err;
         }

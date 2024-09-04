@@ -7,7 +7,7 @@ import { IAddScreenCredentials, IGetMovieListOfDistributerData } from "../contro
 import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../common/IImage.interface";
 import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
-import IMovieSchedule, { IScheduleCredentials } from "../../entity/movieSchedule.entity";
+import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials } from "../../entity/movieSchedule.entity";
 
 export default interface ITheaterOwnerUseCase {
     getDistributerList(): Promise<IDistributerList[] | never>;
@@ -23,6 +23,7 @@ export default interface ITheaterOwnerUseCase {
     getAllMoviesFromOwnerCollection(theaterOwnerId: string | undefined): Promise<ITheaterOwnerMovieDetails[] | never>;
     addMovieSchedule(data: IScheduleCredentials): Promise<void | never>;
     getShecdulesBasedOnDate(screenId: string | undefined, date: string | undefined): Promise<IMovieSchedule[] | never>;
+    getAllMovieSchedule(screenId: string | undefined, theaterId: string | undefined): Promise<IMovieScheduleWithDetails[] | never>
 }
 
 export interface IScreenData {

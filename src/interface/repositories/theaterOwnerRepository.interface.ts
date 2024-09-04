@@ -2,7 +2,7 @@
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
-import IMovieSchedule, { IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
+import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
 import IScreen from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
 import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
@@ -29,4 +29,5 @@ export default interface ITheaterOwnerRepository {
     getScreenById(screenId: string): Promise<IScreen | null | never>;
     addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][], totalCapacity: number): Promise<void | never>;
     getAllSchedulesBasedOnDates(screenId: string, date: Date): Promise<IMovieSchedule[] | never>;
+    getAllMovieSchedule(screenId: string, theaterId: string): Promise<IMovieScheduleWithDetails[] | never>;
 }
