@@ -18,7 +18,7 @@ import JWTTokenError from "../errors/jwt.error";
 import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.error";
 import { IGoogleAuthService } from "../interface/utils/IGoogleAuthService";
 import { TokenPayload } from "google-auth-library";
-import IUser from "../entity/user.entity";
+import IUser, { IUserProfile } from "../entity/user.entity";
 
 export default class UserAuthUseCase implements IUserAuthUseCase {
     private userAuthRepository: IUserAuthRepository;
@@ -188,7 +188,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
         }
     }
 
-    async verifyToken(authorizationHeader: string | undefined): Promise<void | never> {
+    async verifyToken(authorizationHeader: string | undefined): Promise<IUserProfile | never> {
         try {
             if(!authorizationHeader) {
                 throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not authenticated' })
@@ -201,6 +201,14 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
             if(decoded.type !== 'User') {
                 throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
             }
+
+            const data: IUserProfile | null = await this.userAuthRepository.getUserProfileData(decoded.id);
+
+            if(!data) {
+                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not found' })
+            }
+
+            return data;
         } catch (err: any) {
             throw err;
         }

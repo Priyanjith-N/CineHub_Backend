@@ -6,6 +6,7 @@ import IUserAuthUseCase from "../../interface/usecase/user.IAuth.usecase";
 
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
+import { IUserProfile } from "../../entity/user.entity";
 
 export default class UserAuthenticationController implements IUserAuthenticationController {
     private userAuthUseCase: IUserAuthUseCase;
@@ -115,10 +116,11 @@ export default class UserAuthenticationController implements IUserAuthentication
         try {
             const authorizationHeader: string | undefined = req.headers.authorization;
 
-            await this.userAuthUseCase.verifyToken(authorizationHeader);
+            const data: IUserProfile = await this.userAuthUseCase.verifyToken(authorizationHeader);
 
             res.status(StatusCodes.Success).json({
-                message: 'User is authenticated'
+                message: 'User is authenticated',
+                data
             });
         } catch (err: any) {
             next(err);

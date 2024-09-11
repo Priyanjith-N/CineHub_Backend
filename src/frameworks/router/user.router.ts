@@ -15,17 +15,20 @@ import IUserUseCase from '../../interface/usecase/user.usercase';
 import IUserController from '../../interface/controllers/user.controller.interface';
 import IJWTService from '../../interface/utils/IJWTService';
 import IAuthMiddleware from '../../interface/middlewares/authMiddleware.interface';
+import IStripeService from '../../interface/utils/IStripeService.utils';
+import StripeService from '../utils/stripeService.utils';
 
 const router: Router = express.Router();
 
 // services
 const jwtService: IJWTService = new JWTService();
+const stripeService: IStripeService = new StripeService();
 
 // middlewares
 const authMiddleware: IAuthMiddleware = new AuthMiddleware("User", jwtService);
 
 const userRepository: IUserRepository = new UserRepository();
-const userUseCase: IUserUseCase = new UserUseCase(userRepository);
+const userUseCase: IUserUseCase = new UserUseCase(userRepository, stripeService);
 const userController: IUserController = new UserController(userUseCase);
 
 router.get("/getdataforhome", userController.getDataForHomePage.bind(userController));
@@ -38,5 +41,9 @@ router.get("/getTheaterScreenLayout/:scheduleId", userController.getTheaterScree
 
 // router middleware
 router.use(authMiddleware.isAuthenticate.bind(authMiddleware));
+
+router.post('/create-checkout-session', userController.createCheckoutSession.bind(userController));
+
+router.post('/bookseat', userController.bookSeat.bind(userController));
 
 export default router;

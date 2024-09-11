@@ -24,3 +24,7 @@ export interface ISeatLayout {
     category: string;
     price: number;
 }
+
+export interface ISeatPayAmountData extends ISeatCategoryPattern {
+    quantity: number;
+}

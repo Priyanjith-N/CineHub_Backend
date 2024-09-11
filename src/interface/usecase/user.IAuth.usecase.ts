@@ -1,3 +1,4 @@
+import { IUserProfile } from "../../entity/user.entity";
 import { IUserRegisterCredentials } from "../controllers/user.IAuth.controller";
 
 export default interface IUserAuthUseCase {
@@ -6,6 +7,6 @@ export default interface IUserAuthUseCase {
     userRegister(registerData: IUserRegisterCredentials): Promise<void | never>;
     OTPVerification(email: string | undefined, otp: string): Promise<string | never>;
     OTPResend(email: string | undefined): Promise<void | never>;
-    verifyToken(authorizationHeader: string | undefined): Promise<void | never>;
+    verifyToken(authorizationHeader: string | undefined): Promise<IUserProfile | never>;
 }
 

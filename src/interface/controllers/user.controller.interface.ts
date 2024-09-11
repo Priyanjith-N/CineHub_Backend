@@ -6,4 +6,6 @@ export default interface IUserController {
     getMovieDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllShowsForAMovie(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getTheaterScreenLayout(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    createCheckoutSession(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    bookSeat(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }

@@ -5,6 +5,7 @@ import IUserUseCase, { IHomeMovieData } from "../../interface/usecase/user.userc
 import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
 import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../../entity/user.entity";
 
 export default class UserController implements IUserController {
     private userUseCase: IUserUseCase;
@@ -66,6 +67,48 @@ export default class UserController implements IUserController {
           data
         });
       } catch (err: any) {
+        next(err);
+      }
+    }
+
+    async createCheckoutSession(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const data: ICreateCheckoutSessionCredentials = {
+          scheduleId: req.body.scheduleId,
+          selectedSeats: req.body.selectedSeats
+        }
+
+        const sessionId: string = await this.userUseCase.createCheckoutSession(data);
+
+        req.app.locals.bookingSeatCredentials = {
+          scheduleId: req.body.scheduleId,
+          selectedSeats: req.body.selectedSeats,
+          sessionId,
+          userId: req.id
+        }
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull",
+          sessionId
+        });
+      } catch (err: any) {
+        next(err);
+      }
+    }
+
+    async bookSeat(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const seatBookingCredentials: IBookSeatCredentials | undefined = req.app.locals.bookingSeatCredentials;
+
+        await this.userUseCase.bookSeat(seatBookingCredentials, req.id, req.body.checkoutSessionId);
+
+        delete req.app.locals.bookingSeatCredentials;
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull"
+        });
+      } catch (err: any) {
+        delete req.app.locals.bookingSeatCredentials
         next(err);
       }
     }

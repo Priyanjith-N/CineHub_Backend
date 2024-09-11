@@ -3,7 +3,7 @@ import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import Movies from "../../frameworks/models/movie.model";
 import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import IUserRepository from "../../interface/repositories/user.repository";
-import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 
 export default class UserRepository implements IUserRepository {
     async upcommingMovies(): Promise<IMovie[] | never> {
@@ -192,6 +192,22 @@ export default class UserRepository implements IUserRepository {
         const [ schedule ]: IMovieSchedulesForBooking[] = await MovieSchedules.aggregate(agg);
   
         return schedule;
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async isSeatTakenOrBooked(scheduleId: string, query: { [key: string]: boolean }[]): Promise<IMovieSchedule | null | never> {
+      try {
+        return await MovieSchedules.findOne({ _id: scheduleId, $and: query });
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async bookSeat(scheduleId: string, updateQuery: { [key: string]: boolean | string }): Promise<void | never> {
+      try {
+        await MovieSchedules.updateOne({ _id: scheduleId }, {$set: updateQuery});
       } catch (err: any) {
         throw err;
       }

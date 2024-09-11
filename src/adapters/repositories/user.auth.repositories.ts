@@ -5,7 +5,7 @@ import Users from "../../frameworks/models/user.model";
 import IUserAuthRepository from "../../interface/repositories/user.IAuth.repositories";
 import { IUserRegisterCredentials } from "../../interface/controllers/user.IAuth.controller";
 import { IUserDocument } from "../../interface/collections/IUsers.collections";
-import IUser from "../../entity/user.entity";
+import IUser, { IUserProfile } from "../../entity/user.entity";
 
 export default class UserAuthRepository implements IUserAuthRepository {
 
@@ -45,6 +45,14 @@ export default class UserAuthRepository implements IUserAuthRepository {
     async makeUserVerified(email: string): Promise<void | never> {
         try {
             await Users.updateOne({email}, {$set: {OTPVerification: true}});
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getUserProfileData(userId: string): Promise<IUserProfile | null> {
+        try {
+            return await Users.findOne({ _id: userId }, { name: 1, email: 1, phoneNumber: 1, _id: 0 });
         } catch (err: any) {
             throw err;
         }
