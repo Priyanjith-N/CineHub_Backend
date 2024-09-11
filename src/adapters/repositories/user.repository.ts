@@ -4,6 +4,9 @@ import Movies from "../../frameworks/models/movie.model";
 import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import IUserRepository from "../../interface/repositories/user.repository";
 import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import Screens from "../../frameworks/models/screen.model";
+import ITickets from "../../entity/tickets.entity";
+import Tickets from "../../frameworks/models/tickets.model";
 
 export default class UserRepository implements IUserRepository {
     async upcommingMovies(): Promise<IMovie[] | never> {
@@ -208,6 +211,46 @@ export default class UserRepository implements IUserRepository {
     async bookSeat(scheduleId: string, updateQuery: { [key: string]: boolean | string }): Promise<void | never> {
       try {
         await MovieSchedules.updateOne({ _id: scheduleId }, {$set: updateQuery});
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async getScheduleById(scheduleId: string): Promise<IMovieSchedule | null | never> {
+      try {
+        return await MovieSchedules.findOne({ _id: scheduleId })!;
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async getTheaterIdFormScreen(screenId: string): Promise<{ theaterId: string } | null | never> {
+      try {
+        return await Screens.findOne({ _id: screenId }, { theaterId: 1, _id: 0 });
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async saveTicket(saveData: ITickets): Promise<void | never> {
+      try {
+        const newTicketData = new Tickets({
+          userId: saveData.userId,
+          scheduleId: saveData.scheduleId,
+          paymentIntentId: saveData.paymentIntentId,
+          date: saveData.date,
+          time: saveData.time,
+          movieId: saveData.movieId,
+          theaterId: saveData.theaterId,
+          screenId: saveData.screenId,
+          class: saveData.class,
+          purchaseDetails: saveData.purchaseDetails,
+          totalPaidAmount: saveData.totalPaidAmount,
+          selectedSeatsIdx: saveData.selectedSeatsIdx,
+          seatDetails: saveData.seatDetails
+        });
+
+        await newTicketData.save();
       } catch (err: any) {
         throw err;
       }

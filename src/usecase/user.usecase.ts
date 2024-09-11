@@ -6,7 +6,8 @@ import IUserRepository from "../interface/repositories/user.repository";
 import IUserUseCase, { IHomeMovieData } from "../interface/usecase/user.usercase";
 import IStripeService from "../interface/utils/IStripeService.utils";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../entity/user.entity";
-import { ISeatPayAmountData } from "../entity/screen.entity";
+import { ISeatLayout, ISeatPayAmountData } from "../entity/screen.entity";
+import ITickets, { IPurchaseDetails } from "../entity/tickets.entity";
 
 export default class UserUseCase implements IUserUseCase {
     private userRepository: IUserRepository;
@@ -121,7 +122,7 @@ export default class UserUseCase implements IUserUseCase {
 
             const checkoutSession = await this.stripeService.retriveCheckoutSession(checkoutSessionId);
 
-            console.log('payment intent id', checkoutSession.payment_intent);
+            if(checkoutSession.payment_status !== "paid") throw new RequiredCredentialsNotGiven('Not Paid');
             
             const updateQuery: { [key: string]: boolean | string } = {}
 
@@ -130,7 +131,70 @@ export default class UserUseCase implements IUserUseCase {
                 updateQuery[`seats.${seat.rowIdx}.${seat.colIdx}.bookedUserId`] = userId;
             });
 
-            await this.userRepository.bookSeat(bookSeatData.scheduleId, updateQuery);
+            const movieScheduleData: IMovieSchedule | null = await this.userRepository.getScheduleById(bookSeatData.scheduleId);
+
+            if(!movieScheduleData) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const seatDetails: ISeatLayout[] = [];
+
+            const map: Map<string, IPurchaseDetails> = new Map<string, IPurchaseDetails>();
+
+            bookSeatData.selectedSeats.forEach((seat) => {
+                const seatInfo = movieScheduleData.seats[seat.rowIdx][seat.colIdx];
+
+                if(!seatInfo) throw new RequiredCredentialsNotGiven('Seat Error');
+
+                // saving each selected seat details
+                seatDetails.push({
+                    category: seatInfo.category,
+                    name: seatInfo.name,
+                    price: seatInfo.price
+                });
+
+                if(map.has(seatInfo.category)) {
+                    const value = map.get(seatInfo.category)!;
+
+                    value.quantity += 1;
+
+                    map.set(seatInfo.category, value);
+                }else{
+                    map.set(seatInfo.category, { itemName: `${ seatInfo.category.toUpperCase() } Seat`, price: seatInfo.price, quantity: 1 });
+                }
+            });
+
+            const purchaseDetails: IPurchaseDetails[] = Array.from(map.values());
+
+            purchaseDetails.push({
+                itemName: 'SERVICE Charge',
+                price: 20,
+                quantity: bookSeatData.selectedSeats.length
+            });
+            
+            const screen = await this.userRepository.getTheaterIdFormScreen(movieScheduleData.screenId as string);
+
+            if(!screen) throw new RequiredCredentialsNotGiven('screen eroor'); // screen id error.
+
+            const ticketData: ITickets = {
+                userId,
+                date: movieScheduleData.date,
+                movieId: movieScheduleData.movieId,
+                time: movieScheduleData.startTime,
+                paymentIntentId: checkoutSession.payment_intent! as string,
+                scheduleId: movieScheduleData._id,
+                purchaseDetails,
+                selectedSeatsIdx: bookSeatData.selectedSeats,
+                class: Array.from(map.keys()), // key are unique so class are unique
+                screenId: movieScheduleData.screenId,
+                seatDetails,
+                paymentStatus: "Successfull",
+                ticketStatus: "Active",
+                totalPaidAmount: checkoutSession.amount_total! / 100,
+                theaterId: screen.theaterId
+            }
+
+            await this.userRepository.bookSeat(bookSeatData.scheduleId, updateQuery); // make the seat as booked by the user.
+
+            await this.userRepository.saveTicket(ticketData); // save tickets
         } catch (err: any) {
             throw err;
         }
