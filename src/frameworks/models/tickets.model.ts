@@ -48,7 +48,7 @@ const ticketSchema: Schema = new Schema<ITickets>({
     },
     ticketStatus: {
         type: String,
-        enum: ["Active", "canceled", "Succeed", "Fail"],
+        enum: ["Active", "Canceled", "Succeed", "Fail"],
         default: "Active",
         required: true
     },

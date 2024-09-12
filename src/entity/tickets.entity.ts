@@ -1,5 +1,7 @@
 import { ObjectId } from "mongoose";
-import { ISeatLayout } from "./screen.entity";
+import IScreen, { ISeatLayout } from "./screen.entity";
+import IMovie from "./movie.entity";
+import ITheater from "./theater.entity";
 
 export default interface ITickets {
     userId: string | ObjectId;
@@ -29,3 +31,9 @@ export interface ISelectedSeatsIdx {
     rowIdx: number;
     colIdx: number;
 }
+
+export interface ITicketDetilas extends ITickets {
+    movieData: IMovie;
+    theaterData: ITheater;
+    screenData: IScreen;
+} 

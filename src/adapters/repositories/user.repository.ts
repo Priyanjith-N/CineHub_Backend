@@ -5,7 +5,7 @@ import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import IUserRepository from "../../interface/repositories/user.repository";
 import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 import Screens from "../../frameworks/models/screen.model";
-import ITickets from "../../entity/tickets.entity";
+import ITickets, { ITicketDetilas } from "../../entity/tickets.entity";
 import Tickets from "../../frameworks/models/tickets.model";
 
 export default class UserRepository implements IUserRepository {
@@ -251,6 +251,72 @@ export default class UserRepository implements IUserRepository {
         });
 
         await newTicketData.save();
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    private async changeTicketStatus() {
+      try {
+        await Tickets.updateOne({ date: { $lt: new Date(Date.now()) } }, { $set: { ticketStatus: "Succeed" } });
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async getAllActiveTickets(userId: string): Promise<ITicketDetilas[] | never> {
+      try {
+        await this.changeTicketStatus();
+
+        const agg = [
+          {
+            $match: {
+              userId: new mongoose.Types.ObjectId(userId),
+              ticketStatus: 'Active'
+            }
+          },
+          {
+            $lookup: {
+              from: 'movies', 
+              localField: 'movieId', 
+              foreignField: '_id', 
+              as: 'movieData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$movieData'
+            }
+          }, 
+          {
+            $lookup: {
+              from: 'theaters', 
+              localField: 'theaterId', 
+              foreignField: '_id', 
+              as: 'theaterData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$theaterData'
+            }
+          }, 
+          {
+            $lookup: {
+              from: 'screens', 
+              localField: 'screenId', 
+              foreignField: '_id', 
+              as: 'screenData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$screenData'
+            }
+          }
+        ];
+
+        return await Tickets.aggregate(agg);
       } catch (err: any) {
         throw err;
       }

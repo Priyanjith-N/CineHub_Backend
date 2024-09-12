@@ -7,7 +7,7 @@ import IUserUseCase, { IHomeMovieData } from "../interface/usecase/user.usercase
 import IStripeService from "../interface/utils/IStripeService.utils";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../entity/user.entity";
 import { ISeatLayout, ISeatPayAmountData } from "../entity/screen.entity";
-import ITickets, { IPurchaseDetails } from "../entity/tickets.entity";
+import ITickets, { IPurchaseDetails, ITicketDetilas } from "../entity/tickets.entity";
 
 export default class UserUseCase implements IUserUseCase {
     private userRepository: IUserRepository;
@@ -195,6 +195,16 @@ export default class UserUseCase implements IUserUseCase {
             await this.userRepository.bookSeat(bookSeatData.scheduleId, updateQuery); // make the seat as booked by the user.
 
             await this.userRepository.saveTicket(ticketData); // save tickets
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllActiveTickets(userId: string | undefined): Promise<ITicketDetilas[] | never> {
+        try {
+            if(!userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return this.userRepository.getAllActiveTickets(userId);
         } catch (err: any) {
             throw err;
         }

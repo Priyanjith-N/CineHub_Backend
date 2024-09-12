@@ -46,4 +46,6 @@ router.post('/create-checkout-session', userController.createCheckoutSession.bin
 
 router.post('/bookseat', userController.bookSeat.bind(userController));
 
+router.get('/activetickets', userController.getAllActiveTickets.bind(userController)); // get all the booked tickets for movie
+
 export default router;

@@ -8,4 +8,5 @@ export default interface IUserController {
     getTheaterScreenLayout(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     createCheckoutSession(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     bookSeat(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getAllActiveTickets(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }

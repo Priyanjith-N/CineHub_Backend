@@ -1,5 +1,6 @@
 import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import { ITicketDetilas } from "../../entity/tickets.entity";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../../entity/user.entity";
 
 export default interface IUserUseCase {
@@ -9,6 +10,7 @@ export default interface IUserUseCase {
     getTheaterScreenLayout(scheduleId: string | undefined): Promise<IMovieSchedulesForBooking | never>;
     createCheckoutSession(data: ICreateCheckoutSessionCredentials): Promise<string>;
     bookSeat(bookSeatData: IBookSeatCredentials | undefined, userId: string | undefined, checkoutSessionId: string | undefined): Promise<void>;
+    getAllActiveTickets(userId: string | undefined): Promise<ITicketDetilas[] | never>;
 }
 
 export interface IHomeMovieData {

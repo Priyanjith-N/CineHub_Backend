@@ -1,6 +1,6 @@
 import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
-import ITickets from "../../entity/tickets.entity";
+import ITickets, { ITicketDetilas } from "../../entity/tickets.entity";
 
 export default interface IUserRepository {
     upcommingMovies(): Promise<IMovie[] | never>;
@@ -14,4 +14,5 @@ export default interface IUserRepository {
     getScheduleById(scheduleId: string): Promise<IMovieSchedule | null | never>;
     getTheaterIdFormScreen(screenId: string): Promise<{ theaterId: string } | null | never>;
     saveTicket(saveData: ITickets): Promise<void | never>;
+    getAllActiveTickets(userId: string): Promise<ITicketDetilas[] | never>;
 }

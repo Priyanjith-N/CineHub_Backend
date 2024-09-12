@@ -6,6 +6,7 @@ import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
 import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../../entity/user.entity";
+import { ITicketDetilas } from "../../entity/tickets.entity";
 
 export default class UserController implements IUserController {
     private userUseCase: IUserUseCase;
@@ -109,6 +110,19 @@ export default class UserController implements IUserController {
         });
       } catch (err: any) {
         delete req.app.locals.bookingSeatCredentials
+        next(err);
+      }
+    }
+
+    async getAllActiveTickets(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const data: ITicketDetilas[] = await this.userUseCase.getAllActiveTickets(req.id);
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull",
+          data
+        });        
+      } catch (err: any) {
         next(err);
       }
     }
