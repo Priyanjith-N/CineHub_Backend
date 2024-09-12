@@ -126,4 +126,18 @@ export default class UserController implements IUserController {
         next(err);
       }
     }
+
+    async cancelTicket(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const ticketId: string | undefined = req.params.ticketId;
+
+        await this.userUseCase.cancelTicket(ticketId);
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfully amount Refunded",
+        });
+      } catch (err: any) {
+        next(err);
+      }
+    }
 }

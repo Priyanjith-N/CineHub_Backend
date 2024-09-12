@@ -42,7 +42,7 @@ const ticketSchema: Schema = new Schema<ITickets>({
     ],
     paymentStatus: {
         type: String,
-        enum: ["Successfull", "Failed", "Pending"],
+        enum: ["Successfull", "Failed", "Pending", "Refunded"],
         default: "Successfull",
         required: true
     },

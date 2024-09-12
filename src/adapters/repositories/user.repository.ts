@@ -5,7 +5,7 @@ import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import IUserRepository from "../../interface/repositories/user.repository";
 import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 import Screens from "../../frameworks/models/screen.model";
-import ITickets, { ITicketDetilas } from "../../entity/tickets.entity";
+import ITickets, { ISaveCredentionOfTickets, ITicketDetilas } from "../../entity/tickets.entity";
 import Tickets from "../../frameworks/models/tickets.model";
 
 export default class UserRepository implements IUserRepository {
@@ -208,7 +208,7 @@ export default class UserRepository implements IUserRepository {
       }
     }
 
-    async bookSeat(scheduleId: string, updateQuery: { [key: string]: boolean | string }): Promise<void | never> {
+    async bookSeatOrMakeSeatAvaliable(scheduleId: string, updateQuery: { [key: string]: boolean | null | string }): Promise<void | never> {
       try {
         await MovieSchedules.updateOne({ _id: scheduleId }, {$set: updateQuery});
       } catch (err: any) {
@@ -232,7 +232,7 @@ export default class UserRepository implements IUserRepository {
       }
     }
 
-    async saveTicket(saveData: ITickets): Promise<void | never> {
+    async saveTicket(saveData: ISaveCredentionOfTickets): Promise<void | never> {
       try {
         const newTicketData = new Tickets({
           userId: saveData.userId,
@@ -317,6 +317,22 @@ export default class UserRepository implements IUserRepository {
         ];
 
         return await Tickets.aggregate(agg);
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async getTicketById(ticketId: string): Promise<ITickets | null | never> {
+      try {
+        return await Tickets.findOne({ _id: ticketId });
+      } catch (err: any) {
+        throw err;
+      }
+    }
+
+    async cancelTicket(ticketId: string): Promise<void | never> {
+      try {
+        await Tickets.updateOne({ _id: ticketId }, { $set: { ticketStatus: "Canceled", paymentStatus: "Refunded" } })
       } catch (err: any) {
         throw err;
       }

@@ -9,7 +9,7 @@ export default class StripeService implements IStripeService {
         this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);    
     }
 
-    async createCheckoutSessionForBookingSeat(scheduleId: string, itemData: ISeatPayAmountData[]): Promise<string> {
+    async createCheckoutSessionForBookingSeat(scheduleId: string, itemData: ISeatPayAmountData[]): Promise<string | never> {
         try {
             const checkoutSession = await this.stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
@@ -47,6 +47,19 @@ export default class StripeService implements IStripeService {
     async retrivePaymentIntent(paymentIntentId: string): Promise<Stripe.Response<Stripe.PaymentIntent> | never> {
         try {
             return await this.stripe.paymentIntents.retrieve(paymentIntentId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async initiateRefund(paymentIntentId: string, amountToRefund: number): Promise<void | never> {
+        try {
+            // Initiate the refund
+
+            await this.stripe.refunds.create({
+                payment_intent: paymentIntentId,
+                amount: amountToRefund
+            });
         } catch (err: any) {
             throw err;
         }

@@ -7,7 +7,7 @@ import IUserUseCase, { IHomeMovieData } from "../interface/usecase/user.usercase
 import IStripeService from "../interface/utils/IStripeService.utils";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../entity/user.entity";
 import { ISeatLayout, ISeatPayAmountData } from "../entity/screen.entity";
-import ITickets, { IPurchaseDetails, ITicketDetilas } from "../entity/tickets.entity";
+import ITickets, { IPurchaseDetails, ISaveCredentionOfTickets, ITicketDetilas } from "../entity/tickets.entity";
 
 export default class UserUseCase implements IUserUseCase {
     private userRepository: IUserRepository;
@@ -174,7 +174,7 @@ export default class UserUseCase implements IUserUseCase {
 
             if(!screen) throw new RequiredCredentialsNotGiven('screen eroor'); // screen id error.
 
-            const ticketData: ITickets = {
+            const ticketData: ISaveCredentionOfTickets = {
                 userId,
                 date: movieScheduleData.date,
                 movieId: movieScheduleData.movieId,
@@ -186,13 +186,11 @@ export default class UserUseCase implements IUserUseCase {
                 class: Array.from(map.keys()), // key are unique so class are unique
                 screenId: movieScheduleData.screenId,
                 seatDetails,
-                paymentStatus: "Successfull",
-                ticketStatus: "Active",
                 totalPaidAmount: checkoutSession.amount_total! / 100,
                 theaterId: screen.theaterId
             }
 
-            await this.userRepository.bookSeat(bookSeatData.scheduleId, updateQuery); // make the seat as booked by the user.
+            await this.userRepository.bookSeatOrMakeSeatAvaliable(bookSeatData.scheduleId, updateQuery); // make the seat as booked by the user.
 
             await this.userRepository.saveTicket(ticketData); // save tickets
         } catch (err: any) {
@@ -205,6 +203,44 @@ export default class UserUseCase implements IUserUseCase {
             if(!userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return this.userRepository.getAllActiveTickets(userId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async cancelTicket(ticketId: string | undefined): Promise<void | never> {
+        try {
+            if(!ticketId || !isObjectIdOrHexString(ticketId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const ticketData: ITickets | null = await this.userRepository.getTicketById(ticketId);
+            
+
+            if(!ticketData || ticketData.ticketStatus !== "Active" || ticketData.paymentStatus === "Refunded") throw new RequiredCredentialsNotGiven('Ticket Not Found.');
+
+            const currentDate: Date = new Date(Date.now());
+            const movieDate: Date = new Date(ticketData.date);
+
+            movieDate.setHours(Number(ticketData.time.split(':')[0]));
+            movieDate.setMinutes(Number(ticketData.time.split(':')[1]));
+
+            if(currentDate >= movieDate) throw new RequiredCredentialsNotGiven('Ticket Already used For watching movie Refund Not Avaliable.');
+
+            const updateQuery: { [key: string]: boolean | null } = {}
+
+            ticketData.selectedSeatsIdx.forEach((seat) => {
+                updateQuery[`seats.${seat.rowIdx}.${seat.colIdx}.isBooked`] = false;
+                updateQuery[`seats.${seat.rowIdx}.${seat.colIdx}.bookedUserId`] = null;
+            });
+
+            const paymentIntent = await this.stripeService.retrivePaymentIntent(ticketData.paymentIntentId);
+
+            const amountToRefund: number = Math.round(paymentIntent.amount_received * 0.7);
+
+            await this.stripeService.initiateRefund(paymentIntent.id, amountToRefund);
+
+            await this.userRepository.cancelTicket(ticketData._id);
+
+            await this.userRepository.bookSeatOrMakeSeatAvaliable(ticketData.scheduleId as string, updateQuery);
         } catch (err: any) {
             throw err;
         }

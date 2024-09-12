@@ -48,4 +48,6 @@ router.post('/bookseat', userController.bookSeat.bind(userController));
 
 router.get('/activetickets', userController.getAllActiveTickets.bind(userController)); // get all the booked tickets for movie
 
+router.patch('/cancelticket/:ticketId', userController.cancelTicket.bind(userController)); // cancel active ticket for movie
+
 export default router;
