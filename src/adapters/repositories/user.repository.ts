@@ -7,11 +7,37 @@ import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDe
 import Screens from "../../frameworks/models/screen.model";
 import ITickets, { ISaveCredentionOfTickets, ITicketDetilas } from "../../entity/tickets.entity";
 import Tickets from "../../frameworks/models/tickets.model";
+import MovieStreaming from "../../frameworks/models/movieStreaming.mode";
+import { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 
 export default class UserRepository implements IUserRepository {
     async upcommingMovies(): Promise<IMovie[] | never> {
         try {
             return await Movies.find({ releaseDate: { $gt: new Date(Date.now()) } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async streamingMovies(): Promise<IMovieStreamingDetails[] | never> {
+        try {
+          const agg = [
+            {
+              $lookup: {
+                from: 'movies', 
+                localField: 'movieId', 
+                foreignField: '_id', 
+                as: 'movieData'
+              }
+            }, 
+            {
+              $unwind: {
+                path: '$movieData'
+              }
+            }
+          ]
+
+          return await MovieStreaming.aggregate(agg);
         } catch (err: any) {
             throw err;
         }

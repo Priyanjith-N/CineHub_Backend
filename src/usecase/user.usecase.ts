@@ -8,6 +8,7 @@ import IStripeService from "../interface/utils/IStripeService.utils";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../entity/user.entity";
 import { ISeatLayout, ISeatPayAmountData } from "../entity/screen.entity";
 import ITickets, { IPurchaseDetails, ISaveCredentionOfTickets, ITicketDetilas } from "../entity/tickets.entity";
+import IMovieStreaming, { IMovieStreamingDetails } from "../entity/movieStreaming.entity";
 
 export default class UserUseCase implements IUserUseCase {
     private userRepository: IUserRepository;
@@ -20,14 +21,27 @@ export default class UserUseCase implements IUserUseCase {
 
     async getAllDataForHomePage(): Promise<IHomeMovieData | never> {
         try {
-            const nowPlayingMovies: INowPlayingMovies[] = await this.userRepository.nowPlayingMovies();
+            const nowPlaying: INowPlayingMovies[] = await this.userRepository.nowPlayingMovies();
             const recommendedMovies: IMovie[] = await this.userRepository.recommendedMovies();
             const upcommingMovies: IMovie[] = await this.userRepository.upcommingMovies();
+            const streaming: IMovieStreamingDetails[] = await this.userRepository.streamingMovies();
+
+            const nowPlayingMovies: IMovie[] = [];
+            const streamingMovies: IMovie[] = [];
+
+            for(const obj of nowPlaying) {
+                nowPlayingMovies.push(obj.movieData);
+            }
+
+            for(const obj of streaming) {
+                streamingMovies.push(obj.movieData);
+            }
 
             const data: IHomeMovieData = {
                 nowPlayingMovies,
                 recommendedMovies,
-                upcommingMovies
+                upcommingMovies,
+                streamingMovies
             }
 
             return data;

@@ -1,9 +1,11 @@
 import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
+import { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 import ITickets, { ISaveCredentionOfTickets, ITicketDetilas } from "../../entity/tickets.entity";
 
 export default interface IUserRepository {
     upcommingMovies(): Promise<IMovie[] | never>;
+    streamingMovies(): Promise<IMovieStreamingDetails[] | never>;
     recommendedMovies(): Promise<IMovie[] | never>;
     nowPlayingMovies(): Promise<INowPlayingMovies[] | never>;
     getMovieDetails(movieId: string): Promise<IMovie | null | never>;

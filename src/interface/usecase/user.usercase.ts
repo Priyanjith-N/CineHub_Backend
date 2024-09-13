@@ -1,4 +1,4 @@
-import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
+import IMovie from "../../entity/movie.entity";
 import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 import { ITicketDetilas } from "../../entity/tickets.entity";
 import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../../entity/user.entity";
@@ -17,7 +17,8 @@ export default interface IUserUseCase {
 }
 
 export interface IHomeMovieData {
-    nowPlayingMovies: INowPlayingMovies[];
+    nowPlayingMovies: IMovie[];
     recommendedMovies: IMovie[];
     upcommingMovies: IMovie[];
+    streamingMovies: IMovie[];
 }
