@@ -9,6 +9,7 @@ import IMovie from "../../entity/movie.entity";
 import { StatusCodes } from "../../enums/statusCode.enum";
 import { AuthRequest } from "../../interface/middlewares/authMiddleware.interface";
 import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
+import { IMovieStreamingCredentials, IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 
 export default class DistributerController implements IDistributerController {
     private distributerUseCase: IDistributerUseCase;
@@ -121,6 +122,38 @@ export default class DistributerController implements IDistributerController {
 
             res.status(StatusCodes.Success).json({
                 message: 'Request Rejected'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async addStreaming(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const addStreamingCredentials: IMovieStreamingCredentials = {
+                movieId: req.body.movieId,
+                buyAmount: req.body.buyAmount,
+                rentalPeriod: req.body.rentalPeriod,
+                rentAmount: req.body.rentAmount
+            }
+
+            await this.distributerUseCase.addStreaming(addStreamingCredentials);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Movie Now Streaming.'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getAllStreamingMovieDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data: IMovieStreamingDetails[] = await this.distributerUseCase.getAllStreamingMovieDetails(req.id);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Successfull',
+                data
             });
         } catch (err: any) {
             next(err);

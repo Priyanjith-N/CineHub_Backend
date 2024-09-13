@@ -10,6 +10,8 @@ import MovieRequests from "../../frameworks/models/movieRequest.model";
 import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMovieCollection.model";
 import { IDistributer, IDistributerList } from "../../entity/distributer.entity";
+import MovieStreaming from "../../frameworks/models/movieStreaming.mode";
+import IMovieStreaming, { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 
 export default class DistributerRepository implements IDistributerRepository {
     async getAllAvailableMovies(): Promise<IMovie[] | never> {
@@ -137,6 +139,58 @@ export default class DistributerRepository implements IDistributerRepository {
             });
 
             await newMovieInCollection.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async isMovieStreaming(movieId: string): Promise<IMovieStreaming | null | never> {
+        try {
+            return await MovieStreaming.findOne({ movieId: movieId });
+        } catch (err: any) {
+            throw err;            
+        }
+    }
+
+    async addStreaming(movieId: string, rentalPeriod: number, rentAmount: number, buyAmount: number): Promise<void | never> {
+        try {
+            const newStreamingMovie = new MovieStreaming({
+                buyAmount,
+                movieId,
+                rentalPeriod,
+                rentAmount
+            });
+
+            await newStreamingMovie.save();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllStreamingMovieDetails(distributerId: string): Promise<IMovieStreamingDetails[] | never> {
+        try {
+            const agg = [
+                {
+                  $lookup: {
+                    from: 'movies', 
+                    localField: 'movieId', 
+                    foreignField: '_id', 
+                    as: 'movieData'
+                  }
+                }, 
+                {
+                  $unwind: {
+                    path: '$movieData'
+                  }
+                },
+                {
+                    $match: {
+                        "movieData.distributerId": new mongoose.Types.ObjectId(distributerId)
+                    }
+                }
+              ]
+
+            return await MovieStreaming.aggregate(agg);
         } catch (err: any) {
             throw err;
         }

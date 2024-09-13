@@ -48,4 +48,8 @@ router.patch('/approvemovierequest/:requestId', distributerController.approveMov
 
 router.patch('/rejectmovierequest/:requestId', distributerController.rejectMovieRequest.bind(distributerController));
 
+router.post('/addstreaming', distributerController.addStreaming.bind(distributerController));
+
+router.get('/getallstreamingmoviedetails', distributerController.getAllStreamingMovieDetails.bind(distributerController));
+
 export default router;

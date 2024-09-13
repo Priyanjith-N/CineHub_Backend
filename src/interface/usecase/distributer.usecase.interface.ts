@@ -1,6 +1,7 @@
 // interfaces
 import IMovie from "../../entity/movie.entity";
 import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
+import { IMovieStreamingCredentials, IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 
 export default interface IDistributerUseCase {
     getAllAvailableMovies(): Promise<IMovie[] | never>;
@@ -10,4 +11,6 @@ export default interface IDistributerUseCase {
     getAllMovieRequests(distributerId: string | undefined): Promise<IMovieRequestDetailsForDistributer[] | never>;
     approveMovieRequest(requestId: string | undefined, theaterOwnerEmail: string | undefined, movieName: string | undefined): Promise<void | never>;
     rejectMovieRequest(requestId: string | undefined, theaterOwnerEmail: string | undefined, movieName: string | undefined, reason: string | undefined): Promise<void | never>;
+    addStreaming(data: IMovieStreamingCredentials): Promise<void | never>;
+    getAllStreamingMovieDetails(distributerId: string | undefined): Promise<IMovieStreamingDetails[] | never>;
 }

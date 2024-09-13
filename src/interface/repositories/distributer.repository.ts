@@ -2,6 +2,7 @@
 import { IDistributerList } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
 import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
+import IMovieStreaming, { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 
 export default interface IDistributerRepository {
     getAllAvailableMovies(): Promise<IMovie[] | never>;
@@ -14,4 +15,7 @@ export default interface IDistributerRepository {
     approveMovieRequest(requestId: string): Promise<IMovieRequest | null | never>;
     addMovieToCollection(approvedRequest: IMovieRequest): Promise<void | never>;
     rejectMovieRequest(requestId: string): Promise<void | never>;
+    isMovieStreaming(movieId: string): Promise<IMovieStreaming | null | never>;
+    addStreaming(movieId: string, rentalPeriod: number, rentAmount: number, buyAmount: number): Promise<void | never>;
+    getAllStreamingMovieDetails(distributerId: string): Promise<IMovieStreamingDetails[] | never>;
 }

@@ -7,6 +7,9 @@ import IDistributerUseCase from "../interface/usecase/distributer.usecase.interf
 import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../entity/movieRequest.entity";
 import IEmailService from "../interface/utils/IEmailService";
 import { IDistributer, IDistributerList } from "../entity/distributer.entity";
+import IMovieStreaming, { IMovieStreamingCredentials, IMovieStreamingDetails } from "../entity/movieStreaming.entity";
+import AuthenticationError from "../errors/authentication.error";
+import { StatusCodes } from "../enums/statusCode.enum";
 
 export default class DistributerUseCase implements IDistributerUseCase {
     private distributerRepository: IDistributerRepository;
@@ -110,6 +113,30 @@ export default class DistributerUseCase implements IDistributerUseCase {
             const text: string = reason;
 
             await this.emailService.sendEmail(to, subjcet, text);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async addStreaming(data: IMovieStreamingCredentials): Promise<void | never> {
+        try {
+            if(!data.movieId || !isObjectIdOrHexString(data.movieId) || !data.buyAmount || !data.rentAmount || data.buyAmount <= data.rentAmount || !data.rentalPeriod) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const isMovieStreaming: IMovieStreaming | null = await this.distributerRepository.isMovieStreaming(data.movieId);
+
+            if(isMovieStreaming) throw new AuthenticationError({ message: `Movie is already streaming.`, errorField: 'movieToStream', statusCode: StatusCodes.BadRequest });
+
+            await this.distributerRepository.addStreaming(data.movieId, data.rentalPeriod, data.rentAmount, data.buyAmount);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllStreamingMovieDetails(distributerId: string | undefined): Promise<IMovieStreamingDetails[] | never> {
+        try {
+            if(!distributerId || !isObjectIdOrHexString(distributerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return await this.distributerRepository.getAllStreamingMovieDetails(distributerId);
         } catch (err: any) {
             throw err;
         }
