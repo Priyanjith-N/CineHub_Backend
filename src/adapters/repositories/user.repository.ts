@@ -394,4 +394,61 @@ export default class UserRepository implements IUserRepository {
         throw err;
       }
     }
+
+    async getTicketDetailsById(ticketId: string): Promise<ITicketDetilas | undefined | never> {
+      try {
+        const agg = [
+          {
+            $match: {
+              _id: new mongoose.Types.ObjectId(ticketId)
+            }
+          },
+          {
+            $lookup: {
+              from: 'movies', 
+              localField: 'movieId', 
+              foreignField: '_id', 
+              as: 'movieData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$movieData'
+            }
+          }, 
+          {
+            $lookup: {
+              from: 'theaters', 
+              localField: 'theaterId', 
+              foreignField: '_id', 
+              as: 'theaterData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$theaterData'
+            }
+          }, 
+          {
+            $lookup: {
+              from: 'screens', 
+              localField: 'screenId', 
+              foreignField: '_id', 
+              as: 'screenData'
+            }
+          }, 
+          {
+            $unwind: {
+              path: '$screenData'
+            }
+          }
+        ];
+
+        const [ data ]: ITicketDetilas[] = await Tickets.aggregate(agg);
+
+        return data;
+      } catch (err: any) {
+        throw err;
+      }
+    }
 }

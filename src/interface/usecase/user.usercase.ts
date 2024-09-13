@@ -11,8 +11,9 @@ export default interface IUserUseCase {
     createCheckoutSession(data: ICreateCheckoutSessionCredentials): Promise<string>;
     bookSeat(bookSeatData: IBookSeatCredentials | undefined, userId: string | undefined, checkoutSessionId: string | undefined): Promise<void>;
     getAllActiveTickets(userId: string | undefined): Promise<ITicketDetilas[] | never>;
-    cancelTicket(ticketId: string | undefined): Promise<void | never>;
+    cancelTicket(ticketId: string | undefined, userId: string | undefined): Promise<void | never>;
     getAllTransactionList(userId: string | undefined): Promise<ITicketDetilas[] | never>;
+    getTicketDetails(ticketId: string | undefined, userId: string | undefined): Promise<ITicketDetilas | never>;
 }
 
 export interface IHomeMovieData {

@@ -208,14 +208,14 @@ export default class UserUseCase implements IUserUseCase {
         }
     }
 
-    async cancelTicket(ticketId: string | undefined): Promise<void | never> {
+    async cancelTicket(ticketId: string | undefined, userId: string | undefined): Promise<void | never> {
         try {
-            if(!ticketId || !isObjectIdOrHexString(ticketId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            if(!ticketId || !isObjectIdOrHexString(ticketId) || !userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             const ticketData: ITickets | null = await this.userRepository.getTicketById(ticketId);
             
 
-            if(!ticketData || ticketData.ticketStatus !== "Active" || ticketData.paymentStatus === "Refunded") throw new RequiredCredentialsNotGiven('Ticket Not Found.');
+            if(!ticketData || ticketData.ticketStatus !== "Active" || ticketData.paymentStatus === "Refunded" || ticketData.userId.toString() !== userId.toString()) throw new RequiredCredentialsNotGiven('Ticket Not Found.');
 
             const currentDate: Date = new Date(Date.now());
             const movieDate: Date = new Date(ticketData.date);
@@ -251,6 +251,20 @@ export default class UserUseCase implements IUserUseCase {
             if(!userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return this.userRepository.getAllTransactionList(userId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTicketDetails(ticketId: string | undefined, userId: string | undefined): Promise<ITicketDetilas | never> {
+        try {
+            if(!ticketId || !isObjectIdOrHexString(ticketId) || !userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const ticketData: ITicketDetilas | undefined = await this.userRepository.getTicketDetailsById(ticketId);
+
+            if(!ticketData || ticketData.userId.toString() !== userId.toString()) throw new RequiredCredentialsNotGiven('Invaild Ticket details.');
+
+            return ticketData;
         } catch (err: any) {
             throw err;
         }

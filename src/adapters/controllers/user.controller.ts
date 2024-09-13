@@ -131,7 +131,7 @@ export default class UserController implements IUserController {
       try {
         const ticketId: string | undefined = req.params.ticketId;
 
-        await this.userUseCase.cancelTicket(ticketId);
+        await this.userUseCase.cancelTicket(ticketId, req.id);
 
         res.status(StatusCodes.Success).json({
           message: "Sucessfully amount Refunded",
@@ -149,6 +149,19 @@ export default class UserController implements IUserController {
           message: "Sucessfull",
           data
         }); 
+      } catch (err: any) {
+        next(err);
+      }
+    }
+
+    async getTicketDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const data: ITicketDetilas = await this.userUseCase.getTicketDetails(req.params.ticketId, req.id);
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull",
+          data
+        });
       } catch (err: any) {
         next(err);
       }

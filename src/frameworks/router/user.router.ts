@@ -52,4 +52,6 @@ router.patch('/cancelticket/:ticketId', userController.cancelTicket.bind(userCon
 
 router.get('/transactionlist', userController.getAllTransactionList.bind(userController)); // get all transactions
 
+router.get('/ticket/:ticketId', userController.getTicketDetails.bind(userController)); // get all transactions
+
 export default router;
