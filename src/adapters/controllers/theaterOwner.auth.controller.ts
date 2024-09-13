@@ -6,6 +6,7 @@ import ITheaterOwnerAuthUseCase from "../../interface/usecase/theaterOwner.IAuth
 
 //enums
 import { StatusCodes } from "../../enums/statusCode.enum";
+import { IAuthTokens } from "../../interface/utils/IJWTService";
 
 export default class TheaterOwnerAuthenticationController implements ITheaterOwnerAuthenticationController {
     private theaterOwnerAuthUseCase: ITheaterOwnerAuthUseCase;
@@ -17,12 +18,18 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
     async googleAuthLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const idToken: string | undefined = req.body.token;
+            
+            const authTokens: IAuthTokens = await this.theaterOwnerAuthUseCase.googleLoginUser(idToken);
 
-            const token: string = await this.theaterOwnerAuthUseCase.googleLoginUser(idToken);
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
             
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);
@@ -37,11 +44,17 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             }: ITheaterOwnerLoginCredentials = req.body;
 
             // usecase for authenticateing theater owners
-            const token: string = await this.theaterOwnerAuthUseCase.authenticateUser(email, password); // return token or throw an error
+            const authTokens: IAuthTokens = await this.theaterOwnerAuthUseCase.authenticateUser(email, password); // return token or throw an error
 
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
+            
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);
@@ -124,7 +137,10 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
 
     async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing token stroed http only cookie to logout.
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+            }); // clearing refreshToken stroed http only cookie to logout.
             
             res.status(StatusCodes.Success).json({
                 message: "Theater Owner Logout sucessfull"

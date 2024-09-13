@@ -19,11 +19,17 @@ export default class DistributerAuthenticationController implements IDistributer
         try {
             const idToken: string | undefined = req.body.token;
 
-            const token: string = await this.distributerAuthUseCase.googleLoginDistributer(idToken);
+            const authTokens: IAuthTokens = await this.distributerAuthUseCase.googleLoginDistributer(idToken);
+
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
             
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);

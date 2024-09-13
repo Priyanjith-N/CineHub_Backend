@@ -6,7 +6,7 @@ import IEmailService from "../interface/utils/IEmailService";
 import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
-import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import IJWTService, { IAuthTokens, IPayload } from "../interface/utils/IJWTService";
 import IOTPRepository from "../interface/repositories/OTP.IOTPRepository.interface";
 
 // enums
@@ -39,7 +39,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
         this.googleAuthService = googleAuthService;
     }
 
-    async googleLoginUser(idToken: string | undefined): Promise<string | never> {
+    async googleLoginUser(idToken: string | undefined): Promise<IAuthTokens | never> {
         try {
             if(!idToken) {
                 throw new RequiredCredentialsNotGiven('GOOGLE_TOKEN_REQUIRE.');
@@ -70,15 +70,21 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 type: 'User'
             }
 
-            const token: string = this.jwtService.sign(payload, "15m");
+            const accessToken: string = this.jwtService.sign(payload, "15m");
+            const refreshToken: string = this.jwtService.sign(payload, "30d");
 
-            return token;
+            const authTokens: IAuthTokens = {
+                accessToken,
+                refreshToken
+            }
+
+            return authTokens;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async authenticateUser(email: string, password: string): Promise<string | never> {
+    async authenticateUser(email: string, password: string): Promise<IAuthTokens | never> {
         try {
             const userData: IUser | null = await this.userAuthRepository.getDataByEmail(email);
 
@@ -98,9 +104,15 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 id: userData._id,
                 type: 'User'
             }
-            const token: string = this.jwtService.sign(payload, "15m");
+            const accessToken: string = this.jwtService.sign(payload, "15m");
+            const refreshToken: string = this.jwtService.sign(payload, "30d");
 
-            return token;
+            const authTokens: IAuthTokens = {
+                accessToken,
+                refreshToken
+            }
+
+            return authTokens;
         } catch (err: any) {
             throw err;
         }
@@ -129,7 +141,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
         }
     }
 
-    async OTPVerification(email: string | undefined, otp: string): Promise<string | never> {
+    async OTPVerification(email: string | undefined, otp: string): Promise<IAuthTokens | never> {
         try {
             const otpData: IOTPDocument | null = await this.otpRepository.getOTPByEmail(email as string);
             
@@ -152,9 +164,15 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 type: 'User'
             }
 
-            const authToken: string = this.jwtService.sign(payload, "15m"); // genrateing jwt token.
+            const accessToken: string = this.jwtService.sign(payload, "15m");
+            const refreshToken: string = this.jwtService.sign(payload, "30d");
 
-            return authToken; // for authing user by cookei
+            const authTokens: IAuthTokens = {
+                accessToken,
+                refreshToken
+            }
+
+            return authTokens;
         } catch (err: any) {
             throw err;
         }

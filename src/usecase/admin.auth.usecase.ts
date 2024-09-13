@@ -3,7 +3,7 @@ import IAdminAuthUseCase from "../interface/usecase/admin.IAuth.usecase";
 import IAdminAuthRepository from "../interface/repositories/admin.IAuth.repository";
 import IEmailService from "../interface/utils/IEmailService";
 import IHashingService from "../interface/utils/IHashingService";
-import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import IJWTService, { IAuthTokens, IPayload } from "../interface/utils/IJWTService";
 
 // enums
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -26,7 +26,7 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
         this.emailService = emailService;
     }
 
-    async authenticateUser(email: string, password: string): Promise<string | never> {
+    async authenticateUser(email: string, password: string): Promise<IAuthTokens | never> {
         try {
             const adminData: IAdmin | null = await this.adminAuthRepository.getDataByEmail(email);
 
@@ -41,9 +41,15 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
                 type: 'Admin'
             }
             
-            const token: string = this.jwtService.sign(payload, "15m");
+            const accessToken: string = this.jwtService.sign(payload, "15m");
+            const refreshToken: string = this.jwtService.sign(payload, "30d");
 
-            return token;
+            const authTokens: IAuthTokens = {
+                accessToken,
+                refreshToken
+            }
+
+            return authTokens;
         } catch (err: any) {
             throw err;
         }

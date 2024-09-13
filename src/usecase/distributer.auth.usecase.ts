@@ -42,7 +42,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
         this.googleAuthService = googleAuthService;
     }
 
-    async googleLoginDistributer(idToken: string | undefined): Promise<string | never> {
+    async googleLoginDistributer(idToken: string | undefined): Promise<IAuthTokens | never> {
         try {
             if(!idToken) {
                 throw new RequiredCredentialsNotGiven('GOOGLE_TOKEN_REQUIRE.');
@@ -75,9 +75,16 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 type: 'Distributer'
             }
 
-            const token: string = this.jwtService.sign(payload, "15m");
+            const accessToken: string = this.jwtService.sign(payload, "15m");
 
-            return token;
+            const refreshToken: string = this.jwtService.sign(payload, "30d");
+
+            const authTokens: IAuthTokens = {
+                accessToken,
+                refreshToken
+            }
+
+            return authTokens;
         } catch (err: any) {
             throw err;
         }

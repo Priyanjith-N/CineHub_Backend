@@ -3,7 +3,7 @@ import { IDistributerRegisterCredentials } from "../controllers/distributer.IAut
 import { IAuthTokens } from "../utils/IJWTService";
 
 export default interface IDistributerAuthUseCase {
-    googleLoginDistributer(idToken: string | undefined): Promise<string | never>;
+    googleLoginDistributer(idToken: string | undefined): Promise<IAuthTokens | never>;
     authenticateDistributer(email: string | undefined, password: string | undefined): Promise<IAuthTokens | never>;
     register(registerData: IDistributerRegisterCredentials): Promise<void | never>;
     OTPVerification(email: string | undefined, otp: string | undefined): Promise<void | never>;

@@ -4,7 +4,7 @@ import ITheaterOwnerAuthRepository from "../interface/repositories/theaterOwner.
 import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import IEmailService from "../interface/utils/IEmailService";
-import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import IJWTService, { IAuthTokens, IPayload } from "../interface/utils/IJWTService";
 import { ITheaterOwnerRegisterCredentials } from "../interface/controllers/theaterOwner.IAuth.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
@@ -43,7 +43,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
         this.googleAuthService = googleAuthService;
     }
 
-    async googleLoginUser(idToken: string | undefined): Promise<string | never> {
+    async googleLoginUser(idToken: string | undefined): Promise<IAuthTokens | never> {
         try {
             if(!idToken) {
                 throw new RequiredCredentialsNotGiven('GOOGLE_TOKEN_REQUIRE.');
@@ -76,15 +76,21 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 type: 'TheaterOwner'
             }
 
-            const token: string = this.jwtService.sign(payload, "15m");
+            const accessToken: string = this.jwtService.sign(payload, "15m");
+            const refreshToken: string = this.jwtService.sign(payload, "30d");
 
-            return token;
+            const authTokens: IAuthTokens = {
+                accessToken,
+                refreshToken
+            }
+
+            return authTokens;
         } catch (err: any) {
             throw err;
         }
     }
 
-    async authenticateUser(email: string | undefined, password: string | undefined): Promise<string | never> {
+    async authenticateUser(email: string | undefined, password: string | undefined): Promise<IAuthTokens | never> {
      try {
         if(!email || !password) {
             throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
@@ -110,9 +116,16 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
             id: theaterOwnerData._id,
             type: 'TheaterOwner'
         }
-        const token: string = this.jwtService.sign(payload, "15m");
 
-        return token;
+        const accessToken: string = this.jwtService.sign(payload, "15m");
+        const refreshToken: string = this.jwtService.sign(payload, "30d");
+
+        const authTokens: IAuthTokens = {
+            accessToken,
+            refreshToken
+        }
+
+        return authTokens;
      } catch (err: any) {
         throw err;
      }

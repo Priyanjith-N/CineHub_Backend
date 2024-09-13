@@ -7,6 +7,7 @@ import IUserAuthUseCase from "../../interface/usecase/user.IAuth.usecase";
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
 import { IUserProfile } from "../../entity/user.entity";
+import { IAuthTokens } from "../../interface/utils/IJWTService";
 
 export default class UserAuthenticationController implements IUserAuthenticationController {
     private userAuthUseCase: IUserAuthUseCase;
@@ -19,11 +20,17 @@ export default class UserAuthenticationController implements IUserAuthentication
         try {
             const idToken: string | undefined = req.body.token;
 
-            const token: string = await this.userAuthUseCase.googleLoginUser(idToken);
+            const authTokens: IAuthTokens = await this.userAuthUseCase.googleLoginUser(idToken);
+            
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
             
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);
@@ -38,11 +45,17 @@ export default class UserAuthenticationController implements IUserAuthentication
             }: IUserLoginCredentials = req.body;
             
             // usecase for authenticateing User
-            const token: string = await this.userAuthUseCase.authenticateUser(email, password); // return token if credentials and user is verified or error
+            const authTokens: IAuthTokens = await this.userAuthUseCase.authenticateUser(email, password); // return token if credentials and user is verified or error
+            
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
             
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);
@@ -85,13 +98,19 @@ export default class UserAuthenticationController implements IUserAuthentication
             const otp: string = req.body.otp;
             
             
-            const token: string = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
+            const authTokens: IAuthTokens = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
 
             res.cookie('emailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
 
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
+
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);
@@ -129,7 +148,10 @@ export default class UserAuthenticationController implements IUserAuthentication
 
     async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing token stroed http only cookie to logout.
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+            }); // clearing refreshToken stroed http only cookie to logout.
             
             res.status(StatusCodes.Success).json({
                 message: "User Logout sucessfull"
