@@ -50,4 +50,6 @@ router.get('/activetickets', userController.getAllActiveTickets.bind(userControl
 
 router.patch('/cancelticket/:ticketId', userController.cancelTicket.bind(userController)); // cancel active ticket for movie
 
+router.get('/transactionlist', userController.getAllTransactionList.bind(userController)); // get all transactions
+
 export default router;

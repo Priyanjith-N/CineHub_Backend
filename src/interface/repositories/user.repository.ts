@@ -17,4 +17,5 @@ export default interface IUserRepository {
     getAllActiveTickets(userId: string): Promise<ITicketDetilas[] | never>;
     getTicketById(ticketId: string): Promise<ITickets | null | never>;
     cancelTicket(ticketId: string): Promise<void | never>;
+    getAllTransactionList(userId: string): Promise<ITicketDetilas[] | never>
 }

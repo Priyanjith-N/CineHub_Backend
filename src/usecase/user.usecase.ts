@@ -245,4 +245,14 @@ export default class UserUseCase implements IUserUseCase {
             throw err;
         }
     }
+
+    async getAllTransactionList(userId: string | undefined): Promise<ITicketDetilas[] | never> {
+        try {
+            if(!userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return this.userRepository.getAllTransactionList(userId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
 }

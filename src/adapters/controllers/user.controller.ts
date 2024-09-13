@@ -140,4 +140,17 @@ export default class UserController implements IUserController {
         next(err);
       }
     }
+
+    async getAllTransactionList(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const data: ITicketDetilas[] = await this.userUseCase.getAllTransactionList(req.id);
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull",
+          data
+        }); 
+      } catch (err: any) {
+        next(err);
+      }
+    }
 }
