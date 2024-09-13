@@ -116,7 +116,7 @@ export default class UserUseCase implements IUserUseCase {
         }
     }
 
-    async bookSeat(bookSeatData: IBookSeatCredentials | undefined, userId: string | undefined, checkoutSessionId: string | undefined): Promise<void> {
+    async bookSeat(bookSeatData: IBookSeatCredentials | undefined, userId: string | undefined, checkoutSessionId: string | undefined): Promise<string | never> {
         try {
             if(!bookSeatData || !bookSeatData.scheduleId || !isObjectIdOrHexString(bookSeatData.scheduleId) || !bookSeatData.selectedSeats || !bookSeatData.selectedSeats.length || !bookSeatData.sessionId || !bookSeatData.userId || !userId || !isObjectIdOrHexString(bookSeatData.userId) || bookSeatData.userId.toString() !== userId.toString() || !checkoutSessionId || bookSeatData.sessionId !== checkoutSessionId) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
@@ -192,7 +192,7 @@ export default class UserUseCase implements IUserUseCase {
 
             await this.userRepository.bookSeatOrMakeSeatAvaliable(bookSeatData.scheduleId, updateQuery); // make the seat as booked by the user.
 
-            await this.userRepository.saveTicket(ticketData); // save tickets
+            return await this.userRepository.saveTicket(ticketData); // save tickets
         } catch (err: any) {
             throw err;
         }

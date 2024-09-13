@@ -101,12 +101,13 @@ export default class UserController implements IUserController {
       try {
         const seatBookingCredentials: IBookSeatCredentials | undefined = req.app.locals.bookingSeatCredentials;
 
-        await this.userUseCase.bookSeat(seatBookingCredentials, req.id, req.body.checkoutSessionId);
+        const ticketId: string = await this.userUseCase.bookSeat(seatBookingCredentials, req.id, req.body.checkoutSessionId);
 
         delete req.app.locals.bookingSeatCredentials;
 
         res.status(StatusCodes.Success).json({
-          message: "Sucessfull"
+          message: "Sucessfull",
+          ticketId
         });
       } catch (err: any) {
         delete req.app.locals.bookingSeatCredentials

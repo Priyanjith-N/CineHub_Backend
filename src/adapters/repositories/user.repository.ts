@@ -232,7 +232,7 @@ export default class UserRepository implements IUserRepository {
       }
     }
 
-    async saveTicket(saveData: ISaveCredentionOfTickets): Promise<void | never> {
+    async saveTicket(saveData: ISaveCredentionOfTickets): Promise<string | never> {
       try {
         const newTicketData = new Tickets({
           userId: saveData.userId,
@@ -251,6 +251,8 @@ export default class UserRepository implements IUserRepository {
         });
 
         await newTicketData.save();
+
+        return newTicketData._id as string;
       } catch (err: any) {
         throw err;
       }

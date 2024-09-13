@@ -13,7 +13,7 @@ export default interface IUserRepository {
     bookSeatOrMakeSeatAvaliable(scheduleId: string, updateQuery: { [key: string]: boolean | null | string }): Promise<void | never>;
     getScheduleById(scheduleId: string): Promise<IMovieSchedule | null | never>;
     getTheaterIdFormScreen(screenId: string): Promise<{ theaterId: string } | null | never>;
-    saveTicket(saveData: ISaveCredentionOfTickets): Promise<void | never>;
+    saveTicket(saveData: ISaveCredentionOfTickets): Promise<string | never>;
     getAllActiveTickets(userId: string): Promise<ITicketDetilas[] | never>;
     getTicketById(ticketId: string): Promise<ITickets | null | never>;
     cancelTicket(ticketId: string): Promise<void | never>;
