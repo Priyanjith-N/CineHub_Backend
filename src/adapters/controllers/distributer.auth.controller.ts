@@ -6,6 +6,7 @@ import IDistributerAuthUseCase from "../../interface/usecase/distributer.IAuth.u
 
 // enums
 import { StatusCodes } from "../../enums/statusCode.enum";
+import { IAuthTokens } from "../../interface/utils/IJWTService";
 
 export default class DistributerAuthenticationController implements IDistributerAuthenticationController {
     private distributerAuthUseCase: IDistributerAuthUseCase;
@@ -37,11 +38,17 @@ export default class DistributerAuthenticationController implements IDistributer
             }: IDistributerLoginCredentials = req.body;
 
             // usecase for authenticateing distributer
-            const token: string = await this.distributerAuthUseCase.authenticateDistributer(email, password); // return token or throw an error
+            const authTokens: IAuthTokens = await this.distributerAuthUseCase.authenticateDistributer(email, password); // return token or throw an error
+
+            res.cookie('refreshToken', authTokens.refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 30 * 24 * 60 * 60,
+            });
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly login",
-                token
+                token: authTokens.accessToken
             });
         } catch (err: any) {
             next(err);
@@ -125,7 +132,10 @@ export default class DistributerAuthenticationController implements IDistributer
 
     async handleLogoutRequest(req: Request, res: Response, next: NextFunction): Promise<void | never> {
         try {
-            res.cookie('token', '', { httpOnly: true, expires: new Date(Date.now()) }); // clearing token stroed http only cookie to logout.
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+            }); // clearing refreshToken stroed http only cookie to logout.
             
             res.status(StatusCodes.Success).json({
                 message: "Distributer Logout sucessfull"

@@ -31,7 +31,7 @@ export default class AuthMiddleware implements IAuthMiddleware {
             const authorizationHeader: string | undefined = req.headers.authorization;
 
             if(!authorizationHeader) {
-                throw new JWTTokenError({ message: "NOT AUTHENTICATED", statusCode: StatusCodes.Unauthorized });
+                throw new JWTTokenError({ tokenName: "Token", message: "NOT AUTHENTICATED", statusCode: StatusCodes.Unauthorized });
             }
 
             const token = authorizationHeader.split(' ')[1];
@@ -39,7 +39,7 @@ export default class AuthMiddleware implements IAuthMiddleware {
             const decoded: IPayload = this.jwtService.verifyToken(token);
 
             if(decoded.type !== this.type || !isObjectIdOrHexString(decoded.id)) {
-                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
             }
 
             req.id = decoded.id;

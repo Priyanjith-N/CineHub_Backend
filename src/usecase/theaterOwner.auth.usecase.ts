@@ -76,7 +76,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
                 type: 'TheaterOwner'
             }
 
-            const token: string = this.jwtService.sign(payload);
+            const token: string = this.jwtService.sign(payload, "15m");
 
             return token;
         } catch (err: any) {
@@ -110,7 +110,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
             id: theaterOwnerData._id,
             type: 'TheaterOwner'
         }
-        const token: string = this.jwtService.sign(payload);
+        const token: string = this.jwtService.sign(payload, "15m");
 
         return token;
      } catch (err: any) {
@@ -209,7 +209,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
     async verifyToken(authorizationHeader: string | undefined): Promise<void | never> {
         try {
             if(!authorizationHeader) {
-                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'Thearter Owner not authenticated' })
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.Unauthorized, message: 'Thearter Owner not authenticated' })
             }
 
             const token = authorizationHeader.split(' ')[1];
@@ -217,7 +217,7 @@ export default class TheaterOwnerAuthUseCase implements ITheaterOwnerAuthUseCase
             const decoded: IPayload = this.jwtService.verifyToken(token);
 
             if(decoded.type !== 'TheaterOwner') {
-                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
             }
         } catch (err: any) {
             throw err;

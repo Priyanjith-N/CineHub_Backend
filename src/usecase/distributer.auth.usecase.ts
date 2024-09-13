@@ -4,7 +4,7 @@ import IDistributerAuthRepository from "../interface/repositories/distributer.IA
 import IHashingService from "../interface/utils/IHashingService";
 import IOTPService from "../interface/utils/IOTPService";
 import IEmailService from "../interface/utils/IEmailService";
-import IJWTService, { IPayload } from "../interface/utils/IJWTService";
+import IJWTService, { IAuthTokens, IPayload } from "../interface/utils/IJWTService";
 import { IDistributerRegisterCredentials } from "../interface/controllers/distributer.IAuth.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
 import { IOTPDocument } from "../interface/collections/IOTP.collections";
@@ -21,6 +21,7 @@ import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.e
 import JWTTokenError from "../errors/jwt.error";
 import { IDistributer } from "../entity/distributer.entity";
 import IImage from "../interface/common/IImage.interface";
+import { isObjectIdOrHexString } from "mongoose";
 
 export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     private distributerAuthRepository: IDistributerAuthRepository;
@@ -74,7 +75,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
                 type: 'Distributer'
             }
 
-            const token: string = this.jwtService.sign(payload);
+            const token: string = this.jwtService.sign(payload, "15m");
 
             return token;
         } catch (err: any) {
@@ -82,7 +83,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
         }
     }
 
-    async authenticateDistributer(email: string | undefined, password: string | undefined): Promise<string | never> {
+    async authenticateDistributer(email: string | undefined, password: string | undefined): Promise<IAuthTokens | never> {
      try {
         if(!email || !password) {
             throw new AuthenticationError({message: 'Provide All required fields.', statusCode: StatusCodes.BadRequest, errorField: 'Required'});
@@ -108,9 +109,17 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             id: distributerData._id,
             type: 'Distributer'
         }
-        const token: string = this.jwtService.sign(payload);
+        
+        const accessToken: string = this.jwtService.sign(payload, "15m");
 
-        return token;
+        const refreshToken: string = this.jwtService.sign(payload, "30d");
+
+        const authTokens: IAuthTokens = {
+            accessToken,
+            refreshToken
+        }
+
+        return authTokens;
      } catch (err: any) {
         throw err;
      }   
@@ -210,7 +219,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
     async verifyToken(authorizationHeader: string | undefined): Promise<void | never> {
         try {
             if(!authorizationHeader) {
-                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'Distributer not authenticated' })
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.Unauthorized, message: 'Distributer not authenticated' })
             }
 
             const token = authorizationHeader.split(' ')[1];
@@ -218,7 +227,7 @@ export default class DistributerAuthUseCase implements IDistributerAuthUseCase {
             const decoded: IPayload = this.jwtService.verifyToken(token);
 
             if(decoded.type !== 'Distributer') {
-                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
             }
         } catch (err: any) {
             throw err;

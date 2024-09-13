@@ -41,7 +41,7 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
                 type: 'Admin'
             }
             
-            const token: string = this.jwtService.sign(payload);
+            const token: string = this.jwtService.sign(payload, "15m");
 
             return token;
         } catch (err: any) {
@@ -52,7 +52,7 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
     async verifyToken(authorizationHeader: string | undefined): Promise<void | never> {
         try {
             if(!authorizationHeader) {
-                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'Admin not authenticated' })
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.Unauthorized, message: 'Admin not authenticated' })
             }
 
             const token = authorizationHeader.split(' ')[1];
@@ -60,7 +60,7 @@ export default class AdminAuthUseCase implements IAdminAuthUseCase {
             const decoded: IPayload = this.jwtService.verifyToken(token);
 
             if(decoded.type !== 'Admin') {
-                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
             }
         } catch (err: any) {
             throw err;

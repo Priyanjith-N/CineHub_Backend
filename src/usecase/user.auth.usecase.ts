@@ -70,7 +70,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 type: 'User'
             }
 
-            const token: string = this.jwtService.sign(payload);
+            const token: string = this.jwtService.sign(payload, "15m");
 
             return token;
         } catch (err: any) {
@@ -98,7 +98,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 id: userData._id,
                 type: 'User'
             }
-            const token: string = this.jwtService.sign(payload);
+            const token: string = this.jwtService.sign(payload, "15m");
 
             return token;
         } catch (err: any) {
@@ -152,7 +152,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
                 type: 'User'
             }
 
-            const authToken: string = this.jwtService.sign(payload); // genrateing jwt token.
+            const authToken: string = this.jwtService.sign(payload, "15m"); // genrateing jwt token.
 
             return authToken; // for authing user by cookei
         } catch (err: any) {
@@ -191,7 +191,7 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
     async verifyToken(authorizationHeader: string | undefined): Promise<IUserProfile | never> {
         try {
             if(!authorizationHeader) {
-                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not authenticated' })
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.Unauthorized, message: 'User not authenticated' })
             }
 
             const token = authorizationHeader.split(' ')[1];
@@ -199,13 +199,13 @@ export default class UserAuthUseCase implements IUserAuthUseCase {
             const decoded: IPayload = this.jwtService.verifyToken(token);
 
             if(decoded.type !== 'User') {
-                throw new JWTTokenError({ statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.BadRequest, message: 'Invaild Token' });
             }
 
             const data: IUserProfile | null = await this.userAuthRepository.getUserProfileData(decoded.id);
 
             if(!data) {
-                throw new JWTTokenError({ statusCode: StatusCodes.Unauthorized, message: 'User not found' })
+                throw new JWTTokenError({ tokenName: "Token", statusCode: StatusCodes.Unauthorized, message: 'User not found' })
             }
 
             return data;

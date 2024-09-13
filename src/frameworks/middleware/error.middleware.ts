@@ -20,7 +20,12 @@ export default function errorHandler(err: any, req: Request, res: Response, next
     }else if(err instanceof TokenExpiredError || err instanceof JsonWebTokenError) {
         res.status(401).json({ errorField: "Token", message: 'Token expired' });
     }else if(err instanceof JWTTokenError){
-        res.status(err.details.statusCode).json({ errorField: "Token", message: err.message });
+        if(err.details.tokenName === "RefreshToken" || err.message === "Invaild Token") res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+        }); // clearing refreshToken stroed http only cookie.
+
+        res.status(err.details.statusCode).json({ errorField: err.details.tokenName, message: err.message });
     }else if(err instanceof RequiredCredentialsNotGiven) {
         res.status(StatusCodes.BadRequest).json({ requiredCredentialsError: true, message: err.message })
     }else{
