@@ -12,5 +12,7 @@ export default interface IDistributerUseCase {
     approveMovieRequest(requestId: string | undefined, theaterOwnerEmail: string | undefined, movieName: string | undefined): Promise<void | never>;
     rejectMovieRequest(requestId: string | undefined, theaterOwnerEmail: string | undefined, movieName: string | undefined, reason: string | undefined): Promise<void | never>;
     addStreaming(data: IMovieStreamingCredentials): Promise<void | never>;
+    editStreaming(data: IMovieStreamingCredentials, streamingId: string | undefined): Promise<void | never>;
+    deleteStreaming(streamingId: string | undefined): Promise<void | never>;
     getAllStreamingMovieDetails(distributerId: string | undefined): Promise<IMovieStreamingDetails[] | never>;
 }

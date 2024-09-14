@@ -147,6 +147,37 @@ export default class DistributerController implements IDistributerController {
         }
     }
 
+    async editStreaming(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const editStreamingCredentials: IMovieStreamingCredentials = {
+                movieId: req.body.movieId,
+                buyAmount: req.body.buyAmount,
+                rentalPeriod: req.body.rentalPeriod,
+                rentAmount: req.body.rentAmount
+            }
+
+            await this.distributerUseCase.editStreaming(editStreamingCredentials, req.params.streamingId);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Streaming Edited Successfull.'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async deleteStreaming(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            await this.distributerUseCase.deleteStreaming(req.params.streamingId);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Streaming Deleted Successfull.'
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
     async getAllStreamingMovieDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const data: IMovieStreamingDetails[] = await this.distributerUseCase.getAllStreamingMovieDetails(req.id);

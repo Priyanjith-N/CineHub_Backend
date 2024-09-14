@@ -17,5 +17,7 @@ export default interface IDistributerRepository {
     rejectMovieRequest(requestId: string): Promise<void | never>;
     isMovieStreaming(movieId: string): Promise<IMovieStreaming | null | never>;
     addStreaming(movieId: string, rentalPeriod: number, rentAmount: number, buyAmount: number): Promise<void | never>;
+    editStreaming(movieId: string, rentalPeriod: number, rentAmount: number, buyAmount: number, streamingId: string): Promise<void | never>;
+    deleteStreaming(streamingId: string): Promise<void | never>;
     getAllStreamingMovieDetails(distributerId: string): Promise<IMovieStreamingDetails[] | never>;
 }

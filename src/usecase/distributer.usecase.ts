@@ -132,6 +132,26 @@ export default class DistributerUseCase implements IDistributerUseCase {
         }
     }
 
+    async editStreaming(data: IMovieStreamingCredentials, streamingId: string | undefined): Promise<void | never> {
+        try {
+            if(!streamingId || !isObjectIdOrHexString(streamingId) || !data.movieId || !isObjectIdOrHexString(data.movieId) || !data.buyAmount || !data.rentAmount || data.buyAmount <= data.rentAmount || !data.rentalPeriod) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            await this.distributerRepository.editStreaming(data.movieId, data.rentalPeriod, data.rentAmount, data.buyAmount, streamingId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async deleteStreaming(streamingId: string | undefined): Promise<void | never> {
+        try {
+            if(!streamingId || !isObjectIdOrHexString(streamingId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            await this.distributerRepository.deleteStreaming(streamingId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
     async getAllStreamingMovieDetails(distributerId: string | undefined): Promise<IMovieStreamingDetails[] | never> {
         try {
             if(!distributerId || !isObjectIdOrHexString(distributerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');

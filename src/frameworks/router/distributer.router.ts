@@ -50,6 +50,10 @@ router.patch('/rejectmovierequest/:requestId', distributerController.rejectMovie
 
 router.post('/addstreaming', distributerController.addStreaming.bind(distributerController));
 
+router.put('/editstreaming/:streamingId', distributerController.editStreaming.bind(distributerController));
+
+router.delete('/deletestreaming/:streamingId', distributerController.deleteStreaming.bind(distributerController));
+
 router.get('/getallstreamingmoviedetails', distributerController.getAllStreamingMovieDetails.bind(distributerController));
 
 export default router;

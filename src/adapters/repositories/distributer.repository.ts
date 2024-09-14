@@ -167,6 +167,22 @@ export default class DistributerRepository implements IDistributerRepository {
         }
     }
 
+    async editStreaming(movieId: string, rentalPeriod: number, rentAmount: number, buyAmount: number, streamingId: string): Promise<void | never> {
+        try {
+            await MovieStreaming.updateOne({ _id: streamingId, movieId }, { $set:  { rentalPeriod, rentAmount, buyAmount } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async deleteStreaming(streamingId: string): Promise<void | never> {
+        try {
+            await MovieStreaming.deleteOne({ _id: streamingId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
     async getAllStreamingMovieDetails(distributerId: string): Promise<IMovieStreamingDetails[] | never> {
         try {
             const agg = [
