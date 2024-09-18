@@ -41,7 +41,7 @@ const app: Express = express();
 
 // enable cors for custom origin
 app.use(cors({
-    origin: ['http://localhost:4200'],
+    origin: [process.env.FRONT_END_DOMAIN || 'http://localhost:4200'],
     credentials: true
 }));
 
