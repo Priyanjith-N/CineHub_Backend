@@ -78,7 +78,7 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             // use case fo registering theater owner
             await this.theaterOwnerAuthUseCase.register(registerData);
 
-            res.cookie('theaterOwnerEmailToBeVerified', registerData.email); // Set http only cookie for user email to verify the otp
+            res.cookie('theaterOwnerEmailToBeVerified', registerData.email, { secure: process.env.NODE_ENV === 'production' }); // Set http only cookie for user email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -96,7 +96,7 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             // use case for handling otp verification request
             await this.theaterOwnerAuthUseCase.OTPVerification(email, otp);
 
-            res.cookie('theaterOwnerEmailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
+            res.clearCookie('theaterOwnerEmailToBeVerified', { secure: process.env.NODE_ENV === 'production' }); // clearing cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

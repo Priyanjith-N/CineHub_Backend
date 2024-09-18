@@ -79,7 +79,7 @@ export default class DistributerAuthenticationController implements IDistributer
             // use case for handling register request
             await this.distributerAuthUseCase.register(registerData);
 
-            res.cookie('distributerEmailToBeVerified', registerData.email); // Set http only cookie for email to verify the otp
+            res.cookie('distributerEmailToBeVerified', registerData.email, { secure: process.env.NODE_ENV === 'production' }); // Set http only cookie for email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -97,7 +97,7 @@ export default class DistributerAuthenticationController implements IDistributer
             // use case for handling otp verification request
             await this.distributerAuthUseCase.OTPVerification(email, otp);
 
-            res.cookie('distributerEmailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
+            res.clearCookie('distributerEmailToBeVerified', { secure: process.env.NODE_ENV === 'production' }); // clearing cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

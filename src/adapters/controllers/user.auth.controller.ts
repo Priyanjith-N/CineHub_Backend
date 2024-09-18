@@ -82,7 +82,7 @@ export default class UserAuthenticationController implements IUserAuthentication
 
             await this.userAuthUseCase.userRegister(registerData);
 
-            res.cookie('emailToBeVerified', registerData.email); // Set http only cookie for user email to verify the otp
+            res.cookie('emailToBeVerified', registerData.email, { secure: process.env.NODE_ENV === 'production' }); // Set http only cookie for user email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -100,7 +100,7 @@ export default class UserAuthenticationController implements IUserAuthentication
             
             const authTokens: IAuthTokens = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
 
-            res.cookie('emailToBeVerified', '', { expires: new Date(Date.now()) }); // clearing cookie
+            res.clearCookie('emailToBeVerified', { secure: process.env.NODE_ENV === 'production' }); // clearing cookie
 
             res.cookie('refreshToken', authTokens.refreshToken, {
                 httpOnly: true,
