@@ -286,7 +286,7 @@ export default class UserRepository implements IUserRepository {
 
     private async changeTicketStatus() {
       try {
-        await Tickets.updateOne({ date: { $lt: new Date(Date.now()) } }, { $set: { ticketStatus: "Succeed" } });
+        await Tickets.updateMany({ date: { $lt: new Date(Date.now()) }, ticketStatus: "Active" }, { $set: { ticketStatus: "Succeed" } })
       } catch (err: any) {
         throw err;
       }
