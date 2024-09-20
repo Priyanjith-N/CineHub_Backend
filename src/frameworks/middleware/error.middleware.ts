@@ -12,8 +12,9 @@ import RequiredCredentialsNotGiven from "../../errors/requiredCredentialsNotGive
 export default function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
     if(err instanceof AuthenticationError) {
         if(err.details.notOTPVerifiedErrorEmail) {
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
             // Set http only cookie for user email to verify the otp
-            res.cookie(err.details.cookieKeyForOTPVerification!, err.details.notOTPVerifiedErrorEmail);
+            res.cookie(err.details.cookieKeyForOTPVerification!, err.details.notOTPVerifiedErrorEmail, { secure: isProduction, domain: process.env.COOKIE_DOMAIN, sameSite: isProduction ? 'none' : 'lax', path: '/', httpOnly: false }); // Set http only cookie for email verify
         }
         
         res.status(err.details.statusCode!).json({message: err.message, errorField: err.details.errorField});

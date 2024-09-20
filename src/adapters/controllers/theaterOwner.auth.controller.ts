@@ -77,8 +77,17 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
 
             // use case fo registering theater owner
             await this.theaterOwnerAuthUseCase.register(registerData);
+            
 
-            res.cookie('theaterOwnerEmailToBeVerified', registerData.email, { secure: process.env.NODE_ENV === 'production' }); // Set http only cookie for user email to verify the otp
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
+
+            res.cookie('theaterOwnerEmailToBeVerified', registerData.email, { 
+                domain: process.env.COOKIE_DOMAIN,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/',
+                httpOnly: false
+            });
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -96,7 +105,15 @@ export default class TheaterOwnerAuthenticationController implements ITheaterOwn
             // use case for handling otp verification request
             await this.theaterOwnerAuthUseCase.OTPVerification(email, otp);
 
-            res.clearCookie('theaterOwnerEmailToBeVerified', { secure: process.env.NODE_ENV === 'production' }); // clearing cookie
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
+
+            res.clearCookie('theaterOwnerEmailToBeVerified', { 
+                domain: process.env.COOKIE_DOMAIN,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/',
+                httpOnly: false
+            }); // clearing cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

@@ -79,7 +79,15 @@ export default class DistributerAuthenticationController implements IDistributer
             // use case for handling register request
             await this.distributerAuthUseCase.register(registerData);
 
-            res.cookie('distributerEmailToBeVerified', registerData.email, { secure: process.env.NODE_ENV === 'production' }); // Set http only cookie for email to verify the otp
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
+
+            res.cookie('distributerEmailToBeVerified', registerData.email, { 
+                secure: isProduction,
+                domain: process.env.COOKIE_DOMAIN,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/',
+                httpOnly: false
+            }); // Set http only cookie for email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -97,7 +105,15 @@ export default class DistributerAuthenticationController implements IDistributer
             // use case for handling otp verification request
             await this.distributerAuthUseCase.OTPVerification(email, otp);
 
-            res.clearCookie('distributerEmailToBeVerified', { secure: process.env.NODE_ENV === 'production' }); // clearing cookie
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
+
+            res.clearCookie('distributerEmailToBeVerified', { 
+                domain: process.env.COOKIE_DOMAIN,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/',
+                httpOnly: false
+            }); // clearing cookie
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly account verified"

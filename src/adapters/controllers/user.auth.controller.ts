@@ -82,7 +82,16 @@ export default class UserAuthenticationController implements IUserAuthentication
 
             await this.userAuthUseCase.userRegister(registerData);
 
-            res.cookie('emailToBeVerified', registerData.email, { secure: process.env.NODE_ENV === 'production' }); // Set http only cookie for user email to verify the otp
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
+
+            // Set cookie for user email to verify the otp
+            res.cookie('emailToBeVerified', registerData.email, { 
+                domain: process.env.COOKIE_DOMAIN,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/',
+                httpOnly: false
+            }); // Set http only cookie for user email to verify the otp
 
             res.status(StatusCodes.Success).json({
                 message: "Successfuly register"
@@ -100,7 +109,15 @@ export default class UserAuthenticationController implements IUserAuthentication
             
             const authTokens: IAuthTokens = await this.userAuthUseCase.OTPVerification(emailToBeVerified, otp);
 
-            res.clearCookie('emailToBeVerified', { secure: process.env.NODE_ENV === 'production' }); // clearing cookie
+            const isProduction: boolean = process.env.NODE_ENV === 'production';
+
+            res.clearCookie('emailToBeVerified', { 
+                domain: process.env.COOKIE_DOMAIN,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                path: '/',
+                httpOnly: false
+            }); // clearing cookie
 
             res.cookie('refreshToken', authTokens.refreshToken, {
                 httpOnly: true,
