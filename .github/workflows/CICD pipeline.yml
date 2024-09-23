@@ -39,7 +39,7 @@ jobs:
         
       - name: Pull Docker image and run container
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
             sudo docker stop cinehub-backend
             sudo docker rm cinehub-backend
             sudo docker rmi priyanjithn/cinehub-backend:latest
