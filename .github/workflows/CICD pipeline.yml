@@ -32,22 +32,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
-      - name: Run command on EC2 instance
-        uses: LuisEnMarroquin/setup-ssh-action@v2.0.0
-        with:
-          host: ${{ secrets.EC2_PUBLIC_IP }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command: |
+      - name: Pull Docker image and run container
+        run: |
+          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-ip << 'EOF'
             sudo docker stop cinehub-backend
             sudo docker rm cinehub-backend
             sudo docker rmi priyanjithn/cinehub-backend:latest
             sudo docker pull priyanjithn/cinehub-backend:latest
             sudo docker run -d --name cinehub-backend -p 8080:8080 --env-file .env priyanjithn/cinehub-backend
+          EOF
