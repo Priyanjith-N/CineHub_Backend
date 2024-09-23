@@ -40,8 +40,11 @@ jobs:
           region: ${{ secrets.AWS_REGION }}
         
       - name: Run command on EC2 instance
-        uses: LuisEnMarroquin/setup-ssh-action@v2.0.0
+        uses: actions/ssh-key-action@v1
         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
           host: ${{ secrets.EC2_PUBLIC_IP }}
           username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
