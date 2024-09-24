@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { AuthRequest } from "../middlewares/authMiddleware.interface";
 
 export interface IAdminController {
     getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -17,4 +18,5 @@ export interface IAdminController {
     getAllMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
     listOrUnlistMovies(req: Request, res: Response, next: NextFunction): Promise<void>;
     updateMovie(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getDashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }

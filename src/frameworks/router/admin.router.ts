@@ -74,4 +74,6 @@ router.post('/addmovie', adminController.addMovieRequest.bind(adminController));
 
 router.patch('/editmovie/:movieId', adminController.updateMovie.bind(adminController));
 
+router.get('/getdashboarddata', adminController.getDashboardData.bind(adminController));
+
 export default router;

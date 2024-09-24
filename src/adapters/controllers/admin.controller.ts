@@ -10,6 +10,8 @@ import IMovie, { IDataMovies, IMovieData } from "../../entity/movie.entity";
 import { IDistributer } from "../../entity/distributer.entity";
 import ITheaterOwner from "../../entity/theaterOwner.entity";
 import IUser from "../../entity/user.entity";
+import { AuthRequest } from "../../interface/middlewares/authMiddleware.interface";
+import { IDashboardDatas } from "../../entity/admin.entity";
 
 export default class AdminController implements IAdminController {
     private adminUseCase: IAdminUseCase;
@@ -277,6 +279,19 @@ export default class AdminController implements IAdminController {
 
             res.status(StatusCodes.Success).json({
                 message: "Movie Edited"
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getDashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data: IDashboardDatas = await this.adminUseCase.getDataForDashBoard();
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
             });
         } catch (err: any) {
             next(err);

@@ -1,4 +1,5 @@
 // interfaces
+import { IDashboardDatas } from "../../entity/admin.entity";
 import { IDistributer } from "../../entity/distributer.entity";
 import IMovie, { IDataMovies, IMovieData } from "../../entity/movie.entity";
 import ITheaterOwner from "../../entity/theaterOwner.entity";
@@ -22,4 +23,5 @@ export interface IAdminUseCase {
     getAllMovies(page: number, isListed: boolean, limit: number): Promise<IDataMovies | never>;
     listOrUnlistMovies(id: string | undefined, status: boolean | undefined): Promise<void | never>;
     editMovie(movieData: IMovieData, movieId: string | undefined): Promise<void | never>;
+    getDataForDashBoard(): Promise<IDashboardDatas | never>;
 }

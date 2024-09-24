@@ -15,6 +15,7 @@ import { IDistributer } from "../entity/distributer.entity";
 import ITheaterOwner from "../entity/theaterOwner.entity";
 import IUser from "../entity/user.entity";
 import IImage from "../interface/common/IImage.interface";
+import { IDashboardDatas, ITop10Distributers, ITop10Movies, ITop10Theaters } from "../entity/admin.entity";
 
 export default class AdminUseCase implements IAdminUseCase {
     private adminRepository: IAdminRepository;
@@ -310,6 +311,31 @@ export default class AdminUseCase implements IAdminUseCase {
             }
 
             await this.adminRepository.updateMovie(movieId, movieData);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDataForDashBoard(): Promise<IDashboardDatas | never> {
+        try {
+            const totalTheatersCount: number = await this.adminRepository.getTheaterCount();
+            const totalDistributersCount: number = await this.adminRepository.getDistributerCount();
+            const totalMoviesCount: number = await this.adminRepository.getMoviesCount();
+
+            const top10Movies: ITop10Movies[] = await this.adminRepository.getTop10Movies();
+            const top10Distributers: ITop10Distributers[] = await this.adminRepository.getTop10Distributers();
+            const top10Theaters: ITop10Theaters[] = await this.adminRepository.getTop10Theaters();
+
+            const data = {
+                totalTheatersCount,
+                totalDistributersCount,
+                totalMoviesCount,
+                top10Movies,
+                top10Distributers,
+                top10Theaters
+            }
+
+            return data;
         } catch (err: any) {
             throw err;
         }

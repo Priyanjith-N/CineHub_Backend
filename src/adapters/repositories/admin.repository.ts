@@ -12,6 +12,9 @@ import IMovie, { IMovieData } from "../../entity/movie.entity";
 import { IDistributer } from "../../entity/distributer.entity";
 import ITheaterOwner from "../../entity/theaterOwner.entity";
 import IUser from "../../entity/user.entity";
+import Tickets from "../../frameworks/models/tickets.model";
+import { ITop10Distributers, ITop10Movies, ITop10Theaters } from "../../entity/admin.entity";
+import Theaters from "../../frameworks/models/theater.model";
 
 export default class AdminRepository implements IAdminRepository {
     
@@ -269,6 +272,251 @@ export default class AdminRepository implements IAdminRepository {
                 cast: movieData.cast,
                 crew: movieData.crew
             } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTheaterCount(): Promise<number | never> {
+        try {
+            return await Theaters.countDocuments();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDistributerCount(): Promise<number | never> {
+        try {
+            return await Distributers.countDocuments();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getMoviesCount(): Promise<number | never> {
+        try {
+            return await Movies.countDocuments();
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTop10Movies(): Promise<ITop10Movies[] | never> {
+        try {
+            return await Tickets.aggregate(
+                [
+                    {
+                      $match: {
+                        paymentStatus: 'Successfull', 
+                        ticketStatus: 'Succeed'
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: '$movieId', 
+                        totalTicketSold: {
+                          $sum: 1
+                        }, 
+                        amount: {
+                          $sum: '$totalPaidAmount'
+                        }
+                      }
+                    }, 
+                    {
+                      $sort: {
+                        totalTicketSold: -1,
+                        amount: -1
+                      }
+                    }, 
+                    {
+                      $limit: 10
+                    }, 
+                    {
+                      $project: {
+                         _id: 0, 
+                         movieId: '$_id', 
+                         amount: 1, 
+                         totalTicketSold: 1
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'movies', 
+                        localField: 'movieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$movieData'
+                      }
+                    }, 
+                    {
+                      $project: {
+                        movieId: 0
+                      }
+                    }
+                ]
+            );
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTop10Distributers(): Promise<ITop10Distributers[] | never> {
+        try {
+            return await Tickets.aggregate(
+                [
+                    {
+                      $match: {
+                        paymentStatus: 'Successfull', 
+                        ticketStatus: 'Succeed'
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: "$movieId", 
+                        totalTicketSold: {
+                          $sum: 1
+                        }, 
+                        amount: {
+                          $sum: '$totalPaidAmount'
+                        }
+                      }
+                    }, 
+                    {
+                      $project: {
+                        _id: 0, 
+                        movieId: '$_id', 
+                        totalTicketSold: 1, 
+                        amount: 1
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'movies', 
+                        localField: 'movieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$movieData'
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: '$movieData.distributerId', 
+                        amount: {
+                          $sum: '$amount'
+                        }, 
+                        totalTicketSold: {
+                          $sum: '$totalTicketSold'
+                        }
+                      }
+                    }, 
+                    {
+                      $sort: {
+                        totalTicketSold: -1, 
+                        amount: -1
+                      }
+                    }, 
+                    {
+                      $limit: 10
+                    }, 
+                    {
+                      $project: {
+                        _id: 0, 
+                        distributerId: '$_id', 
+                        amount: 1
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'distributers', 
+                        localField: 'distributerId', 
+                        foreignField: '_id', 
+                        as: 'distributerData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$distributerData'
+                      }
+                    },
+                    {
+                        $project: {
+                          distributerId: 0
+                        }
+                    }
+                ]
+            );
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTop10Theaters(): Promise<ITop10Theaters[] | never> {
+        try {
+            return await Tickets.aggregate(
+                [
+                    {
+                      $match: {
+                        paymentStatus: 'Successfull', 
+                        ticketStatus: 'Succeed'
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: '$theaterId', 
+                        totalTicketSold: {
+                          $sum: 1
+                        }, 
+                        amount: {
+                          $sum: '$totalPaidAmount'
+                        }
+                      }
+                    }, 
+                    {
+                      $sort: {
+                        totalTicketSold: -1, 
+                        amount: -1
+                      }
+                    }, 
+                    {
+                      $limit: 10
+                    }, 
+                    {
+                      $project: {
+                        _id: 0, 
+                        theaterId: '$_id', 
+                        totalTicketSold: 1, 
+                        amount: 1
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'theaters', 
+                        localField: 'theaterId', 
+                        foreignField: '_id', 
+                        as: 'theaterData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$theaterData'
+                      }
+                    }, 
+                    {
+                      $project: {
+                        theaterId: 0,
+                        totalTicketSold: 0
+                      }
+                    }
+                ]
+            );
         } catch (err: any) {
             throw err;
         }

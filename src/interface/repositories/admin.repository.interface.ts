@@ -1,4 +1,5 @@
 // interfaces
+import { ITop10Distributers, ITop10Movies, ITop10Theaters } from "../../entity/admin.entity";
 import { IDistributer } from "../../entity/distributer.entity";
 import IMovie, { IMovieData } from "../../entity/movie.entity";
 import ITheaterOwner from "../../entity/theaterOwner.entity";
@@ -23,6 +24,12 @@ export interface IAdminRepository {
     getAllMovies(page: number, isListed: boolean, limit: number): Promise<IMovie[] | never>;
     makeMovieAsListedOrUnlisted(id: string, status: boolean): Promise<void | never>;
     updateMovie(movieId: string, movieData: IMovieData): Promise<void | never>;
+    getTheaterCount(): Promise<number | never>;
+    getDistributerCount(): Promise<number | never>;
+    getMoviesCount(): Promise<number | never>;
+    getTop10Movies(): Promise<ITop10Movies[] | never>;
+    getTop10Distributers(): Promise<ITop10Distributers[] | never>;
+    getTop10Theaters(): Promise<ITop10Theaters[] | never>;
 }
 
 export interface INotVerifiedTheaterOwners {
