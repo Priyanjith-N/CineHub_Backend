@@ -370,54 +370,59 @@ export default class UserRepository implements IUserRepository {
       try {
         await this.changeTicketStatus();
 
-        const agg = [
-          {
-            $match: {
-              userId: new mongoose.Types.ObjectId(userId)
+        return await Tickets.aggregate(
+          [
+            {
+              $match: {
+                userId: new mongoose.Types.ObjectId(userId)
+              }
+            },
+            {
+              $sort: {
+                date: -1
+              }
+            },
+            {
+              $lookup: {
+                from: 'movies', 
+                localField: 'movieId', 
+                foreignField: '_id', 
+                as: 'movieData'
+              }
+            }, 
+            {
+              $unwind: {
+                path: '$movieData'
+              }
+            }, 
+            {
+              $lookup: {
+                from: 'theaters', 
+                localField: 'theaterId', 
+                foreignField: '_id', 
+                as: 'theaterData'
+              }
+            }, 
+            {
+              $unwind: {
+                path: '$theaterData'
+              }
+            }, 
+            {
+              $lookup: {
+                from: 'screens', 
+                localField: 'screenId', 
+                foreignField: '_id', 
+                as: 'screenData'
+              }
+            }, 
+            {
+              $unwind: {
+                path: '$screenData'
+              }
             }
-          },
-          {
-            $lookup: {
-              from: 'movies', 
-              localField: 'movieId', 
-              foreignField: '_id', 
-              as: 'movieData'
-            }
-          }, 
-          {
-            $unwind: {
-              path: '$movieData'
-            }
-          }, 
-          {
-            $lookup: {
-              from: 'theaters', 
-              localField: 'theaterId', 
-              foreignField: '_id', 
-              as: 'theaterData'
-            }
-          }, 
-          {
-            $unwind: {
-              path: '$theaterData'
-            }
-          }, 
-          {
-            $lookup: {
-              from: 'screens', 
-              localField: 'screenId', 
-              foreignField: '_id', 
-              as: 'screenData'
-            }
-          }, 
-          {
-            $unwind: {
-              path: '$screenData'
-            }
-          }
-        ];
-
-        return await Tickets.aggregate(agg);
+          ]
+        );
       } catch (err: any) {
         throw err;
       }
