@@ -6,7 +6,7 @@ import ITheaterOwnerUseCase from "../../interface/usecase/theaterOwner.usecase";
 import { IDistributerList } from "../../entity/distributer.entity";
 import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
-import ITheater from "../../entity/theater.entity";
+import ITheater, { ITheaterOwnerDashboardData } from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../../interface/common/IImage.interface";
@@ -247,6 +247,19 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
             const theaterId: string | undefined = req.params.theaterId;
 
             const data: IMovieScheduleWithDetails[] = await this.theaterOwnerUseCase.getAllMovieSchedule(screenId, theaterId);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            next(err);
+        }
+    }
+
+    async getDashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data: ITheaterOwnerDashboardData = await this.theaterOwnerUseCase.getDashboardData(req.id);
 
             res.status(StatusCodes.Success).json({
                 message: "Successfull",

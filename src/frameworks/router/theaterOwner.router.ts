@@ -62,4 +62,6 @@ router.get('/getAllSchedulesOn', theaterOwnerController.getAllSchedulesBasedOnDa
 
 router.get('/getallmovieschedule/:screenId/:theaterId', theaterOwnerController.getAllMovieSchedule.bind(theaterOwnerController));
 
+router.get('/getdashboarddata', theaterOwnerController.getDashboardData.bind(theaterOwnerController));
+
 export default router;

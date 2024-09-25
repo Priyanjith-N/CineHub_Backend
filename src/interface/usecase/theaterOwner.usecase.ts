@@ -2,7 +2,7 @@
 import { ObjectId } from "mongoose";
 import { IDistributerList } from "../../entity/distributer.entity";
 import IScreen, { ISeatCategory, ISeatLayout } from "../../entity/screen.entity";
-import ITheater from "../../entity/theater.entity";
+import ITheater, { ITheaterOwnerDashboardData } from "../../entity/theater.entity";
 import { IAddScreenCredentials, IGetMovieListOfDistributerData } from "../controllers/theaterOwner.controller";
 import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../common/IImage.interface";
@@ -23,7 +23,8 @@ export default interface ITheaterOwnerUseCase {
     getAllMoviesFromOwnerCollection(theaterOwnerId: string | undefined): Promise<ITheaterOwnerMovieDetails[] | never>;
     addMovieSchedule(data: IScheduleCredentials): Promise<void | never>;
     getShecdulesBasedOnDate(screenId: string | undefined, date: string | undefined): Promise<IMovieSchedule[] | never>;
-    getAllMovieSchedule(screenId: string | undefined, theaterId: string | undefined): Promise<IMovieScheduleWithDetails[] | never>
+    getAllMovieSchedule(screenId: string | undefined, theaterId: string | undefined): Promise<IMovieScheduleWithDetails[] | never>;
+    getDashboardData(theaterOwnerId: string | undefined): Promise<ITheaterOwnerDashboardData | never>;
 }
 
 export interface IScreenData {

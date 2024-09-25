@@ -30,4 +30,7 @@ export default interface ITheaterOwnerRepository {
     addMovieSchedule(data: IScheduleCredentials, seatLayout: (IScheduleSeatLayout | null)[][], totalCapacity: number): Promise<void | never>;
     getAllSchedulesBasedOnDates(screenId: string, date: Date): Promise<IMovieSchedule[] | never>;
     getAllMovieSchedule(screenId: string, theaterId: string): Promise<IMovieScheduleWithDetails[] | never>;
+    getTotalActiveMovieCount(theaterOwnerId: string): Promise<number | never>;
+    getTotalOverallBooking(theaterOwnerId: string): Promise<number | never>;
+    getTotalPendingRequest(theaterOwnerId: string): Promise<number | never>;
 }

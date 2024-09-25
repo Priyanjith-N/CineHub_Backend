@@ -9,7 +9,7 @@ import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.e
 import IMovie from "../entity/movie.entity";
 import { IAddScreenCredentials, IAddTheaterCredentials, IGetMovieListOfDistributerData } from "../interface/controllers/theaterOwner.controller";
 import ICloudinaryService from "../interface/utils/ICloudinaryService";
-import ITheater from "../entity/theater.entity";
+import ITheater, { ITheaterOwnerDashboardData } from "../entity/theater.entity";
 import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
 import IScreen, { ISeatCategory, ISeatCategoryPattern, ISeatLayout } from "../entity/screen.entity";
@@ -315,6 +315,26 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             if(!screenId || !isObjectIdOrHexString(screenId) || !theaterId || !isObjectIdOrHexString(theaterId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return await this.theaterOwnerRepository.getAllMovieSchedule(screenId, theaterId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDashboardData(theaterOwnerId: string | undefined): Promise<ITheaterOwnerDashboardData | never> {
+        try {
+            if(!theaterOwnerId || !isObjectIdOrHexString(theaterOwnerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const totalActiveMovieCount: number = await this.theaterOwnerRepository.getTotalActiveMovieCount(theaterOwnerId);
+            const totalOverallBooking: number = await this.theaterOwnerRepository.getTotalOverallBooking(theaterOwnerId);
+            const totalPendingRequest: number = await this.theaterOwnerRepository.getTotalPendingRequest(theaterOwnerId);
+
+            const data: ITheaterOwnerDashboardData = {
+                totalActiveMovieCount,
+                totalOverallBooking,
+                totalPendingRequest
+            }
+
+            return data;
         } catch (err: any) {
             throw err;
         }

@@ -11,3 +11,9 @@ export default interface ITheater {
     licence: IImage;
     isListed: boolean;
 }
+
+export interface ITheaterOwnerDashboardData {
+    totalActiveMovieCount: number;
+    totalOverallBooking: number;
+    totalPendingRequest: number;
+}

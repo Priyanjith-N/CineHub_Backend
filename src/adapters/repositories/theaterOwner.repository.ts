@@ -19,6 +19,7 @@ import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMo
 import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
 import MovieSchedules from "../../frameworks/models/movieSchedule.model";
+import Tickets from "../../frameworks/models/tickets.model";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -335,6 +336,57 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getAllSchedulesBasedOnDates(screenId: string, date: Date): Promise<IMovieSchedule[] | never> {
         try {
             return await MovieSchedules.find({ screenId, date: new Date(date) });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalActiveMovieCount(theaterOwnerId: string): Promise<number | never> {
+        try {
+            return  await TheaterOwnerMovieCollections.countDocuments({ theaterOwnerId, movieValidity: { $gte: new Date(Date.now()) } });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalOverallBooking(theaterOwnerId: string): Promise<number | never> {
+        try {
+            return (await Tickets.aggregate(
+                [
+                    {
+                      $match: {
+                        paymentStatus: 'Successfull', 
+                        ticketStatus: 'Succeed'
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'theaters', 
+                        localField: 'theaterId', 
+                        foreignField: '_id', 
+                        as: 'theaterData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$theaterData'
+                      }
+                    }, 
+                    {
+                      $match: {
+                        "theaterData.ownerId": new mongoose.Types.ObjectId(theaterOwnerId)
+                      }
+                    }
+                ]
+            )).length;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalPendingRequest(theaterOwnerId: string): Promise<number | never> {
+        try {
+            return await MovieRequests.countDocuments({ theaterOwnerId, requestStatus: "Pending" });
         } catch (err: any) {
             throw err;
         }
