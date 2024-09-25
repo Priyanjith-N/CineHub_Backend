@@ -128,21 +128,9 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
 
     async isAlreadyInCollection(movieId: string, theaterOwnerId: string): Promise<ITheaterOwnerMovieCollection | null | never> {
         try {
-            await this.deleteAllDueValiditiyMovies();
-
-            return await TheaterOwnerMovieCollections.findOne({ theaterOwnerId, movieId });
+            return await TheaterOwnerMovieCollections.findOne({ theaterOwnerId, movieId, movieValidity: { $gte: new Date(Date.now()) } });
         } catch (err: any) {
             throw err;
-        }
-    }
-
-    private async deleteAllDueValiditiyMovies(): Promise<void | never> {
-        try {
-            const currentData: Date = new Date(Date.now());
-
-            await TheaterOwnerMovieCollections.deleteMany({ movieValidity: { $gt: { currentData } } })
-        } catch (err: any) {
-            
         }
     }
 
@@ -173,41 +161,46 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
 
     async getAllRequests(theaterOwner: string): Promise<IMovieRequestDetails[] | never> {
         try {
-            const agg = [
-                {
-                    $match: {
-                        theaterOwnerId: new mongoose.Types.ObjectId(theaterOwner)
+            return await MovieRequests.aggregate(
+                [
+                    {
+                        $match: {
+                            theaterOwnerId: new mongoose.Types.ObjectId(theaterOwner)
+                        }
+                    },
+                    {
+                        $sort: {
+                          date: -1
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'movies', 
+                            localField: 'requestedMovieId', 
+                            foreignField: '_id', 
+                            as: 'movieData'
+                        }
+                    }, 
+                    {
+                        $unwind: {
+                            path: '$movieData'
+                        }
+                    }, 
+                    {
+                        $lookup: {
+                            from: 'distributers', 
+                            localField: 'requestedMovieDistributerId', 
+                            foreignField: '_id', 
+                            as: 'distributerData'
+                        }
+                    }, 
+                    {
+                        $unwind: {
+                            path: '$distributerData'
+                        }
                     }
-                },
-                {
-                    $lookup: {
-                        from: 'movies', 
-                        localField: 'requestedMovieId', 
-                        foreignField: '_id', 
-                        as: 'movieData'
-                    }
-                }, 
-                {
-                    $unwind: {
-                        path: '$movieData'
-                    }
-                }, 
-                {
-                    $lookup: {
-                        from: 'distributers', 
-                        localField: 'requestedMovieDistributerId', 
-                        foreignField: '_id', 
-                        as: 'distributerData'
-                    }
-                }, 
-                {
-                    $unwind: {
-                        path: '$distributerData'
-                    }
-                }
-            ];
-
-            return await MovieRequests.aggregate(agg);
+                ]
+            );
         } catch (err: any) {
             throw err;
         }
@@ -218,7 +211,8 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
             const agg = [
                 {
                     $match: {
-                        theaterOwnerId: new mongoose.Types.ObjectId(theaterOwnerId)
+                        theaterOwnerId: new mongoose.Types.ObjectId(theaterOwnerId),
+                        movieValidity: { $gte: new Date(Date.now()) }
                     }
                 },
                 {
@@ -252,63 +246,69 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
 
     async getAllMovieSchedule(screenId: string, theaterId: string): Promise<IMovieScheduleWithDetails[] | never> {
         try {
-            const agg = [
-                {
-                  $lookup: {
-                    from: 'screens', 
-                    localField: 'screenId', 
-                    foreignField: '_id', 
-                    as: 'screenData'
-                  }
-                }, 
-                {
-                  $unwind: {
-                    path: '$screenData'
-                  }
-                },
-                {
-                    $match: {
-                        $and: [
-                          { screenId: new mongoose.Types.ObjectId(screenId) },
-                          { "screenData.theaterId": new mongoose.Types.ObjectId(theaterId) }
-                        ]
-                    } 
-                },
-                {
-                  $lookup: {
-                    from: 'movies', 
-                    localField: 'movieId', 
-                    foreignField: '_id', 
-                    as: 'movieData'
-                  }
-                }, 
-                {
-                  $unwind: {
-                    path: '$movieData'
-                  }
-                }, 
-                {
-                  $group: {
-                    _id: '$date', 
-                    schedules: {
-                      $push: {
-                        _id: '$_id', 
-                        movieData: '$movieData', 
-                        startTime: '$startTime', 
-                        endTime: '$endTime'
+            return await MovieSchedules.aggregate(
+                [
+                    {
+                      $lookup: {
+                        from: 'screens', 
+                        localField: 'screenId', 
+                        foreignField: '_id', 
+                        as: 'screenData'
                       }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$screenData'
+                      }
+                    },
+                    {
+                        $match: {
+                            $and: [
+                              { screenId: new mongoose.Types.ObjectId(screenId) },
+                              { "screenData.theaterId": new mongoose.Types.ObjectId(theaterId) }
+                            ]
+                        } 
+                    },
+                    {
+                      $lookup: {
+                        from: 'movies', 
+                        localField: 'movieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$movieData'
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: '$date', 
+                        schedules: {
+                          $push: {
+                            _id: '$_id', 
+                            movieData: '$movieData', 
+                            startTime: '$startTime', 
+                            endTime: '$endTime'
+                          }
+                        }
+                      }
+                    }, 
+                    {
+                      $project: {
+                        schedules: 1, 
+                        scheduledDate: '$_id', 
+                        _id: 0
+                      }
+                    },
+                    {
+                        $sort: {
+                            scheduledDate: 1
+                        }
                     }
-                  }
-                }, {
-                  $project: {
-                    schedules: 1, 
-                    scheduledDate: '$_id', 
-                    _id: 0
-                  }
-                }
-              ]
-
-              return await MovieSchedules.aggregate(agg);
+                ]
+            );
         } catch (err: any) {
             throw err;
         }
