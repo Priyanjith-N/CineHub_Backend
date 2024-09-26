@@ -64,4 +64,6 @@ router.get('/getallmovieschedule/:screenId/:theaterId', theaterOwnerController.g
 
 router.get('/getdashboarddata', theaterOwnerController.getDashboardData.bind(theaterOwnerController));
 
+router.get('/getgraphdata/:theaterId/:screenId', theaterOwnerController.getGraphData.bind(theaterOwnerController));
+
 export default router;

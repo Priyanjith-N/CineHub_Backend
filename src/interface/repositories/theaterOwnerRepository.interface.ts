@@ -5,6 +5,7 @@ import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails, IMovieRe
 import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
 import IScreen from "../../entity/screen.entity";
 import ITheater from "../../entity/theater.entity";
+import { IAllTheaterWithScreen, IDaily, IGraphData, IGroupPipline, IMonthly, IYearly } from "../../entity/theaterOwner.entity";
 import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import { IAddTheaterCredentials } from "../controllers/theaterOwner.controller";
 import { IScreenData } from "../usecase/theaterOwner.usecase";
@@ -33,4 +34,6 @@ export default interface ITheaterOwnerRepository {
     getTotalActiveMovieCount(theaterOwnerId: string): Promise<number | never>;
     getTotalOverallBooking(theaterOwnerId: string): Promise<number | never>;
     getTotalPendingRequest(theaterOwnerId: string): Promise<number | never>;
+    getAllTheatersWithScreens(theaterOwnerId: string): Promise<IAllTheaterWithScreen[] | never>;
+    getDataForGraph(theaterId: string, theaterOwnerId: string, screenId: string, groupStage: IGroupPipline<IDaily | IMonthly | IYearly>): Promise<IGraphData[] | never>;
 }

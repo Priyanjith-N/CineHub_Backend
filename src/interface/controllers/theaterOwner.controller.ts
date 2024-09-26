@@ -20,6 +20,7 @@ export default interface ITheaterOwnerController {
     getAllSchedulesBasedOnDate(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllMovieSchedule(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getDashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getGraphData(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
 
 export interface IGetMovieListOfDistributerData {

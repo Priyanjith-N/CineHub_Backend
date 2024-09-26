@@ -5,13 +5,13 @@ import { AuthRequest } from "../../interface/middlewares/authMiddleware.interfac
 import ITheaterOwnerUseCase from "../../interface/usecase/theaterOwner.usecase";
 import { IDistributerList } from "../../entity/distributer.entity";
 import { StatusCodes } from "../../enums/statusCode.enum";
-import IMovie from "../../entity/movie.entity";
 import ITheater, { ITheaterOwnerDashboardData } from "../../entity/theater.entity";
 import IScreen from "../../entity/screen.entity";
 import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../../entity/movieRequest.entity";
 import { ILocation } from "../../interface/common/IImage.interface";
 import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials } from "../../entity/movieSchedule.entity";
+import { IGraphData } from "../../entity/theaterOwner.entity";
 
 export default class TheaterOwnerController implements ITheaterOwnerController {
     private theaterOwnerUseCase: ITheaterOwnerUseCase;
@@ -101,7 +101,7 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
                 message: "Successfully Screen added.",
             });
         } catch (err: any) {
-            throw err;
+            next(err);
         }
     }
 
@@ -170,7 +170,7 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
                 message: "Successfully Movie re-requested."
             });
         } catch (err: any) {
-            throw err;
+            next(err);
         }
     }
 
@@ -200,7 +200,7 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
                 data
             });
         } catch (err: any) {
-            throw err;
+            next(err);
         }
     }
 
@@ -266,7 +266,22 @@ export default class TheaterOwnerController implements ITheaterOwnerController {
                 data
             });
         } catch (err: any) {
-            throw err;
+            next(err);
+        }
+    }
+
+    async getGraphData(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const filter: "Daily" | "Monthly" | "Yearly" | undefined = req.query.filter as ("Daily" | "Monthly" | "Yearly" | undefined);
+            
+            const data: IGraphData[] = await this.theaterOwnerUseCase.getGraphData(req.id, req.params.theaterId, req.params.screenId, filter);
+
+            res.status(StatusCodes.Success).json({
+                message: "Successfull",
+                data
+            });
+        } catch (err: any) {
+            next(err);
         }
     }
 }

@@ -8,6 +8,7 @@ import { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredenti
 import { ILocation } from "../common/IImage.interface";
 import { ITheaterOwnerMovieDetails } from "../../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials } from "../../entity/movieSchedule.entity";
+import { IGraphData } from "../../entity/theaterOwner.entity";
 
 export default interface ITheaterOwnerUseCase {
     getDistributerList(): Promise<IDistributerList[] | never>;
@@ -25,6 +26,7 @@ export default interface ITheaterOwnerUseCase {
     getShecdulesBasedOnDate(screenId: string | undefined, date: string | undefined): Promise<IMovieSchedule[] | never>;
     getAllMovieSchedule(screenId: string | undefined, theaterId: string | undefined): Promise<IMovieScheduleWithDetails[] | never>;
     getDashboardData(theaterOwnerId: string | undefined): Promise<ITheaterOwnerDashboardData | never>;
+    getGraphData(theaterOwnerId: string | undefined, theaterId: string | undefined, screenId: string | undefined, filter: undefined | "Daily" | "Monthly" | "Yearly"): Promise<IGraphData[] | never>;
 }
 
 export interface IScreenData {

@@ -1,5 +1,6 @@
 import { ObjectId } from "mongoose";
 import IImage, { ILocation } from "../interface/common/IImage.interface";
+import { IAllTheaterWithScreen } from "./theaterOwner.entity";
 
 export default interface ITheater {
     _id: string;
@@ -16,4 +17,5 @@ export interface ITheaterOwnerDashboardData {
     totalActiveMovieCount: number;
     totalOverallBooking: number;
     totalPendingRequest: number;
+    allTheatersWithScreens: IAllTheaterWithScreen[]
 }

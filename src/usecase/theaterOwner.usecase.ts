@@ -17,6 +17,7 @@ import IImage, { ILocation } from "../interface/common/IImage.interface";
 import IMovieRequest, { IMovieRequestCredentials, IMovieRequestDetails, IMovieReRequestCredentials } from "../entity/movieRequest.entity";
 import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../entity/theaterOwnerMovieCollection.entity";
 import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials, IScheduleSeatLayout } from "../entity/movieSchedule.entity";
+import { IAllTheaterWithScreen, IDaily, IGraphData, IGroupPipline, IMonthly, IYearly } from "../entity/theaterOwner.entity";
 
 export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
     private theaterOwnerRepository: ITheaterOwnerRepository;
@@ -327,14 +328,53 @@ export default class TheaterOwnerUseCase implements ITheaterOwnerUseCase {
             const totalActiveMovieCount: number = await this.theaterOwnerRepository.getTotalActiveMovieCount(theaterOwnerId);
             const totalOverallBooking: number = await this.theaterOwnerRepository.getTotalOverallBooking(theaterOwnerId);
             const totalPendingRequest: number = await this.theaterOwnerRepository.getTotalPendingRequest(theaterOwnerId);
+            const allTheatersWithScreens: IAllTheaterWithScreen[] = await this.theaterOwnerRepository.getAllTheatersWithScreens(theaterOwnerId);
 
             const data: ITheaterOwnerDashboardData = {
                 totalActiveMovieCount,
                 totalOverallBooking,
-                totalPendingRequest
+                totalPendingRequest,
+                allTheatersWithScreens
             }
 
             return data;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getGraphData(theaterOwnerId: string | undefined, theaterId: string | undefined, screenId: string | undefined, filter: undefined | "Daily" | "Monthly" | "Yearly"): Promise<IGraphData[] | never> {
+        try {
+            if(!theaterOwnerId || !isObjectIdOrHexString(theaterOwnerId) || !theaterId || !isObjectIdOrHexString(theaterId) || !screenId || !isObjectIdOrHexString(screenId) || !filter || ((filter !== "Daily") && (filter !== "Monthly") && (filter !== "Yearly"))) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            let groupStage: IGroupPipline<IDaily | IMonthly | IYearly> = { // init object for daily
+                $group: {
+                    _id: {
+                        day: { $dayOfMonth: "$date" },
+                        month: { $dateToString: { format: "%B", date: "$date" } },
+                        year: { $year: "$date" }
+                    },
+                    revenue: {
+                        $sum: "$totalPaidAmount"
+                    }
+                }
+            };
+
+            if(filter === "Monthly") {
+                groupStage.$group._id = {
+                    month: { $dateToString: { format: "%B", date: "$date" } },
+                    year: { $year: "$date" }
+                }
+            }else if(filter === "Yearly"){
+                groupStage.$group._id = {
+                    year: { $year: "$date" }
+                }
+            }
+
+            console.log(await this.theaterOwnerRepository.getDataForGraph(theaterId, theaterOwnerId, screenId, groupStage));
+            
+
+            return await this.theaterOwnerRepository.getDataForGraph(theaterId, theaterOwnerId, screenId, groupStage);
         } catch (err: any) {
             throw err;
         }

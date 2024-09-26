@@ -20,6 +20,7 @@ import ITheaterOwnerMovieCollection, { ITheaterOwnerMovieDetails } from "../../e
 import IMovieSchedule, { IMovieScheduleWithDetails, IScheduleCredentials, IScheduleSeatLayout } from "../../entity/movieSchedule.entity";
 import MovieSchedules from "../../frameworks/models/movieSchedule.model";
 import Tickets from "../../frameworks/models/tickets.model";
+import { IAllTheaterWithScreen, IDaily, IGraphData, IGroupPipline, IMonthly, IYearly } from "../../entity/theaterOwner.entity";
 
 export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getDistributerList(): Promise<IDistributerList[] | never> {
@@ -387,6 +388,108 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
     async getTotalPendingRequest(theaterOwnerId: string): Promise<number | never> {
         try {
             return await MovieRequests.countDocuments({ theaterOwnerId, requestStatus: "Pending" });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getAllTheatersWithScreens(theaterOwnerId: string): Promise<IAllTheaterWithScreen[] | never> {
+        try {
+            return await Screens.aggregate(
+                [
+                    {
+                      $lookup: {
+                        from: 'theaters', 
+                        localField: 'theaterId', 
+                        foreignField: '_id', 
+                        as: 'theaterData'
+                      }
+                    }, {
+                      $unwind: {
+                        path: '$theaterData'
+                      }
+                    }, 
+                    {
+                      $match: {
+                        'theaterData.ownerId': new mongoose.Types.ObjectId(theaterOwnerId)
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: '$theaterData._id', 
+                        theaterData: {
+                          $first: '$theaterData'
+                        }, 
+                        screens: {
+                          $push: {
+                            _id: '$_id', 
+                            name: '$name'
+                          }
+                        }
+                      }
+                    }, 
+                    {
+                      $project: {
+                        _id: 0
+                      }
+                    }
+                  ]
+            );
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDataForGraph(theaterId: string, theaterOwnerId: string, screenId: string, groupStage: IGroupPipline<IDaily | IMonthly | IYearly>): Promise<IGraphData[] | never> {
+        try {
+            return await Tickets.aggregate(
+                [
+                    {
+                      $match: {
+                        ticketStatus: 'Succeed', 
+                        paymentStatus: 'Successfull'
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'theaters', 
+                        localField: 'theaterId', 
+                        foreignField: '_id', 
+                        as: 'theaterData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$theaterData'
+                      }
+                    }, 
+                    {
+                      $match: {
+                        'theaterData.ownerId': new mongoose.Types.ObjectId(theaterOwnerId)
+                      }
+                    }, {
+                      $project: {
+                        theaterData: 0
+                      }
+                    }, 
+                    {
+                      $match: {
+                        theaterId: new mongoose.Types.ObjectId(theaterId), 
+                        screenId: new mongoose.Types.ObjectId(screenId)
+                      }
+                    }, 
+                    groupStage, 
+                    {
+                      $project: {
+                        _id: 0, 
+                        day: '$_id.day', 
+                        month: '$_id.month', 
+                        year: '$_id.year', 
+                        revenue: 1
+                      }
+                    }
+                ]
+            );
         } catch (err: any) {
             throw err;
         }
