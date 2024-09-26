@@ -1,4 +1,5 @@
 // interfaces
+import { IDistributerDashboardData } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
 import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 import { IMovieStreamingCredentials, IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
@@ -15,4 +16,5 @@ export default interface IDistributerUseCase {
     editStreaming(data: IMovieStreamingCredentials, streamingId: string | undefined): Promise<void | never>;
     deleteStreaming(streamingId: string | undefined): Promise<void | never>;
     getAllStreamingMovieDetails(distributerId: string | undefined): Promise<IMovieStreamingDetails[] | never>;
+    getDashboardData(distributerId: string | undefined): Promise<IDistributerDashboardData | never>;
 }

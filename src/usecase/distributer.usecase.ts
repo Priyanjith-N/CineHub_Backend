@@ -6,7 +6,7 @@ import IDistributerRepository from "../interface/repositories/distributer.reposi
 import IDistributerUseCase from "../interface/usecase/distributer.usecase.interface";
 import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../entity/movieRequest.entity";
 import IEmailService from "../interface/utils/IEmailService";
-import { IDistributer, IDistributerList } from "../entity/distributer.entity";
+import { IDistributer, IDistributerDashboardData, IDistributerList, IMovieDeatilsWithRevenue } from "../entity/distributer.entity";
 import IMovieStreaming, { IMovieStreamingCredentials, IMovieStreamingDetails } from "../entity/movieStreaming.entity";
 import AuthenticationError from "../errors/authentication.error";
 import { StatusCodes } from "../enums/statusCode.enum";
@@ -157,6 +157,28 @@ export default class DistributerUseCase implements IDistributerUseCase {
             if(!distributerId || !isObjectIdOrHexString(distributerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return await this.distributerRepository.getAllStreamingMovieDetails(distributerId);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getDashboardData(distributerId: string | undefined): Promise<IDistributerDashboardData | never> {
+        try {
+            if(!distributerId || !isObjectIdOrHexString(distributerId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            const totalDistributedMovieCount: number = await this.distributerRepository.getTotalMoviesDistributedCount(distributerId);
+            const totalMoviesStreamingCount: number = await this.distributerRepository.getTotalMoviesStreamingCount(distributerId);
+            const totalNewPendingRequestCount: number = await this.distributerRepository.getTotalNewPendingRequestCount(distributerId);
+            const movieDetailsWithRevenue: IMovieDeatilsWithRevenue[] = await this.distributerRepository.getMoviesAndRevenueMade(distributerId);
+
+            const data: IDistributerDashboardData = {
+                totalDistributedMovieCount,
+                totalMoviesStreamingCount,
+                totalNewPendingRequestCount,
+                movieDetailsWithRevenue
+            }
+
+            return data;
         } catch (err: any) {
             throw err;
         }

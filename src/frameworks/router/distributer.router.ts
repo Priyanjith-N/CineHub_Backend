@@ -56,4 +56,6 @@ router.delete('/deletestreaming/:streamingId', distributerController.deleteStrea
 
 router.get('/getallstreamingmoviedetails', distributerController.getAllStreamingMovieDetails.bind(distributerController));
 
+router.get('/getdashboarddata', distributerController.getDashboardData.bind(distributerController));
+
 export default router;

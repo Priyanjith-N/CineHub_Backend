@@ -9,9 +9,10 @@ import mongoose from "mongoose";
 import MovieRequests from "../../frameworks/models/movieRequest.model";
 import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 import TheaterOwnerMovieCollections from "../../frameworks/models/theaterOwnerMovieCollection.model";
-import { IDistributer, IDistributerList } from "../../entity/distributer.entity";
+import { IDistributer, IDistributerList, IMovieDeatilsWithRevenue } from "../../entity/distributer.entity";
 import MovieStreaming from "../../frameworks/models/movieStreaming.mode";
 import IMovieStreaming, { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
+import Tickets from "../../frameworks/models/tickets.model";
 
 export default class DistributerRepository implements IDistributerRepository {
     async getAllAvailableMovies(): Promise<IMovie[] | never> {
@@ -207,6 +208,109 @@ export default class DistributerRepository implements IDistributerRepository {
               ]
 
             return await MovieStreaming.aggregate(agg);
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalMoviesDistributedCount(distributerId: string): Promise<number | never> {
+        try {
+            return await Movies.countDocuments({ distributerId });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalMoviesStreamingCount(distributerId: string): Promise<number | never> {
+        try {
+            return (await MovieStreaming.aggregate(
+                [
+                    {
+                        $lookup: {
+                          from: 'movies', 
+                          localField: 'movieId', 
+                          foreignField: '_id', 
+                          as: 'movieData'
+                        }
+                      }, 
+                      {
+                        $unwind: {
+                          path: '$movieData'
+                        }
+                      },
+                      {
+                          $match: {
+                              "movieData.distributerId": new mongoose.Types.ObjectId(distributerId)
+                          }
+                      }
+                ]
+            )).length;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getTotalNewPendingRequestCount(distributerId: string): Promise<number | never> {
+        try {
+            return await MovieRequests.countDocuments({ requestedMovieDistributerId: distributerId, requestStatus: "Pending" });
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getMoviesAndRevenueMade(distributerId: string): Promise<IMovieDeatilsWithRevenue[] | never> {
+        try {
+            return await Tickets.aggregate(
+                [
+                    {
+                      $match: {
+                        ticketStatus: 'Succeed', 
+                        paymentStatus: 'Successfull'
+                      }
+                    }, 
+                    {
+                      $group: {
+                        _id: '$movieId', 
+                        movieId: {
+                          $first: '$movieId'
+                        }, 
+                        totalTicketSold: {
+                          $sum: 1
+                        }, 
+                        revenue: {
+                          $sum: '$totalPaidAmount'
+                        }
+                      }
+                    }, 
+                    {
+                      $project: {
+                        _id: 0
+                      }
+                    }, 
+                    {
+                      $lookup: {
+                        from: 'movies', 
+                        localField: 'movieId', 
+                        foreignField: '_id', 
+                        as: 'movieData'
+                      }
+                    }, 
+                    {
+                      $unwind: {
+                        path: '$movieData'
+                      }
+                    }, {
+                      $match: {
+                        'movieData.distributerId': new mongoose.Types.ObjectId(distributerId)
+                      }
+                    }, 
+                    {
+                      $project: {
+                        movieId: 0
+                      }
+                    }
+                  ]
+            );
         } catch (err: any) {
             throw err;
         }

@@ -1,5 +1,5 @@
 // interfaces
-import { IDistributerList } from "../../entity/distributer.entity";
+import { IDistributerList, IMovieDeatilsWithRevenue } from "../../entity/distributer.entity";
 import IMovie from "../../entity/movie.entity";
 import IMovieRequest, { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 import IMovieStreaming, { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
@@ -20,4 +20,8 @@ export default interface IDistributerRepository {
     editStreaming(movieId: string, rentalPeriod: number, rentAmount: number, buyAmount: number, streamingId: string): Promise<void | never>;
     deleteStreaming(streamingId: string): Promise<void | never>;
     getAllStreamingMovieDetails(distributerId: string): Promise<IMovieStreamingDetails[] | never>;
+    getTotalMoviesDistributedCount(distributerId: string): Promise<number | never>;
+    getTotalMoviesStreamingCount(distributerId: string): Promise<number | never>;
+    getTotalNewPendingRequestCount(distributerId: string): Promise<number | never>;
+    getMoviesAndRevenueMade(distributerId: string): Promise<IMovieDeatilsWithRevenue[] | never>;
 }

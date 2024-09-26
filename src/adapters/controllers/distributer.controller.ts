@@ -10,6 +10,7 @@ import { StatusCodes } from "../../enums/statusCode.enum";
 import { AuthRequest } from "../../interface/middlewares/authMiddleware.interface";
 import { IMovieRequestDetailsForDistributer } from "../../entity/movieRequest.entity";
 import { IMovieStreamingCredentials, IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
+import { IDistributerDashboardData } from "../../entity/distributer.entity";
 
 export default class DistributerController implements IDistributerController {
     private distributerUseCase: IDistributerUseCase;
@@ -188,6 +189,19 @@ export default class DistributerController implements IDistributerController {
             });
         } catch (err: any) {
             next(err);
+        }
+    }
+
+    async getDashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const data: IDistributerDashboardData = await this.distributerUseCase.getDashboardData(req.id);
+
+            res.status(StatusCodes.Success).json({
+                message: 'Successfull',
+                data
+            });
+        } catch (err: any) {
+            throw err;
         }
     }
 }

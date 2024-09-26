@@ -15,4 +15,5 @@ export default interface IDistributerController {
     editStreaming(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     deleteStreaming(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllStreamingMovieDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getDashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }
