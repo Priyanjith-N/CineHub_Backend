@@ -307,8 +307,7 @@ export default class AdminRepository implements IAdminRepository {
                 [
                     {
                       $match: {
-                        paymentStatus: 'Successfull', 
-                        ticketStatus: 'Succeed'
+                        paymentStatus: 'Successfull'
                       }
                     }, 
                     {
@@ -370,8 +369,7 @@ export default class AdminRepository implements IAdminRepository {
                 [
                     {
                       $match: {
-                        paymentStatus: 'Successfull', 
-                        ticketStatus: 'Succeed'
+                        paymentStatus: 'Successfull'
                       }
                     }, 
                     {
@@ -464,8 +462,7 @@ export default class AdminRepository implements IAdminRepository {
                 [
                     {
                       $match: {
-                        paymentStatus: 'Successfull', 
-                        ticketStatus: 'Succeed'
+                        paymentStatus: 'Successfull'
                       }
                     }, 
                     {

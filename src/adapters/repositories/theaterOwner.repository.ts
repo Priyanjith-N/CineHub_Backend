@@ -356,8 +356,7 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
                 [
                     {
                       $match: {
-                        paymentStatus: 'Successfull', 
-                        ticketStatus: 'Succeed'
+                        paymentStatus: 'Successfull',
                       }
                     }, 
                     {
@@ -446,7 +445,6 @@ export default class TheaterOwnerRepository implements ITheaterOwnerRepository {
                 [
                     {
                       $match: {
-                        ticketStatus: 'Succeed', 
                         paymentStatus: 'Successfull'
                       }
                     }, 

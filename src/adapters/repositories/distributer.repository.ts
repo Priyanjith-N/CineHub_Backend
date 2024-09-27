@@ -264,7 +264,6 @@ export default class DistributerRepository implements IDistributerRepository {
                 [
                     {
                       $match: {
-                        ticketStatus: 'Succeed', 
                         paymentStatus: 'Successfull'
                       }
                     }, 
