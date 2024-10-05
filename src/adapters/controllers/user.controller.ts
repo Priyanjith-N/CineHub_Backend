@@ -170,7 +170,7 @@ export default class UserController implements IUserController {
 
     async getUserProfileData(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
       try {
-        const data: IUserProfile = await this.userUseCase.getUserProfileData(req.id);
+        const data: IUserProfile | null = await this.userUseCase.getUserProfileData(req.id);
 
         res.status(StatusCodes.Success).json({
           message: "Sucessfull",

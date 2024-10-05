@@ -14,7 +14,7 @@ export default interface IUserUseCase {
     cancelTicket(ticketId: string | undefined, userId: string | undefined): Promise<void | never>;
     getAllTransactionList(userId: string | undefined): Promise<ITicketDetilas[] | never>;
     getTicketDetails(ticketId: string | undefined, userId: string | undefined): Promise<ITicketDetilas | never>;
-    getUserProfileData(userId: string | undefined): Promise<IUserProfile | never>;
+    getUserProfileData(userId: string | undefined): Promise<IUserProfile | null | never>;
 }
 
 export interface IHomeMovieData {

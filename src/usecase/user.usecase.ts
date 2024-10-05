@@ -284,14 +284,12 @@ export default class UserUseCase implements IUserUseCase {
         }
     }
 
-    async getUserProfileData(userId: string | undefined): Promise<IUserProfile | never> {
+    async getUserProfileData(userId: string | undefined): Promise<IUserProfile | null | never> {
         try {
             
-            if(!userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            if(!userId || !isObjectIdOrHexString(userId)) return null;
             
             const data: IUserProfile | null = await this.userRepository.getUserProfileData(userId);
-            
-            if(!data) throw new RequiredCredentialsNotGiven('Provide all required details.');
 
             return data;
         } catch (err: any) {
