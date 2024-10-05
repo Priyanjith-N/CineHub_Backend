@@ -12,4 +12,5 @@ export default interface IUserController {
     cancelTicket(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllTransactionList(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getTicketDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getUserProfileData(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
 }

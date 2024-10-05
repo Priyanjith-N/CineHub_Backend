@@ -42,6 +42,8 @@ router.get("/getTheaterScreenLayout/:scheduleId", userController.getTheaterScree
 // router middleware
 router.use(authMiddleware.isAuthenticate.bind(authMiddleware));
 
+router.get('/getUserProfileData', userController.getUserProfileData.bind(userController));
+
 router.post('/create-checkout-session', userController.createCheckoutSession.bind(userController));
 
 router.post('/bookseat', userController.bookSeat.bind(userController));

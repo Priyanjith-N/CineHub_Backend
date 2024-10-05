@@ -2,6 +2,7 @@ import IMovie, { INowPlayingMovies } from "../../entity/movie.entity";
 import IMovieSchedule, { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 import { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
 import ITickets, { ISaveCredentionOfTickets, ITicketDetilas } from "../../entity/tickets.entity";
+import { IUserProfile } from "../../entity/user.entity";
 
 export default interface IUserRepository {
     upcommingMovies(): Promise<IMovie[] | never>;
@@ -21,4 +22,5 @@ export default interface IUserRepository {
     cancelTicket(ticketId: string): Promise<void | never>;
     getAllTransactionList(userId: string): Promise<ITicketDetilas[] | never>;
     getTicketDetailsById(ticketId: string): Promise<ITicketDetilas | undefined | never>;
+    getUserProfileData(userId: string): Promise<IUserProfile | null>;
 }

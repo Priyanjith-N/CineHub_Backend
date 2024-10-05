@@ -49,12 +49,4 @@ export default class UserAuthRepository implements IUserAuthRepository {
             throw err;
         }
     }
-
-    async getUserProfileData(userId: string): Promise<IUserProfile | null> {
-        try {
-            return await Users.findOne({ _id: userId }, { name: 1, email: 1, phoneNumber: 1, _id: 0 });
-        } catch (err: any) {
-            throw err;
-        }
-    }
 }

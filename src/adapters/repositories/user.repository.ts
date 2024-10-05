@@ -9,6 +9,8 @@ import ITickets, { ISaveCredentionOfTickets, ITicketDetilas } from "../../entity
 import Tickets from "../../frameworks/models/tickets.model";
 import MovieStreaming from "../../frameworks/models/movieStreaming.mode";
 import { IMovieStreamingDetails } from "../../entity/movieStreaming.entity";
+import Users from "../../frameworks/models/user.model";
+import { IUserProfile } from "../../entity/user.entity";
 
 export default class UserRepository implements IUserRepository {
     async upcommingMovies(): Promise<IMovie[] | never> {
@@ -484,4 +486,12 @@ export default class UserRepository implements IUserRepository {
         throw err;
       }
     }
+
+    async getUserProfileData(userId: string): Promise<IUserProfile | null> {
+      try {
+          return await Users.findOne({ _id: userId }, { name: 1, email: 1, phoneNumber: 1, _id: 0 });
+      } catch (err: any) {
+          throw err;
+      }
+  }
 }

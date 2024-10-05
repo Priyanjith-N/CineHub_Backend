@@ -5,7 +5,7 @@ import IUserUseCase, { IHomeMovieData } from "../../interface/usecase/user.userc
 import { StatusCodes } from "../../enums/statusCode.enum";
 import IMovie from "../../entity/movie.entity";
 import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
-import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../../entity/user.entity";
+import { IBookSeatCredentials, ICreateCheckoutSessionCredentials, IUserProfile } from "../../entity/user.entity";
 import { ITicketDetilas } from "../../entity/tickets.entity";
 
 export default class UserController implements IUserController {
@@ -158,6 +158,19 @@ export default class UserController implements IUserController {
     async getTicketDetails(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
       try {
         const data: ITicketDetilas = await this.userUseCase.getTicketDetails(req.params.ticketId, req.id);
+
+        res.status(StatusCodes.Success).json({
+          message: "Sucessfull",
+          data
+        });
+      } catch (err: any) {
+        next(err);
+      }
+    }
+
+    async getUserProfileData(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const data: IUserProfile = await this.userUseCase.getUserProfileData(req.id);
 
         res.status(StatusCodes.Success).json({
           message: "Sucessfull",

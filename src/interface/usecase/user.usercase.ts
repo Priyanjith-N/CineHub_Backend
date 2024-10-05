@@ -1,7 +1,7 @@
 import IMovie from "../../entity/movie.entity";
 import { IMovieSchedulesForBooking, IMovieSchedulesWithTheaterDetails } from "../../entity/movieSchedule.entity";
 import { ITicketDetilas } from "../../entity/tickets.entity";
-import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../../entity/user.entity";
+import { IBookSeatCredentials, ICreateCheckoutSessionCredentials, IUserProfile } from "../../entity/user.entity";
 
 export default interface IUserUseCase {
     getAllDataForHomePage(): Promise<IHomeMovieData | never>;
@@ -14,6 +14,7 @@ export default interface IUserUseCase {
     cancelTicket(ticketId: string | undefined, userId: string | undefined): Promise<void | never>;
     getAllTransactionList(userId: string | undefined): Promise<ITicketDetilas[] | never>;
     getTicketDetails(ticketId: string | undefined, userId: string | undefined): Promise<ITicketDetilas | never>;
+    getUserProfileData(userId: string | undefined): Promise<IUserProfile | never>;
 }
 
 export interface IHomeMovieData {

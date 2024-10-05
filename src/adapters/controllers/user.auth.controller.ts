@@ -152,11 +152,10 @@ export default class UserAuthenticationController implements IUserAuthentication
         try {
             const authorizationHeader: string | undefined = req.headers.authorization;
 
-            const data: IUserProfile = await this.userAuthUseCase.verifyToken(authorizationHeader);
+            await this.userAuthUseCase.verifyToken(authorizationHeader);
 
             res.status(StatusCodes.Success).json({
-                message: 'User is authenticated',
-                data
+                message: 'User is authenticated'
             });
         } catch (err: any) {
             next(err);

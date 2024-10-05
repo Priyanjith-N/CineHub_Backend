@@ -5,7 +5,7 @@ import RequiredCredentialsNotGiven from "../errors/requiredCredentialsNotGiven.e
 import IUserRepository from "../interface/repositories/user.repository";
 import IUserUseCase, { IHomeMovieData } from "../interface/usecase/user.usercase";
 import IStripeService from "../interface/utils/IStripeService.utils";
-import { IBookSeatCredentials, ICreateCheckoutSessionCredentials } from "../entity/user.entity";
+import IUser, { IBookSeatCredentials, ICreateCheckoutSessionCredentials, IUserProfile } from "../entity/user.entity";
 import { ISeatLayout, ISeatPayAmountData } from "../entity/screen.entity";
 import ITickets, { IPurchaseDetails, ISaveCredentionOfTickets, ITicketDetilas } from "../entity/tickets.entity";
 import IMovieStreaming, { IMovieStreamingDetails } from "../entity/movieStreaming.entity";
@@ -279,6 +279,21 @@ export default class UserUseCase implements IUserUseCase {
             if(!ticketData || ticketData.userId.toString() !== userId.toString()) throw new RequiredCredentialsNotGiven('Invaild Ticket details.');
 
             return ticketData;
+        } catch (err: any) {
+            throw err;
+        }
+    }
+
+    async getUserProfileData(userId: string | undefined): Promise<IUserProfile | never> {
+        try {
+            
+            if(!userId || !isObjectIdOrHexString(userId)) throw new RequiredCredentialsNotGiven('Provide all required details.');
+            
+            const data: IUserProfile | null = await this.userRepository.getUserProfileData(userId);
+            
+            if(!data) throw new RequiredCredentialsNotGiven('Provide all required details.');
+
+            return data;
         } catch (err: any) {
             throw err;
         }
