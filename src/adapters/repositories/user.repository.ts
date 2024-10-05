@@ -57,6 +57,13 @@ export default class UserRepository implements IUserRepository {
         try {
             const agg = [
               {
+                $match: {
+                  date: {
+                    $gte: new Date(Date.now())
+                  }
+                }
+              },
+              {
                 $group: {
                   _id: '$movieId'
                 }
